@@ -1,0 +1,480 @@
+validation_persent: 4
+test_persent: 2
+dict_path: /home/alex/Downloads/dict.opcorpora.xml
+words_path: words.pkl
+dataset_path: dataset
+max_word_size: 32
+model_key: small #big
+export_path: export
+save_path: chekpoints/
+publish_net_path: ../../cs/DeepMorphy/NeuralNet/
+publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml
+publish_gramms_path: ../../cs/DeepMorphy/grams.xml
+
+#miss_steps:
+#  - post
+#  - gndr
+#  - nmbr
+#  - case
+#  - tens
+#  - pers
+
+gram_classification:
+  default:
+    char_vector_size: 32
+    rnn_state_size: 32
+    test_batch_size:  2048
+    train_batch_size: 2048
+
+    #char_vector_size: 128
+    #rnn_state_size: 128
+    #test_batch_size: 1024
+    #train_batch_size: 1014
+
+    rnn_layers_count: 2
+    rnn_bidirectional: True
+    stop_training_acc_delta: 0.00001
+    learn_rate: 0.01
+    learn_rate_decay_step: 0.1
+    min_learn_rate: 0.000001
+    return_step: 2
+    keep_dropout: 1
+    use_weights: false
+
+
+classification:
+  char_vector_size: 64
+  rnn_state_size: 64
+  test_batch_size: 2048
+  train_batch_size: 2048
+
+  #char_vector_size: 256
+  #rnn_state_size: 256
+  #test_batch_size: 2048
+  #train_batch_size: 4096
+
+  rnn_layers_count: 2
+  rnn_bidirectional: True
+  stop_training_acc_delta: 0.00005
+  learn_rate: 0.01
+  learn_rate_decay_step: 0.1
+  min_learn_rate: 0.0000001
+  return_step: 2
+  keep_dropout: 1
+  use_weights: false
+
+
+
+chars:
+  - а
+  - б
+  - в
+  - г
+  - д
+  - е
+  - ё
+  - ж
+  - з
+  - и
+  - й
+  - к
+  - л
+  - м
+  - н
+  - о
+  - п
+  - р
+  - с
+  - т
+  - у
+  - ф
+  - х
+  - ч
+  - ц
+  - ш
+  - щ
+  - ъ
+  - ы
+  - ь
+  - э
+  - ю
+  - я
+  - "-"
+  - UNDEFINED # неизвестный символ
+
+
+other_post_types:
+  punct:
+    key_ru: пункт
+    name_ru: пунктуция
+    desc_ru: пунктуация
+
+  int:
+    key_ru: цифра
+    name_ru: цифра
+    desc_ru: цифра
+
+  romn:
+    key_ru: рим_цифр
+    name_ru: римская цифра
+    desc_ru: римская цифра
+
+  unkn:
+    key_ru: неизв
+    name_ru: неизвестный токен
+    desc_ru: неизвестный токен
+
+
+dict_post_types:
+  npro:
+    key_ru: мест
+    power: 2
+    name_ru: местоимение
+    desc_ru: местоимение
+    keys:
+      - NPRO
+
+  prep:
+    key_ru: предл
+    power: 2
+    name_ru: предлог
+    desc_ru: предлог
+    keys:
+      - PREP
+
+  conj:
+    key_ru: союз
+    power: 2
+    name_ru: союз
+    desc_ru: союз
+    keys:
+      - CONJ
+
+  prcl:
+    key_ru: част
+    power: 0
+    name_ru: частица
+    desc_ru: частица
+    keys:
+      - PRCL
+
+  intj:
+    key_ru: межд
+    power: 0.5
+    name_ru: междометие
+    desc_ru: междометие
+    keys:
+      - INTJ
+
+  numb:
+    key_ru: числ
+    power: 2
+    name_ru: числительное
+    desc_ru: числительное
+    keys:
+      - NUMR
+
+grammemes_types:
+  post:
+    index: 0
+    key_ru: чр
+    name: часть речи
+    classes:
+      noun:
+        index: 0
+        key_ru: сущ
+        name_ru: существительное
+        desc_ru: существительное
+        keys:
+          - NOUN
+
+      adjf:
+        index: 1
+        key_ru: прил
+        name_ru: полное прилагательное
+        desc_ru: полное прилагательное
+        keys:
+          - ADJF
+
+      adjs:
+        index: 2
+        key_ru: кр_прил
+        name_ru: краткое прилагательное
+        desc_ru: полное прилагательное
+        keys:
+          - ADJS
+
+      verb:
+        index: 3
+        key_ru: гл
+        name_ru: личная форма глагола
+        desc_ru: личная форма глагола
+        keys:
+          - VERB
+
+      infn:
+        index: 4
+        key_ru: инф_гл
+        name_ru: инфинитив глагола
+        desc_ru: инфинитив глагола
+        keys:
+          - INFN
+
+      comp:
+        index: 5
+        key_ru: комп
+        name_ru: компаратив
+        desc_ru: компаратив
+        keys:
+          - COMP
+
+      prtf:
+        index: 6
+        key_ru: прич
+        name_ru: причастие
+        desc_ru: причастие
+        keys:
+          - PRTF
+
+      prts:
+        index: 7
+        key_ru: кр_прич
+        name_ru: краткое причастие
+        desc_ru: краткое причастие
+        keys:
+          - PRTS
+
+      grnd:
+        index: 8
+        key_ru: деепр
+        name_ru: деепричастие
+        desc_ru: деепричастие
+        keys:
+          - GRND
+
+      advb:
+        index: 9
+        key_ru: нареч
+        name_ru: наречие
+        desc_ru: наречие
+        keys:
+          - ADVB
+
+      pred:
+        index: 10
+        key_ru: предик
+        name_ru: предикатив
+        desc_ru: предикатив
+        keys:
+          - PRED
+
+  gndr:
+    index: 1
+    key_ru: пол
+    name: пол
+    classes:
+      masc:
+        index: 0
+        key_ru: муж
+        name_ru: мужской
+        desc_ru: мужской род
+        keys:
+          - masc
+
+      femn:
+        index: 1
+        key_ru: жен
+        name_ru: женский
+        desc_ru: женский род
+        keys:
+          - femn
+
+      neut:
+        index: 2
+        key_ru: ср
+        name_ru: средний
+        desc_ru: средний род
+        keys:
+          - neut
+
+  nmbr:
+    index: 2
+    key_ru: чл
+    name: чл
+    classes:
+      sing:
+        index: 0
+        key_ru: ед
+        name_ru: единственное
+        desc_ru: единственное число
+        keys:
+          - sing
+
+      plur:
+        index: 1
+        key_ru: мн
+        name_ru: множественное
+        desc_ru: множественное число
+        keys:
+          - plur
+
+  case:
+   index: 3
+   key_ru: пд
+   name: падеж
+   classes:
+     nomn:
+       index: 0
+       key_ru: им
+       name_ru: именительный
+       desc_ru: именительный падеж
+       keys:
+         - nomn
+
+     gent:
+       index: 1
+       key_ru: рд
+       name_ru: родительный
+       desc_ru: родительный падеж
+       keys:
+         - gent
+
+     datv:
+       index: 2
+       key_ru: дт
+       name_ru: дательный
+       desc_ru: дательный падеж
+       keys:
+         - datv
+
+     accs:
+       index: 3
+       key_ru: вн
+       name_ru: винительный
+       desc_ru: винительный падеж
+       keys:
+         - accs
+
+     ablt:
+       index: 4
+       key_ru: тв
+       name_ru: творительный
+       desc_ru: творительный падеж
+       keys:
+         - ablt
+
+     loct:
+       index: 5
+       key_ru: пр
+       name_ru: предложный
+       desc_ru: предложный падеж
+       keys:
+         - loct
+
+     gent1:
+       index: 6
+       key_ru: рд1
+       name_ru: первый родительный
+       desc_ru: первый родительный падеж
+       keys:
+         - gen1
+
+     gent2:
+       index: 7
+       key_ru: рд2
+       name_ru: второй родительный
+       desc_ru: второй родительный падеж
+       keys:
+         - gen2
+
+     voct:
+       index: 8
+       key_ru: зв
+       name_ru: звательный
+       desc_ru: звательный падеж
+       keys:
+         - voct
+
+     accs2:
+       index: 9
+       key_ru: вн2
+       name_ru: второй винительный
+       desc_ru: второй винительный падеж
+       keys:
+         - acc2
+
+     loct1:
+       index: 10
+       key_ru: пр1
+       name_ru: первый предложный
+       desc_ru: первый предложный падеж
+       keys:
+         - loc1
+
+     loct2:
+       index: 11
+       key_ru: пр2
+       name_ru: второй предложный
+       desc_ru: второй предложный падеж
+       keys:
+         - loc2
+
+  pers:
+    index: 4
+    key_ru: лц
+    name: лицо
+    classes:
+      1per:
+        index: 0
+        key_ru: 1л
+        name_ru: 1
+        desc_ru: 1 лицо
+        keys:
+          - 1per
+
+      2per:
+        index: 1
+        key_ru: 2л
+        name_ru: 2
+        desc_ru: 2 лицо
+        keys:
+          - 2per
+
+      3per:
+        index: 2
+        key_ru: 3л
+        name_ru: 3
+        desc_ru: 3 лицо
+        keys:
+          - 3per
+
+  tens:
+    index: 5
+    key_ru: вр
+    name: время
+    classes:
+      pres:
+        index: 0
+        key_ru: наст
+        name_ru: настоящее
+        desc_ru: настоящее время
+        keys:
+          - pres
+
+      past:
+        index: 1
+        key_ru: прош
+        name_ru: прошедшее
+        desc_ru: прошедшее время
+        keys:
+          - past
+
+      futr:
+        index: 2
+        key_ru: буд
+        name_ru: будущее
+        desc_ru: будущее время
+        keys:
+          - futr
+
+

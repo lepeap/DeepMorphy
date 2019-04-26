@@ -1,0 +1,5 @@
+tqdm=4.31.1
+numpy==1.16.2
+PyYAML==5.1
+tensorflow-gpu==1.13.1
+lxml=4.3.3

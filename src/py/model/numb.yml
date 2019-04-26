@@ -1,0 +1,1571 @@
+0:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: нулевой}
+  - {case: nomn, gndr: femn, nmbr: sing, text: нулевая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: нулевое}
+  - {case: nomn, nmbr: plur, text: нулевые}
+  - {case: gent, gndr: masc, nmbr: sing, text: нулевого}
+  - {case: gent, gndr: femn, nmbr: sing, text: нулевой}
+  - {case: gent, gndr: neut, nmbr: sing, text: нулевого}
+  - {case: gent, nmbr: plur, text: нулевых, lemma: нулевой}
+  - {case: datv, gndr: masc, nmbr: sing, text: нулевому}
+  - {case: datv, gndr: femn, nmbr: sing, text: нулевой}
+  - {case: datv, gndr: neut, nmbr: sing, text: нулевому}
+  - {case: datv, nmbr: plur, text: нулевым}
+  - {case: accs, gndr: masc, nmbr: sing, text: нулевого}
+  - {case: accs, gndr: femn, nmbr: sing, text: нулевой}
+  - {case: accs, gndr: femn, nmbr: sing, text: нулевую}
+  - {case: accs, gndr: neut, nmbr: sing, text: нулевое}
+  - {case: accs, nmbr: plur, text: нулевых}
+  - {case: accs, nmbr: plur, text: нулевые}
+  - {case: ablt, gndr: masc, nmbr: sing, text: нулевым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: нулевой}
+  - {case: ablt, gndr: femn, nmbr: sing, text: нулевою}
+  - {case: ablt, gndr: neut, nmbr: sing, text: нулевым}
+  - {case: ablt, nmbr: plur, text: нулевыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: нулевом}
+  - {case: loct, gndr: femn, nmbr: sing, text: нулевой}
+  - {case: loct, gndr: neut, nmbr: sing, text: нулевом}
+  - {case: loct, nmbr: plur, text: нулевых}
+  s:
+  - {case: nomn, gndr: masc, nmbr: sing, text: ноль}
+  - {case: nomn, gndr: masc, nmbr: plur, text: ноли}
+  - {case: gent, gndr: masc, nmbr: sing, text: ноля}
+  - {case: gent, gndr: masc, nmbr: plur, text: нолей}
+  - {case: datv, gndr: masc, nmbr: sing, text: нолю}
+  - {case: datv, gndr: masc, nmbr: plur, text: нолям}
+  - {case: accs, gndr: masc, nmbr: sing, text: ноль}
+  - {case: accs, gndr: masc, nmbr: plur, text: ноли}
+  - {case: ablt, gndr: masc, nmbr: sing, text: нолём}
+  - {case: ablt, gndr: masc, nmbr: plur, text: нолями}
+  - {case: loct, gndr: masc, nmbr: sing, text: ноле}
+  - {case: loct, gndr: masc, nmbr: plur, text: нолях}
+1:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: первый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: первая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: первое}
+  - {case: nomn, nmbr: plur, text: первые}
+  - {case: gent, gndr: masc, nmbr: sing, text: первого}
+  - {case: gent, gndr: femn, nmbr: sing, text: первой}
+  - {case: gent, gndr: neut, nmbr: sing, text: первого}
+  - {case: gent, nmbr: plur, text: первых}
+  - {case: datv, gndr: masc, nmbr: sing, text: первому}
+  - {case: datv, gndr: femn, nmbr: sing, text: первой}
+  - {case: datv, gndr: neut, nmbr: sing, text: первому}
+  - {case: datv, nmbr: plur, text: первым}
+  - {case: accs, gndr: masc, nmbr: sing, text: первый}
+  - {case: accs, gndr: masc, nmbr: sing, text: первого}
+  - {case: accs, gndr: femn, nmbr: sing, text: первую}
+  - {case: accs, gndr: neut, nmbr: sing, text: первое}
+  - {case: accs, nmbr: plur, text: первые}
+  - {case: accs, nmbr: plur, text: первых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: первым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: первой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: первым}
+  - {case: ablt, nmbr: plur, text: первыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: первом}
+  - {case: loct, gndr: femn, nmbr: sing, text: первой}
+  - {case: loct, gndr: neut, nmbr: sing, text: первом}
+  - {case: loct, nmbr: plur, text: первых}
+  s:
+  - {case: nomn, gndr: masc, nmbr: sing, text: один}
+  - {case: nomn, gndr: femn, nmbr: sing, text: одна}
+  - {case: nomn, gndr: neut, nmbr: sing, text: одно}
+  - {case: nomn, nmbr: plur, text: одни}
+  - {case: gent, gndr: masc, nmbr: sing, text: одного}
+  - {case: gent, gndr: femn, nmbr: sing, text: одной}
+  - {case: gent, gndr: neut, nmbr: sing, text: одного}
+  - {case: gent, nmbr: plur, text: одних}
+  - {case: datv, gndr: masc, nmbr: sing, text: одному}
+  - {case: datv, gndr: femn, nmbr: sing, text: одной}
+  - {case: datv, gndr: neut, nmbr: sing, text: одному}
+  - {case: datv, nmbr: plur, text: одним}
+  - {case: accs, gndr: masc, nmbr: sing, text: один}
+  - {case: accs, gndr: femn, nmbr: sing, text: одного}
+  - {case: accs, gndr: femn, nmbr: sing, text: одну}
+  - {case: accs, gndr: neut, nmbr: sing, text: одно}
+  - {case: accs, nmbr: plur, text: одни}
+  - {case: accs, nmbr: plur, text: одних}
+  - {case: ablt, gndr: masc, nmbr: sing, text: одним}
+  - {case: ablt, gndr: femn, nmbr: sing, text: одной}
+  - {case: ablt, gndr: neut, nmbr: sing, text: одним}
+  - {case: ablt, nmbr: plur, text: одними}
+  - {case: loct, gndr: masc, nmbr: sing, text: одном}
+  - {case: loct, gndr: femn, nmbr: sing, text: одной}
+  - {case: loct, gndr: neut, nmbr: sing, text: одном}
+  - {case: loct, nmbr: plur, text: одних}
+  - {case: nomn, gndr: femn, text: один}
+  - {case: nomn, text: одни}
+  - {case: nomn, gndr: femn, text: одна}
+  - {case: nomn, gndr: neut, text: одно}
+  - {case: gent, text: одних}
+  - {case: gent, gndr: femn, text: одного}
+  - {case: gent, gndr: femn, text: одной}
+  - {case: gent, gndr: neut, text: одного}
+  - {case: datv, text: одним}
+  - {case: datv, gndr: femn, text: одному}
+  - {case: datv, gndr: femn, text: одной}
+  - {case: datv, gndr: neut, text: одному}
+  - {case: accs, text: одни}
+  - {case: accs, text: одних}
+  - {case: accs, gndr: masc, text: один}
+  - {case: accs, gndr: masc, text: одного}
+  - {case: accs, gndr: femn, text: одну}
+  - {case: accs, gndr: neut, text: одно}
+  - {case: ablt, text: одними}
+  - {case: ablt, gndr: masc, text: одним}
+  - {case: ablt, gndr: femn, text: одной}
+  - {case: ablt, gndr: femn, text: одною}
+  - {case: ablt, gndr: neut, text: одним}
+  - {case: loct, gndr: femn, text: одном}
+  - {case: loct, gndr: femn, text: одной}
+  - {case: loct, gndr: neut, text: одном}
+2:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: второй}
+  - {case: nomn, gndr: femn, nmbr: sing, text: вторая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: второе}
+  - {case: nomn, nmbr: plur, text: вторые}
+  - {case: gent, gndr: masc, nmbr: sing, text: второго}
+  - {case: gent, gndr: femn, nmbr: sing, text: второй}
+  - {case: gent, gndr: neut, nmbr: sing, text: второго}
+  - {case: gent, nmbr: plur, text: вторых}
+  - {case: datv, gndr: masc, nmbr: sing, text: второму}
+  - {case: datv, gndr: femn, nmbr: sing, text: второй}
+  - {case: datv, gndr: neut, nmbr: sing, text: второму}
+  - {case: datv, nmbr: plur, text: вторым}
+  - {case: accs, gndr: masc, nmbr: sing, text: второй}
+  - {case: accs, gndr: femn, nmbr: sing, text: второго}
+  - {case: accs, gndr: femn, nmbr: sing, text: вторую}
+  - {case: accs, gndr: neut, nmbr: sing, text: второе}
+  - {case: accs, nmbr: plur, text: вторые}
+  - {case: accs, nmbr: plur, text: вторых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: вторым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: второй}
+  - {case: ablt, gndr: neut, nmbr: sing, text: вторым}
+  - {case: ablt, nmbr: plur, text: вторыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: втором}
+  - {case: loct, gndr: femn, nmbr: sing, text: второй}
+  - {case: loct, gndr: neut, nmbr: sing, text: втором}
+  - {case: loct, nmbr: plur, text: вторых}
+  s:
+  - {case: nomn, gndr: masc, text: два}
+  - {case: nomn, gndr: femn, text: две}
+  - {case: nomn, gndr: neut, text: два}
+  - {case: gent, gndr: masc, text: двух}
+  - {case: gent, gndr: femn, text: двух}
+  - {case: gent, gndr: neut, text: двух}
+  - {case: datv, gndr: masc, text: двум}
+  - {case: datv, gndr: femn, text: двум}
+  - {case: datv, gndr: neut, text: двум}
+  - {case: accs, gndr: masc, text: два}
+  - {case: accs, gndr: masc, text: двух}
+  - {case: accs, gndr: femn, text: две}
+  - {case: accs, gndr: femn, text: двух}
+  - {case: accs, gndr: neut, text: два}
+  - {case: ablt, gndr: masc, text: двумя}
+  - {case: ablt, gndr: femn, text: двумя}
+  - {case: ablt, gndr: neut, text: двумя}
+  - {case: loct, gndr: masc, text: двух}
+  - {case: loct, gndr: femn, text: двух}
+  - {case: loct, gndr: neut, text: двух}
+3:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: третий}
+  - {case: nomn, gndr: femn, nmbr: sing, text: третья}
+  - {case: nomn, gndr: neut, nmbr: sing, text: третье}
+  - {case: nomn, nmbr: plur, text: третьи}
+  - {case: gent, gndr: masc, nmbr: sing, text: третьего}
+  - {case: gent, gndr: femn, nmbr: sing, text: третьей}
+  - {case: gent, gndr: neut, nmbr: sing, text: третьего}
+  - {case: gent, nmbr: plur, text: третьих}
+  - {case: datv, gndr: masc, nmbr: sing, text: третьему}
+  - {case: datv, gndr: femn, nmbr: sing, text: третьей}
+  - {case: datv, gndr: neut, nmbr: sing, text: третьему}
+  - {case: datv, nmbr: plur, text: третьим}
+  - {case: accs, gndr: masc, nmbr: sing, text: третий}
+  - {case: accs, gndr: masc, nmbr: sing, text: третьего}
+  - {case: accs, gndr: femn, nmbr: sing, text: третью}
+  - {case: accs, gndr: neut, nmbr: sing, text: третье}
+  - {case: accs, nmbr: plur, text: третьи}
+  - {case: accs, nmbr: plur, text: третьих}
+  - {case: ablt, gndr: masc, nmbr: sing, text: третьим}
+  - {case: ablt, gndr: femn, nmbr: sing, text: третьей}
+  - {case: ablt, gndr: femn, nmbr: sing, text: третьею}
+  - {case: ablt, gndr: neut, nmbr: sing, text: третьим}
+  - {case: ablt, nmbr: plur, text: третьими}
+  - {case: loct, gndr: masc, nmbr: sing, text: третьем}
+  - {case: loct, gndr: femn, nmbr: sing, text: третьей}
+  - {case: loct, gndr: neut, nmbr: sing, text: третьем}
+  - {case: loct, nmbr: plur, text: третьих}
+  s:
+  - {case: nomn, text: три}
+  - {case: gent, text: трех}
+  - {case: datv, text: трем}
+  - {case: accs, text: трех}
+  - {case: accs, text: три}
+  - {case: ablt, text: тремя}
+  - {case: loct, text: трех}
+4:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: четвёртый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: четвёртая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: четвёртое}
+  - {case: nomn, nmbr: plur, text: четвёртые}
+  - {case: gent, gndr: masc, nmbr: sing, text: четвёртого}
+  - {case: gent, gndr: femn, nmbr: sing, text: четвёртой}
+  - {case: gent, gndr: neut, nmbr: sing, text: четвёртого}
+  - {case: gent, nmbr: plur, text: четвёртых}
+  - {case: datv, gndr: masc, nmbr: sing, text: четвёртому}
+  - {case: datv, gndr: femn, nmbr: sing, text: четвёртой}
+  - {case: datv, gndr: neut, nmbr: sing, text: четвёртому}
+  - {case: datv, nmbr: plur, text: четвёртым}
+  - {case: accs, gndr: masc, nmbr: sing, text: четвёртый}
+  - {case: accs, gndr: masc, nmbr: sing, text: четвёртого}
+  - {case: accs, gndr: femn, nmbr: sing, text: четвёртую}
+  - {case: accs, gndr: neut, nmbr: sing, text: четвёртое}
+  - {case: accs, nmbr: plur, text: четвёртые}
+  - {case: accs, nmbr: plur, text: четвёртых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: четвёртым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: четвёртой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: четвёртым}
+  - {case: ablt, nmbr: plur, text: четвёртыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: четвёртом}
+  - {case: loct, gndr: femn, nmbr: sing, text: четвёртой}
+  - {case: loct, gndr: neut, nmbr: sing, text: четвёртом}
+  - {case: loct, nmbr: plur, text: четвёртых}
+  s:
+  - {case: nomn, text: четыре}
+  - {case: gent, text: четырех}
+  - {case: datv, text: четырем}
+  - {case: accs, text: четыре}
+  - {case: accs, text: четырех}
+  - {case: ablt, text: четырьмя}
+  - {case: loct, text: четырех}
+5:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: пятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: пятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: пятое}
+  - {case: nomn, nmbr: plur, text: пятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: пятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: пятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: пятого}
+  - {case: gent, nmbr: plur, text: пятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: пятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: пятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: пятому}
+  - {case: datv, nmbr: plur, text: пятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятый}
+  - {case: accs, gndr: femn, nmbr: sing, text: пятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: пятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: пятое}
+  - {case: accs, nmbr: plur, text: пятые}
+  - {case: accs, nmbr: plur, text: пятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: пятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: пятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: пятым}
+  - {case: ablt, nmbr: plur, text: пятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: пятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: пятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: пятом}
+  - {case: loct, nmbr: plur, text: пятых}
+  s:
+  - {case: nomn, text: пять}
+  - {case: gent, text: пяти}
+  - {case: datv, text: пяти}
+  - {case: accs, text: пять}
+  - {case: ablt, text: пятью}
+  - {case: loct, text: пяти}
+6:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: шестой}
+  - {case: nomn, gndr: femn, nmbr: sing, text: шестая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: шестое}
+  - {case: nomn, nmbr: plur, text: шестые}
+  - {case: gent, gndr: masc, nmbr: sing, text: шестого}
+  - {case: gent, gndr: femn, nmbr: sing, text: шестой}
+  - {case: gent, gndr: neut, nmbr: sing, text: шестого}
+  - {case: gent, nmbr: plur, text: шестых}
+  - {case: datv, gndr: masc, nmbr: sing, text: шестому}
+  - {case: datv, gndr: femn, nmbr: sing, text: шестой}
+  - {case: datv, gndr: neut, nmbr: sing, text: шестому}
+  - {case: datv, nmbr: plur, text: шестым}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестой}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестого}
+  - {case: accs, gndr: femn, nmbr: sing, text: шестую}
+  - {case: accs, gndr: neut, nmbr: sing, text: шестое}
+  - {case: accs, nmbr: plur, text: шестые}
+  - {case: accs, nmbr: plur, text: шестых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: шестым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: шестой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: шестым}
+  - {case: ablt, nmbr: plur, text: шестыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: шестом}
+  - {case: loct, gndr: femn, nmbr: sing, text: шестой}
+  - {case: loct, gndr: neut, nmbr: sing, text: шестом}
+  - {case: loct, nmbr: plur, text: шестых}
+  s:
+  - {case: nomn, text: шесть}
+  - {case: gent, text: шести}
+  - {case: datv, text: шести}
+  - {case: accs, text: шесть}
+  - {case: ablt, text: шестью}
+  - {case: loct, text: шести}
+7:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: седьмой}
+  - {case: nomn, gndr: femn, nmbr: sing, text: седьмая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: седьмое}
+  - {case: nomn, nmbr: plur, text: седьмые}
+  - {case: gent, gndr: masc, nmbr: sing, text: седьмого}
+  - {case: gent, gndr: femn, nmbr: sing, text: седьмой}
+  - {case: gent, gndr: neut, nmbr: sing, text: седьмого}
+  - {case: gent, nmbr: plur, text: седьмых}
+  - {case: datv, gndr: masc, nmbr: sing, text: седьмому}
+  - {case: datv, gndr: femn, nmbr: sing, text: седьмой}
+  - {case: datv, gndr: neut, nmbr: sing, text: седьмому}
+  - {case: datv, nmbr: plur, text: седьмым}
+  - {case: accs, gndr: masc, nmbr: sing, text: седьмой}
+  - {case: accs, gndr: masc, nmbr: sing, text: седьмого}
+  - {case: accs, gndr: femn, nmbr: sing, text: седьмую}
+  - {case: accs, gndr: neut, nmbr: sing, text: седьмое}
+  - {case: accs, nmbr: plur, text: седьмые}
+  - {case: accs, nmbr: plur, text: седьмых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: седьмым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: седьмой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: седьмым}
+  - {case: ablt, nmbr: plur, text: седьмыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: седьмом}
+  - {case: loct, gndr: femn, nmbr: sing, text: седьмой}
+  - {case: loct, gndr: neut, nmbr: sing, text: седьмом}
+  - {case: loct, nmbr: plur, text: седьмых}
+  s:
+  - {case: nomn, text: семь}
+  - {case: gent, text: семи}
+  - {case: datv, text: семи}
+  - {case: accs, text: семь}
+  - {case: ablt, text: семью}
+  - {case: loct, text: семи}
+8:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: восьмой}
+  - {case: nomn, gndr: femn, nmbr: sing, text: восьмая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: восьмое}
+  - {case: nomn, nmbr: plur, text: восьмые}
+  - {case: gent, gndr: masc, nmbr: sing, text: восьмого}
+  - {case: gent, gndr: femn, nmbr: sing, text: восьмой}
+  - {case: gent, gndr: neut, nmbr: sing, text: восьмого}
+  - {case: gent, nmbr: plur, text: восьмых}
+  - {case: datv, gndr: masc, nmbr: sing, text: восьмому}
+  - {case: datv, gndr: femn, nmbr: sing, text: восьмой}
+  - {case: datv, gndr: neut, nmbr: sing, text: восьмому}
+  - {case: datv, nmbr: plur, text: восьмым}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмой}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмого}
+  - {case: accs, gndr: femn, nmbr: sing, text: восьмую}
+  - {case: accs, gndr: neut, nmbr: sing, text: восьмое}
+  - {case: accs, nmbr: plur, text: восьмые}
+  - {case: accs, nmbr: plur, text: восьмых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: восьмым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: восьмой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: восьмым}
+  - {case: ablt, nmbr: plur, text: восьмыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: восьмом}
+  - {case: loct, gndr: femn, nmbr: sing, text: восьмой}
+  - {case: loct, gndr: neut, nmbr: sing, text: восьмом}
+  - {case: loct, nmbr: plur, text: восьмых}
+  s:
+  - {case: nomn, text: восемь}
+  - {case: gent, text: восьми}
+  - {case: datv, text: восьми}
+  - {case: accs, text: восемь}
+  - {case: ablt, text: восемью}
+  - {case: ablt, text: восьмью}
+  - {case: loct, text: восьми}
+9:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: девятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: девятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: девятое}
+  - {case: nomn, nmbr: plur, text: девятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: девятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: девятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: девятого}
+  - {case: gent, nmbr: plur, text: девятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: девятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: девятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: девятому}
+  - {case: datv, nmbr: plur, text: девятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятый}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: девятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: девятое}
+  - {case: accs, nmbr: plur, text: девятые}
+  - {case: accs, nmbr: plur, text: девятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: девятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: девятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: девятым}
+  - {case: ablt, nmbr: plur, text: девятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: девятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: девятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: девятом}
+  - {case: loct, nmbr: plur, text: девятых}
+  s:
+  - {case: nomn, text: девять}
+  - {case: gent, text: девяти}
+  - {case: datv, text: девяти}
+  - {case: accs, text: девять}
+  - {case: ablt, text: девятью}
+  - {case: loct, text: девяти}
+10:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: десятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: десятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: десятое}
+  - {case: nomn, nmbr: plur, text: десятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: десятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: десятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: десятого}
+  - {case: gent, nmbr: plur, text: десятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: десятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: десятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: десятому}
+  - {case: datv, nmbr: plur, text: десятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: десятый}
+  - {case: accs, gndr: masc, nmbr: sing, text: десятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: десятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: десятое}
+  - {case: accs, nmbr: plur, text: десятые}
+  - {case: accs, nmbr: plur, text: десятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: десятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: десятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: десятым}
+  - {case: ablt, nmbr: plur, text: десятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: десятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: десятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: десятом}
+  - {case: loct, nmbr: plur, text: десятых}
+  s:
+  - {case: nomn, text: десять}
+  - {case: gent, text: десяти}
+  - {case: datv, text: десяти}
+  - {case: accs, text: десять}
+  - {case: ablt, text: десятью}
+  - {case: loct, text: десяти}
+11:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: одиннадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: одиннадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: одиннадцатое}
+  - {case: nomn, nmbr: plur, text: одиннадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: одиннадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: одиннадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: одиннадцатого}
+  - {case: gent, nmbr: plur, text: одиннадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: одиннадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: одиннадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: одиннадцатому}
+  - {case: datv, nmbr: plur, text: одиннадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: одиннадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: одиннадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: одиннадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: одиннадцатое}
+  - {case: accs, nmbr: plur, text: одиннадцатые}
+  - {case: accs, nmbr: plur, text: одиннадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: одиннадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: одиннадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: одиннадцатым}
+  - {case: ablt, nmbr: plur, text: одиннадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: одиннадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: одиннадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: одиннадцатом}
+  - {case: loct, nmbr: plur, text: одиннадцатых}
+  s:
+  - {case: nomn, text: одиннадцать}
+  - {case: gent, text: одиннадцати}
+  - {case: datv, text: одиннадцати}
+  - {case: accs, text: одиннадцать}
+  - {case: ablt, text: одиннадцатью}
+  - {case: loct, text: одиннадцати}
+12:
+  ad:
+  - {case: nomn, gndr: femn, nmbr: sing, text: дюжина}
+  - {case: nomn, gndr: femn, nmbr: plur, text: дюжины}
+  - {case: gent, gndr: femn, nmbr: sing, text: дюжины}
+  - {case: gent, gndr: femn, nmbr: plur, text: дюжин}
+  - {case: datv, gndr: femn, nmbr: sing, text: дюжине}
+  - {case: datv, gndr: femn, nmbr: plur, text: дюжинам}
+  - {case: accs, gndr: femn, nmbr: sing, text: дюжину}
+  - {case: accs, gndr: femn, nmbr: plur, text: дюжины}
+  - {case: ablt, gndr: femn, nmbr: sing, text: дюжиной}
+  - {case: ablt, gndr: femn, nmbr: sing, text: дюжиною}
+  - {case: ablt, gndr: femn, nmbr: plur, text: дюжинами}
+  - {case: loct, gndr: femn, nmbr: sing, text: дюжине}
+  - {case: loct, gndr: femn, nmbr: plur, text: дюжинах}
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: двенадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: двенадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: двенадцатое}
+  - {case: nomn, nmbr: plur, text: двенадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: двенадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: двенадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: двенадцатого}
+  - {case: gent, nmbr: plur, text: двенадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: двенадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: двенадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: двенадцатому}
+  - {case: datv, nmbr: plur, text: двенадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: двенадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: двенадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: двенадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: двенадцатое}
+  - {case: accs, nmbr: plur, text: двенадцатые}
+  - {case: accs, nmbr: plur, text: двенадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: двенадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: двенадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: двенадцатым}
+  - {case: ablt, nmbr: plur, text: двенадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: двенадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: двенадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: двенадцатом}
+  - {case: loct, nmbr: plur, text: двенадцатых}
+  s:
+  - {case: nomn, text: двенадцать}
+  - {case: gent, text: двенадцати}
+  - {case: datv, text: двенадцати}
+  - {case: accs, text: двенадцать}
+  - {case: ablt, text: двенадцатью}
+  - {case: loct, text: двенадцати}
+13:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: тринадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: тринадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: тринадцатое}
+  - {case: nomn, nmbr: plur, text: тринадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: тринадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: тринадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: тринадцатого}
+  - {case: gent, nmbr: plur, text: тринадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: тринадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: тринадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: тринадцатому}
+  - {case: datv, nmbr: plur, text: тринадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: тринадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: тринадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: тринадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: тринадцатое}
+  - {case: accs, nmbr: plur, text: тринадцатые}
+  - {case: accs, nmbr: plur, text: тринадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: тринадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: тринадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: тринадцатым}
+  - {case: ablt, nmbr: plur, text: тринадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: тринадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: тринадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: тринадцатом}
+  - {case: loct, nmbr: plur, text: тринадцатых}
+  s:
+  - {case: nomn, text: тринадцать}
+  - {case: gent, text: тринадцати}
+  - {case: datv, text: тринадцати}
+  - {case: accs, text: тринадцать}
+  - {case: ablt, text: тринадцатью}
+  - {case: loct, text: тринадцати}
+14:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: четырнадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: четырнадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: четырнадцатое}
+  - {case: nomn, nmbr: plur, text: четырнадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: четырнадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: четырнадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: четырнадцатого}
+  - {case: gent, nmbr: plur, text: четырнадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: четырнадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: четырнадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: четырнадцатому}
+  - {case: datv, nmbr: plur, text: четырнадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырнадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырнадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: четырнадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: четырнадцатое}
+  - {case: accs, nmbr: plur, text: четырнадцатые}
+  - {case: accs, nmbr: plur, text: четырнадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: четырнадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: четырнадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: четырнадцатым}
+  - {case: ablt, nmbr: plur, text: четырнадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: четырнадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: четырнадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: четырнадцатом}
+  - {case: loct, nmbr: plur, text: четырнадцатых}
+  s:
+  - {case: nomn, text: четырнадцать}
+  - {case: gent, text: четырнадцати}
+  - {case: datv, text: четырнадцати}
+  - {case: accs, text: четырнадцать}
+  - {case: ablt, text: четырнадцатью}
+  - {case: loct, text: четырнадцати}
+15:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: пятнадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: пятнадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: пятнадцатое}
+  - {case: nomn, nmbr: plur, text: пятнадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: пятнадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: пятнадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: пятнадцатого}
+  - {case: gent, nmbr: plur, text: пятнадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: пятнадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: пятнадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: пятнадцатому}
+  - {case: datv, nmbr: plur, text: пятнадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятнадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятнадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: пятнадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: пятнадцатое}
+  - {case: accs, nmbr: plur, text: пятнадцатые}
+  - {case: accs, nmbr: plur, text: пятнадцатых}
+  - {case: ablt, gndr: femn, nmbr: sing, text: пятнадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: пятнадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: пятнадцатым}
+  - {case: ablt, nmbr: plur, text: пятнадцатыми}
+  - {case: loct, gndr: femn, nmbr: sing, text: пятнадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: пятнадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: пятнадцатом}
+  - {case: loct, nmbr: plur, text: пятнадцатых}
+  s:
+  - {case: nomn, text: пятнадцать}
+  - {case: gent, text: пятнадцати}
+  - {case: datv, text: пятнадцати}
+  - {case: accs, text: пятнадцать}
+  - {case: ablt, text: пятнадцатью}
+  - {case: loct, text: пятнадцати}
+16:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: шестнадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: шестнадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: шестнадцатое}
+  - {case: nomn, nmbr: plur, text: шестнадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: шестнадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: шестнадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: шестнадцатого}
+  - {case: gent, nmbr: plur, text: шестнадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: шестнадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: шестнадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: шестнадцатому}
+  - {case: datv, nmbr: plur, text: шестнадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестнадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестнадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: шестнадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: шестнадцатое}
+  - {case: accs, nmbr: plur, text: шестнадцатые}
+  - {case: accs, nmbr: plur, text: шестнадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: шестнадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: шестнадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: шестнадцатым}
+  - {case: ablt, nmbr: plur, text: шестнадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: шестнадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: шестнадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: шестнадцатом}
+  - {case: loct, nmbr: plur, text: шестнадцатых}
+  s:
+  - {case: nomn, text: шестнадцать}
+  - {case: gent, text: шестнадцати}
+  - {case: datv, text: шестнадцати}
+  - {case: accs, text: шестнадцать}
+  - {case: ablt, text: шестнадцатью}
+  - {case: loct, text: шестнадцати}
+17:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: семнадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: семнадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: семнадцатое}
+  - {case: nomn, nmbr: plur, text: семнадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: семнадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: семнадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: семнадцатого}
+  - {case: gent, nmbr: plur, text: семнадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: семнадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: семнадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: семнадцатому}
+  - {case: datv, nmbr: plur, text: семнадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: семнадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: семнадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: семнадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: семнадцатое}
+  - {case: accs, nmbr: plur, text: семнадцатые}
+  - {case: accs, nmbr: plur, text: семнадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: семнадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: семнадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: семнадцатым}
+  - {case: ablt, nmbr: plur, text: семнадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: семнадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: семнадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: семнадцатом}
+  - {case: loct, nmbr: plur, text: семнадцатых}
+  s:
+  - {case: nomn, text: семнадцать}
+  - {case: gent, text: семнадцати}
+  - {case: datv, text: семнадцати}
+  - {case: accs, text: семнадцать}
+  - {case: ablt, text: семнадцатью}
+  - {case: loct, text: семнадцати}
+18:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: восемнадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: восемнадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: восемнадцатое}
+  - {case: nomn, nmbr: plur, text: восемнадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: восемнадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: восемнадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: восемнадцатого}
+  - {case: gent, nmbr: plur, text: восемнадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: восемнадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: восемнадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: восемнадцатому}
+  - {case: datv, nmbr: plur, text: восемнадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: восемнадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: восемнадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: восемнадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: восемнадцатое}
+  - {case: accs, nmbr: plur, text: восемнадцатые}
+  - {case: accs, nmbr: plur, text: восемнадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: восемнадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: восемнадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: восемнадцатым}
+  - {case: ablt, nmbr: plur, text: восемнадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: восемнадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: восемнадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: восемнадцатом}
+  - {case: loct, nmbr: plur, text: восемнадцатых}
+  s:
+  - {case: nomn, text: восемнадцать}
+  - {case: gent, text: восемнадцати}
+  - {case: datv, text: восемнадцати}
+  - {case: accs, text: восемнадцать}
+  - {case: ablt, text: восемнадцатью}
+  - {case: loct, text: восемнадцати}
+19:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: девятнадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: девятнадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: девятнадцатое}
+  - {case: nomn, nmbr: plur, text: девятнадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: девятнадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: девятнадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: девятнадцатого}
+  - {case: gent, nmbr: plur, text: девятнадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: девятнадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: девятнадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: девятнадцатому}
+  - {case: datv, nmbr: plur, text: девятнадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятнадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятнадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: девятнадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: девятнадцатое}
+  - {case: accs, nmbr: plur, text: девятнадцатые}
+  - {case: accs, nmbr: plur, text: девятнадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: девятнадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: девятнадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: девятнадцатым}
+  - {case: ablt, nmbr: plur, text: девятнадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: девятнадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: девятнадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: девятнадцатом}
+  - {case: loct, nmbr: plur, text: девятнадцатых}
+  s:
+  - {case: nomn, text: девятнадцать}
+  - {case: gent, text: девятнадцати}
+  - {case: datv, text: девятнадцати}
+  - {case: accs, text: девятнадцать}
+  - {case: ablt, text: девятнадцатью}
+  - {case: loct, text: девятнадцати}
+20:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: двадцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: двадцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: двадцатое}
+  - {case: nomn, nmbr: plur, text: двадцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: двадцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: двадцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: двадцатого}
+  - {case: gent, nmbr: plur, text: двадцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: двадцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: двадцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: двадцатому}
+  - {case: datv, nmbr: plur, text: двадцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: двадцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: двадцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: двадцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: двадцатое}
+  - {case: accs, nmbr: plur, text: двадцатые}
+  - {case: accs, nmbr: plur, text: двадцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: двадцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: двадцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: двадцатым}
+  - {case: ablt, nmbr: plur, text: двадцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: двадцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: двадцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: двадцатом}
+  - {case: loct, nmbr: plur, text: двадцатых}
+  s:
+  - {case: nomn, text: двадцать}
+  - {case: gent, text: двадцати}
+  - {case: datv, text: двадцати}
+  - {case: accs, text: двадцать}
+  - {case: ablt, text: двадцатью}
+  - {case: loct, text: двадцати}
+30:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: тридцатый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: тридцатая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: тридцатое}
+  - {case: nomn, nmbr: plur, text: тридцатые}
+  - {case: gent, gndr: masc, nmbr: sing, text: тридцатого}
+  - {case: gent, gndr: femn, nmbr: sing, text: тридцатой}
+  - {case: gent, gndr: neut, nmbr: sing, text: тридцатого}
+  - {case: gent, nmbr: plur, text: тридцатых}
+  - {case: datv, gndr: masc, nmbr: sing, text: тридцатому}
+  - {case: datv, gndr: femn, nmbr: sing, text: тридцатой}
+  - {case: datv, gndr: neut, nmbr: sing, text: тридцатому}
+  - {case: datv, nmbr: plur, text: тридцатым}
+  - {case: accs, gndr: masc, nmbr: sing, text: тридцатый}
+  - {case: accs, gndr: masc, nmbr: sing, text: тридцатого}
+  - {case: accs, gndr: femn, nmbr: sing, text: тридцатую}
+  - {case: accs, gndr: neut, nmbr: sing, text: тридцатое}
+  - {case: accs, nmbr: plur, text: тридцатые}
+  - {case: accs, nmbr: plur, text: тридцатых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: тридцатым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: тридцатой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: тридцатым}
+  - {case: ablt, nmbr: plur, text: тридцатыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: тридцатом}
+  - {case: loct, gndr: femn, nmbr: sing, text: тридцатой}
+  - {case: loct, gndr: neut, nmbr: sing, text: тридцатом}
+  - {case: loct, nmbr: plur, text: тридцатых}
+  s:
+  - {case: nomn, text: тридцать}
+  - {case: gent, text: тридцати}
+  - {case: datv, text: тридцати}
+  - {case: accs, text: тридцать}
+  - {case: ablt, text: тридцатью}
+  - {case: loct, text: тридцати}
+40:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: сороковой}
+  - {case: nomn, gndr: femn, nmbr: sing, text: сороковая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: сороковое}
+  - {case: nomn, nmbr: plur, text: сороковые}
+  - {case: gent, gndr: masc, nmbr: sing, text: сорокового}
+  - {case: gent, gndr: femn, nmbr: sing, text: сороковой}
+  - {case: gent, gndr: neut, nmbr: sing, text: сорокового}
+  - {case: gent, nmbr: plur, text: сороковых}
+  - {case: datv, gndr: masc, nmbr: sing, text: сороковому}
+  - {case: datv, gndr: femn, nmbr: sing, text: сороковой}
+  - {case: datv, gndr: neut, nmbr: sing, text: сороковому}
+  - {case: datv, nmbr: plur, text: сороковым}
+  - {case: accs, gndr: masc, nmbr: sing, text: сороковой}
+  - {case: accs, gndr: masc, nmbr: sing, text: сорокового}
+  - {case: accs, gndr: femn, nmbr: sing, text: сороковую}
+  - {case: accs, gndr: neut, nmbr: sing, text: сороковое}
+  - {case: accs, nmbr: plur, text: сороковые}
+  - {case: accs, nmbr: plur, text: сороковых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: сороковым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: сороковой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: сороковым}
+  - {case: ablt, nmbr: plur, text: сороковыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: сороковом}
+  - {case: loct, gndr: femn, nmbr: sing, text: сороковой}
+  - {case: loct, gndr: neut, nmbr: sing, text: сороковом}
+  - {case: loct, nmbr: plur, text: сороковых}
+  s:
+  - {case: nomn, text: сорок}
+  - {case: gent, text: сорока}
+  - {case: datv, text: сорока}
+  - {case: accs, text: сорок}
+  - {case: ablt, text: сорока}
+  - {case: loct, text: сорока}
+50:
+  ad:
+  - {case: nomn, gndr: neut, nmbr: sing, text: полсотни}
+  - {case: accs, gndr: neut, nmbr: sing, text: полсотни}
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: пятидесятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: пятидесятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: пятидесятое}
+  - {case: nomn, nmbr: plur, text: пятидесятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: пятидесятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: пятидесятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: пятидесятого}
+  - {case: gent, nmbr: plur, text: пятидесятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: пятидесятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: пятидесятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: пятидесятому}
+  - {case: datv, nmbr: plur, text: пятидесятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятидесятый}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятидесятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: пятидесятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: пятидесятое}
+  - {case: accs, nmbr: plur, text: пятидесятые}
+  - {case: accs, nmbr: plur, text: пятидесятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: пятидесятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: пятидесятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: пятидесятым}
+  - {case: ablt, nmbr: plur, text: пятидесятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: пятидесятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: пятидесятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: пятидесятом}
+  - {case: loct, nmbr: plur, text: пятидесятых}
+  s:
+  - {case: nomn, text: пятьдесят}
+  - {case: gent, text: пятидесяти}
+  - {case: datv, text: пятидесяти}
+  - {case: accs, text: пятьдесят}
+  - {case: ablt, text: пятьюдесятью}
+  - {case: loct, text: пятидесяти}
+60:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: шестидесятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: шестидесятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: шестидесятое}
+  - {case: nomn, nmbr: plur, text: шестидесятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: шестидесятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: шестидесятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: шестидесятого}
+  - {case: gent, nmbr: plur, text: шестидесятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: шестидесятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: шестидесятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: шестидесятому}
+  - {case: datv, nmbr: plur, text: шестидесятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестидесятый}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестидесятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: шестидесятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: шестидесятое}
+  - {case: accs, nmbr: plur, text: шестидесятые}
+  - {case: accs, nmbr: plur, text: шестидесятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: шестидесятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: шестидесятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: шестидесятым}
+  - {case: ablt, nmbr: plur, text: шестидесятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: шестидесятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: шестидесятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: шестидесятом}
+  - {case: loct, nmbr: plur, text: шестидесятых}
+  s:
+  - {case: nomn, text: шестьдесят}
+  - {case: gent, text: шестидесяти}
+  - {case: datv, text: шестидесяти}
+  - {case: accs, text: шестьдесят}
+  - {case: ablt, text: шестьюдесятью}
+  - {case: loct, text: шестидесяти}
+70:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: семидесятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: семидесятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: семидесятое}
+  - {case: nomn, nmbr: plur, text: семидесятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: семидесятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: семидесятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: семидесятого}
+  - {case: gent, nmbr: plur, text: семидесятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: семидесятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: семидесятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: семидесятому}
+  - {case: datv, nmbr: plur, text: семидесятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: семидесятый}
+  - {case: accs, gndr: masc, nmbr: sing, text: семидесятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: семидесятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: семидесятое}
+  - {case: accs, nmbr: plur, text: семидесятые}
+  - {case: accs, nmbr: plur, text: семидесятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: семидесятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: семидесятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: семидесятым}
+  - {case: ablt, nmbr: plur, text: семидесятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: семидесятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: семидесятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: семидесятом}
+  - {case: loct, nmbr: plur, text: семидесятых}
+  s:
+  - {case: nomn, text: семьдесят}
+  - {case: gent, text: семидесяти}
+  - {case: datv, text: семидесяти}
+  - {case: accs, text: семьдесят}
+  - {case: ablt, text: семьюдесятью}
+  - {case: loct, text: семидесяти}
+80:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: восьмидесятый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: восьмидесятая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: восьмидесятое}
+  - {case: nomn, nmbr: plur, text: восьмидесятые}
+  - {case: gent, gndr: masc, nmbr: sing, text: восьмидесятого}
+  - {case: gent, gndr: femn, nmbr: sing, text: восьмидесятой}
+  - {case: gent, gndr: neut, nmbr: sing, text: восьмидесятого}
+  - {case: gent, nmbr: plur, text: восьмидесятых}
+  - {case: datv, gndr: masc, nmbr: sing, text: восьмидесятому}
+  - {case: datv, gndr: femn, nmbr: sing, text: восьмидесятой}
+  - {case: datv, gndr: neut, nmbr: sing, text: восьмидесятому}
+  - {case: datv, nmbr: plur, text: восьмидесятым}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмидесятый}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмидесятого}
+  - {case: accs, gndr: femn, nmbr: sing, text: восьмидесятую}
+  - {case: accs, gndr: neut, nmbr: sing, text: восьмидесятое}
+  - {case: accs, nmbr: plur, text: восьмидесятые}
+  - {case: accs, nmbr: plur, text: восьмидесятых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: восьмидесятым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: восьмидесятой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: восьмидесятым}
+  - {case: ablt, nmbr: plur, text: восьмидесятыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: восьмидесятом}
+  - {case: loct, gndr: femn, nmbr: sing, text: восьмидесятой}
+  - {case: loct, gndr: neut, nmbr: sing, text: восьмидесятом}
+  - {case: loct, nmbr: plur, text: восьмидесятых}
+  s:
+  - {case: nomn, text: восемьдесят}
+  - {case: gent, text: восьмидесяти}
+  - {case: datv, text: восьмидесяти}
+  - {case: accs, text: восемьдесят}
+  - {case: ablt, text: восемьюдесятью}
+  - {case: ablt, text: восьмьюдесятью}
+  - {case: loct, text: восьмидесяти}
+90:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: девяностый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: девяностая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: девяностое}
+  - {case: nomn, nmbr: plur, text: девяностые}
+  - {case: gent, gndr: masc, nmbr: sing, text: девяностого}
+  - {case: gent, gndr: femn, nmbr: sing, text: девяностой}
+  - {case: gent, gndr: neut, nmbr: sing, text: девяностого}
+  - {case: gent, nmbr: plur, text: девяностых}
+  - {case: datv, gndr: masc, nmbr: sing, text: девяностому}
+  - {case: datv, gndr: femn, nmbr: sing, text: девяностой}
+  - {case: datv, gndr: neut, nmbr: sing, text: девяностому}
+  - {case: datv, nmbr: plur, text: девяностым}
+  - {case: accs, gndr: masc, nmbr: sing, text: девяностый}
+  - {case: accs, gndr: masc, nmbr: sing, text: девяностого}
+  - {case: accs, gndr: femn, nmbr: sing, text: девяностую}
+  - {case: accs, gndr: neut, nmbr: sing, text: девяностое}
+  - {case: accs, nmbr: plur, text: девяностые}
+  - {case: accs, nmbr: plur, text: девяностых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: девяностым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: девяностой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: девяностым}
+  - {case: ablt, nmbr: plur, text: девяностыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: девяностом}
+  - {case: loct, gndr: femn, nmbr: sing, text: девяностой}
+  - {case: loct, gndr: neut, nmbr: sing, text: девяностом}
+  - {case: loct, nmbr: plur, text: девяностых}
+  s: []
+100:
+  ad:
+  - {case: nomn, gndr: femn, nmbr: sing, text: сотня}
+  - {case: nomn, gndr: femn, nmbr: plur, text: сотни}
+  - {case: gent, gndr: femn, nmbr: sing, text: сотни}
+  - {case: gent, gndr: femn, nmbr: plur, text: сот}
+  - {case: gent, gndr: femn, nmbr: plur, text: сотен}
+  - {case: datv, gndr: femn, nmbr: sing, text: сотне}
+  - {case: datv, gndr: femn, nmbr: plur, text: сотням}
+  - {case: accs, gndr: femn, nmbr: sing, text: сотню}
+  - {case: accs, gndr: femn, nmbr: plur, text: сотни}
+  - {case: ablt, gndr: femn, nmbr: sing, text: сотней}
+  - {case: ablt, gndr: femn, nmbr: sing, text: сотнею}
+  - {case: ablt, gndr: femn, nmbr: plur, text: сотнями}
+  - {case: loct, gndr: femn, nmbr: sing, text: сотне}
+  - {case: loct, gndr: femn, nmbr: plur, text: сотнях}
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: сотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: сотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: сотое}
+  - {case: nomn, nmbr: plur, text: сотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: сотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: сотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: сотого}
+  - {case: gent, nmbr: plur, text: сотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: сотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: сотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: сотому}
+  - {case: datv, nmbr: plur, text: сотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: сотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: сотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: сотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: сотое}
+  - {case: accs, nmbr: plur, text: сотые}
+  - {case: accs, nmbr: plur, text: сотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: сотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: сотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: сотым}
+  - {case: ablt, nmbr: plur, text: сотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: сотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: сотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: сотом}
+  - {case: loct, nmbr: plur, text: сотых}
+  s:
+  - {case: nomn, text: сто}
+  - {case: gent, text: ста}
+  - {case: datv, text: ста}
+  - {case: accs, text: сто}
+  - {case: ablt, text: ста}
+  - {case: loct, text: ста}
+200:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: двухсотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: двухсотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: двухсотое}
+  - {case: nomn, nmbr: plur, text: двухсотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: двухсотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: двухсотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: двухсотого}
+  - {case: gent, nmbr: plur, text: двухсотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: двухсотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: двухсотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: двухсотому}
+  - {case: datv, nmbr: plur, text: двухсотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: двухсотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: двухсотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: двухсотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: двухсотое}
+  - {case: accs, nmbr: plur, text: двухсотые}
+  - {case: accs, nmbr: plur, text: двухсотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: двухсотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: двухсотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: двухсотым}
+  - {case: ablt, nmbr: plur, text: двухсотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: двухсотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: двухсотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: двухсотом}
+  - {case: loct, nmbr: plur, text: двухсотых}
+  s:
+  - {case: nomn, text: двести}
+  - {case: gent, text: двухсот}
+  - {case: datv, text: двумстам}
+  - {case: accs, text: двести}
+  - {case: ablt, text: двумястами}
+  - {case: loct, text: двухстах}
+300:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: трёхсотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: трёхсотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: трёхсотое}
+  - {case: nomn, nmbr: plur, text: трёхсотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: трёхсотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: трёхсотого}
+  - {case: gent, nmbr: plur, text: трёхсотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: трёхсотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: трёхсотому}
+  - {case: datv, nmbr: plur, text: трёхсотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: трёхсотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: трёхсотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: трёхсотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: трёхсотое}
+  - {case: accs, nmbr: plur, text: трёхсотые}
+  - {case: accs, nmbr: plur, text: трёхсотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: трёхсотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: трёхсотым}
+  - {case: ablt, nmbr: plur, text: трёхсотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: трёхсотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: трёхсотом}
+  - {case: loct, nmbr: plur, text: трёхсотых}
+  - {case: nomn, gndr: masc, nmbr: sing, text: трёхсотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: трёхсотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: трёхсотое}
+  - {case: nomn, nmbr: plur, text: трёхсотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: трёхсотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: трёхсотого}
+  - {case: gent, nmbr: plur, text: трёхсотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: трёхсотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: трёхсотому}
+  - {case: datv, nmbr: plur, text: трёхсотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: трёхсотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: трёхсотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: трёхсотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: трёхсотое}
+  - {case: accs, nmbr: plur, text: трёхсотые}
+  - {case: accs, nmbr: plur, text: трёхсотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: трёхсотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: трёхсотым}
+  - {case: ablt, nmbr: plur, text: трёхсотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: трёхсотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: трёхсотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: трёхсотом}
+  - {case: loct, nmbr: plur, text: трёхсотых}
+  s:
+  - {case: nomn, text: триста}
+  - {case: gent, text: трехсот}
+  - {case: datv, text: тремстам}
+  - {case: accs, text: триста}
+  - {case: ablt, text: тремястами}
+  - {case: loct, text: трехстах}
+400:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: четырёхсотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: четырёхсотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: четырёхсотое}
+  - {case: nomn, nmbr: plur, text: четырёхсотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: четырёхсотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: четырёхсотого}
+  - {case: gent, nmbr: plur, text: четырёхсотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: четырёхсотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: четырёхсотому}
+  - {case: datv, nmbr: plur, text: четырёхсотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: четырёхсотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: четырёхсотое}
+  - {case: accs, nmbr: plur, text: четырёхсотые}
+  - {case: accs, nmbr: plur, text: четырёхсотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: четырёхсотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: четырёхсотым}
+  - {case: ablt, nmbr: plur, text: четырёхсотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: четырёхсотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: четырёхсотом}
+  - {case: loct, nmbr: plur, text: четырёхсотых}
+  - {case: nomn, gndr: masc, nmbr: sing, text: четырёхсотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: четырёхсотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: четырёхсотое}
+  - {case: nomn, nmbr: plur, text: четырёхсотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: четырёхсотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: четырёхсотого}
+  - {case: gent, nmbr: plur, text: четырёхсотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: четырёхсотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: четырёхсотому}
+  - {case: datv, nmbr: plur, text: четырёхсотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: четырёхсотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: четырёхсотое}
+  - {case: accs, nmbr: plur, text: четырёхсотые}
+  - {case: accs, nmbr: plur, text: четырёхсотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: четырёхсотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: четырёхсотым}
+  - {case: ablt, nmbr: plur, text: четырёхсотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: четырёхсотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: четырёхсотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: четырёхсотом}
+  - {case: loct, nmbr: plur, text: четырёхсотых}
+  s:
+  - {case: nomn, text: четыреста}
+  - {case: gent, text: четырехсот}
+  - {case: datv, text: четыремстам}
+  - {case: accs, text: четыреста}
+  - {case: ablt, text: четырьмястами}
+  - {case: loct, text: четырехстах}
+500:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: пятисотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: пятисотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: пятисотое}
+  - {case: nomn, nmbr: plur, text: пятисотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: пятисотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: пятисотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: пятисотого}
+  - {case: gent, nmbr: plur, text: пятисотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: пятисотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: пятисотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: пятисотому}
+  - {case: datv, nmbr: plur, text: пятисотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятисотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятисотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: пятисотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: пятисотое}
+  - {case: accs, nmbr: plur, text: пятисотые}
+  - {case: accs, nmbr: plur, text: пятисотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: пятисотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: пятисотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: пятисотым}
+  - {case: ablt, nmbr: plur, text: пятисотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: пятисотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: пятисотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: пятисотом}
+  - {case: loct, nmbr: plur, text: пятисотых}
+  s:
+  - {case: nomn, text: пятьсот}
+  - {case: gent, text: пятисот}
+  - {case: datv, text: пятистам}
+  - {case: accs, text: пятьсот}
+  - {case: ablt, text: пятьюстами}
+  - {case: loct, text: пятистах}
+600:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: шестисотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: шестисотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: шестисотое}
+  - {case: nomn, nmbr: plur, text: шестисотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: шестисотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: шестисотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: шестисотого}
+  - {case: gent, nmbr: plur, text: шестисотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: шестисотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: шестисотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: шестисотому}
+  - {case: datv, nmbr: plur, text: шестисотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестисотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестисотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: шестисотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: шестисотое}
+  - {case: accs, nmbr: plur, text: шестисотые}
+  - {case: accs, nmbr: plur, text: шестисотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: шестисотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: шестисотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: шестисотым}
+  - {case: ablt, nmbr: plur, text: шестисотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: шестисотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: шестисотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: шестисотом}
+  - {case: loct, nmbr: plur, text: шестисотых}
+  s:
+  - {case: nomn, text: шестьсот}
+  - {case: gent, text: шестисот}
+  - {case: datv, text: шестистам}
+  - {case: accs, text: шестьсот}
+  - {case: ablt, text: шестьюстами}
+  - {case: loct, text: шестистах}
+700:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: семисотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: семисотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: семисотое}
+  - {case: nomn, nmbr: plur, text: семисотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: семисотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: семисотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: семисотого}
+  - {case: gent, nmbr: plur, text: семисотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: семисотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: семисотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: семисотому}
+  - {case: datv, nmbr: plur, text: семисотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: семисотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: семисотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: семисотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: семисотое}
+  - {case: accs, nmbr: plur, text: семисотые}
+  - {case: accs, nmbr: plur, text: семисотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: семисотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: семисотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: семисотым}
+  - {case: ablt, nmbr: plur, text: семисотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: семисотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: семисотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: семисотом}
+  - {case: loct, nmbr: plur, text: семисотых}
+  s:
+  - {case: nomn, text: семьсот}
+  - {case: gent, text: семисот}
+  - {case: datv, text: семистам}
+  - {case: accs, text: семьсот}
+  - {case: ablt, text: семьюстами}
+  - {case: loct, text: семистах}
+800:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: восьмисотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: восьмисотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: восьмисотое}
+  - {case: nomn, nmbr: plur, text: восьмисотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: восьмисотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: восьмисотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: восьмисотого}
+  - {case: gent, nmbr: plur, text: восьмисотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: восьмисотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: восьмисотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: восьмисотому}
+  - {case: datv, nmbr: plur, text: восьмисотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмисотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмисотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: восьмисотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: восьмисотое}
+  - {case: accs, nmbr: plur, text: восьмисотые}
+  - {case: accs, nmbr: plur, text: восьмисотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: восьмисотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: восьмисотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: восьмисотым}
+  - {case: ablt, nmbr: plur, text: восьмисотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: восьмисотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: восьмисотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: восьмисотом}
+  - {case: loct, nmbr: plur, text: восьмисотых}
+  s:
+  - {case: nomn, text: восемьсот}
+  - {case: gent, text: восьмисот}
+  - {case: datv, text: восьмистам}
+  - {case: accs, text: восемьсот}
+  - {case: ablt, text: восемьюстами}
+  - {case: loct, text: восьмистах}
+900:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: девятисотый}
+  - {case: nomn, gndr: femn, nmbr: sing, text: девятисотая}
+  - {case: nomn, gndr: neut, nmbr: sing, text: девятисотое}
+  - {case: nomn, nmbr: plur, text: девятисотые}
+  - {case: gent, gndr: masc, nmbr: sing, text: девятисотого}
+  - {case: gent, gndr: femn, nmbr: sing, text: девятисотой}
+  - {case: gent, gndr: neut, nmbr: sing, text: девятисотого}
+  - {case: gent, nmbr: plur, text: девятисотых}
+  - {case: datv, gndr: masc, nmbr: sing, text: девятисотому}
+  - {case: datv, gndr: femn, nmbr: sing, text: девятисотой}
+  - {case: datv, gndr: neut, nmbr: sing, text: девятисотому}
+  - {case: datv, nmbr: plur, text: девятисотым}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятисотый}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятисотого}
+  - {case: accs, gndr: femn, nmbr: sing, text: девятисотую}
+  - {case: accs, gndr: neut, nmbr: sing, text: девятисотое}
+  - {case: accs, nmbr: plur, text: девятисотые}
+  - {case: accs, nmbr: plur, text: девятисотых}
+  - {case: ablt, gndr: masc, nmbr: sing, text: девятисотым}
+  - {case: ablt, gndr: femn, nmbr: sing, text: девятисотой}
+  - {case: ablt, gndr: neut, nmbr: sing, text: девятисотым}
+  - {case: ablt, nmbr: plur, text: девятисотыми}
+  - {case: loct, gndr: masc, nmbr: sing, text: девятисотом}
+  - {case: loct, gndr: femn, nmbr: sing, text: девятисотой}
+  - {case: loct, gndr: neut, nmbr: sing, text: девятисотом}
+  - {case: loct, nmbr: plur, text: девятисотых}
+  s:
+  - {case: nomn, text: девятьсот}
+  - {case: gent, text: девятисот}
+  - {case: datv, text: девятистам}
+  - {case: accs, text: девятьсот}
+  - {case: ablt, text: девятьюстами}
+  - {case: loct, text: девятистах}
+1000:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: тысячный}
+  - {case: nomn, gndr: femn, nmbr: sing, text: тысячная}
+  - {case: nomn, gndr: neut, nmbr: sing, text: тысячное}
+  - {case: nomn, nmbr: plur, text: тысячные}
+  - {case: gent, gndr: masc, nmbr: sing, text: тысячного}
+  - {case: gent, gndr: femn, nmbr: sing, text: тысячной}
+  - {case: gent, gndr: neut, nmbr: sing, text: тысячного}
+  - {case: gent, nmbr: plur, text: тысячных}
+  - {case: datv, gndr: masc, nmbr: sing, text: тысячному}
+  - {case: datv, gndr: femn, nmbr: sing, text: тысячной}
+  - {case: datv, gndr: neut, nmbr: sing, text: тысячному}
+  - {case: datv, nmbr: plur, text: тысячным}
+  - {case: accs, gndr: masc, nmbr: sing, text: тысячный}
+  - {case: accs, gndr: masc, nmbr: sing, text: тысячного}
+  - {case: accs, gndr: femn, nmbr: sing, text: тысячную}
+  - {case: accs, gndr: neut, nmbr: sing, text: тысячное}
+  - {case: accs, nmbr: plur, text: тысячные}
+  - {case: accs, nmbr: plur, text: тысячных}
+  - {case: ablt, gndr: masc, nmbr: sing, text: тысячным}
+  - {case: ablt, gndr: femn, nmbr: sing, text: тысячной}
+  - {case: ablt, gndr: femn, nmbr: sing, text: тысячною}
+  - {case: ablt, gndr: neut, nmbr: sing, text: тысячным}
+  - {case: ablt, nmbr: plur, text: тысячными}
+  - {case: loct, gndr: masc, nmbr: sing, text: тысячном}
+  - {case: loct, gndr: femn, nmbr: sing, text: тысячной}
+  - {case: loct, gndr: neut, nmbr: sing, text: тысячном}
+  - {case: loct, nmbr: plur, text: тысячных}
+  s:
+  - {case: nomn, text: тысяча}
+  - {case: nomn, text: тысячи}
+  - {case: gent, text: тысяч}
+  - {case: gent, text: тысячи}
+  - {case: datv, text: тысячам}
+  - {case: datv, text: тысяче}
+  - {case: accs, text: тысячи}
+  - {case: accs, text: тысячу}
+  - {case: ablt, text: тысячами}
+  - {case: ablt, text: тысячей}
+  - {case: ablt, text: тысячью}
+  - {case: loct, text: тысячах}
+  - {case: loct, text: тысяче}
+1000000:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: миллионный}
+  - {case: nomn, gndr: femn, nmbr: sing, text: миллионная}
+  - {case: nomn, gndr: neut, nmbr: sing, text: миллионное}
+  - {case: nomn, nmbr: plur, text: миллионные}
+  - {case: gent, gndr: masc, nmbr: sing, text: миллионного}
+  - {case: gent, gndr: femn, nmbr: sing, text: миллионной}
+  - {case: gent, gndr: neut, nmbr: sing, text: миллионного}
+  - {case: gent, nmbr: plur, text: миллионных}
+  - {case: datv, gndr: masc, nmbr: sing, text: миллионному}
+  - {case: datv, gndr: femn, nmbr: sing, text: миллионной}
+  - {case: datv, gndr: neut, nmbr: sing, text: миллионному}
+  - {case: datv, nmbr: plur, text: миллионным}
+  - {case: accs, gndr: masc, nmbr: sing, text: миллионный}
+  - {case: accs, gndr: masc, nmbr: sing, text: миллионного}
+  - {case: accs, gndr: femn, nmbr: sing, text: миллионную}
+  - {case: accs, gndr: neut, nmbr: sing, text: миллионное}
+  - {case: accs, nmbr: plur, text: миллионные}
+  - {case: accs, nmbr: plur, text: миллионных}
+  - {case: ablt, gndr: masc, nmbr: sing, text: миллионным}
+  - {case: ablt, gndr: femn, nmbr: sing, text: миллионной}
+  - {case: ablt, gndr: femn, nmbr: sing, text: миллионною}
+  - {case: ablt, gndr: neut, nmbr: sing, text: миллионным}
+  - {case: ablt, nmbr: plur, text: миллионными}
+  - {case: loct, gndr: masc, nmbr: sing, text: миллионном}
+  - {case: loct, gndr: femn, nmbr: sing, text: миллионной}
+  - {case: loct, gndr: neut, nmbr: sing, text: миллионном}
+  - {case: loct, nmbr: plur, text: миллионных}
+  s:
+  - {case: nomn, text: миллион}
+  - {case: gent, text: миллиона}
+  - {case: gent, text: миллионов}
+  - {case: datv, text: миллионам}
+  - {case: datv, text: миллиону}
+  - {case: accs, text: миллион}
+  - {case: ablt, text: миллионами}
+  - {case: ablt, text: миллионом}
+  - {case: loct, text: миллионах}
+  - {case: loct, text: миллионе}
+
+1000000000:
+  p:
+  - {case: nomn, gndr: masc, nmbr: sing, text: миллиардный}
+  - {case: nomn, gndr: femn, nmbr: sing, text: миллиардная}
+  - {case: nomn, gndr: neut, nmbr: sing, text: миллиардное}
+  - {case: nomn, nmbr: plur, text: миллиардные}
+  - {case: gent, gndr: masc, nmbr: sing, text: миллиардного}
+  - {case: gent, gndr: femn, nmbr: sing, text: миллиардной}
+  - {case: gent, gndr: neut, nmbr: sing, text: миллиардного}
+  - {case: gent, nmbr: plur, text: миллиардным}
+  - {case: gent, nmbr: plur, text: миллиардных}
+  - {case: datv, gndr: masc, nmbr: sing, text: миллиардному}
+  - {case: datv, gndr: femn, nmbr: sing, text: миллиардной}
+  - {case: datv, gndr: neut, nmbr: sing, text: миллиардному}
+  - {case: accs, gndr: femn, nmbr: sing, text: миллиардный}
+  - {case: accs, gndr: masc, nmbr: sing, text: миллиардного}
+  - {case: accs, gndr: femn, nmbr: sing, text: миллиардную}
+  - {case: accs, gndr: neut, nmbr: sing, text: миллиардное}
+  - {case: accs, nmbr: plur, text: миллиардные}
+  - {case: accs, nmbr: plur, text: миллиардных}
+  - {case: ablt, gndr: masc, nmbr: sing, text: миллиардным}
+  - {case: ablt, gndr: femn, nmbr: sing, text: миллиардной}
+  - {case: ablt, gndr: femn, nmbr: sing, text: миллиардною}
+  - {case: ablt, gndr: neut, nmbr: sing, text: миллиардным}
+  - {case: ablt, nmbr: plur, text: миллиардными}
+  - {case: loct, gndr: masc, nmbr: sing, text: миллиардном}
+  - {case: loct, gndr: femn, nmbr: sing, text: миллиардной}
+  - {case: loct, gndr: neut, nmbr: sing, text: миллиардном}
+  - {case: loct, nmbr: plur, text: миллиардных}
+  s:
+  - {case: nomn, text: миллиард}
+  - {case: nomn, text: миллиарды}
+  - {case: gent, text: миллиарда}
+  - {case: gent, text: миллиардов}
+  - {case: datv, text: миллиардам}
+  - {case: datv, text: миллиарду}
+  - {case: accs, text: миллиард}
+  - {case: accs, text: миллиарды}
+  - {case: ablt, text: миллиардами}
+  - {case: ablt, text: миллиардом}
+  - {case: loct, text: миллиардах}
+  - {case: loct, text: миллиарде}
