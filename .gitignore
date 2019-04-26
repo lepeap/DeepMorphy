@@ -21,8 +21,11 @@ pip-delete-this-directory.txt
 
 .idea/
 
+# Ignore temp directories
 *.pkl
-
+export/
+checkpoints/
+dataset/
 
 
 ########################################################

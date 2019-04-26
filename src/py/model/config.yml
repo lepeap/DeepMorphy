@@ -6,7 +6,7 @@ dataset_path: dataset
 max_word_size: 32
 model_key: small #big
 export_path: export
-save_path: chekpoints/
+save_path: checkpoints/
 publish_net_path: ../../cs/DeepMorphy/NeuralNet/
 publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml
 publish_gramms_path: ../../cs/DeepMorphy/grams.xml

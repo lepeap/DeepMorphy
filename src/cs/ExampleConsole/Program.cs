@@ -36,6 +36,9 @@ namespace ExampleConsole
                 "дотошный",
                 "красотка"
             }).ToArray();
+
+            foreach (var token in results)
+                Console.WriteLine(token.ToString());
         }
     }
 }
