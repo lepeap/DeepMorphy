@@ -25,12 +25,12 @@ def config():
 def get_flat_words(words):
     for item in words:
         lemma = item['lemma']
+        lemma['lemma'] = lemma['text']
         for form in item['forms']:
             word = dict(lemma)
-            if form['text'] != lemma['text']:
-                word['lemma'] = lemma['text']
             for key in form:
                 word[key] = form[key]
+
             yield word
 
 

@@ -1,7 +1,8 @@
 validation_persent: 4
 test_persent: 2
 dict_path: /home/alex/Downloads/dict.opcorpora.xml
-words_path: words.pkl
+dataset_words_path: dataset_words.pkl
+dict_words_path: dict_words.pkl
 dataset_path: dataset
 max_word_size: 32
 model_key: small #big
@@ -10,6 +11,10 @@ save_path: checkpoints/
 publish_net_path: ../../cs/DeepMorphy/NeuralNet/
 publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml
 publish_gramms_path: ../../cs/DeepMorphy/grams.xml
+
+
+start_token: 35
+end_token: 36
 
 #miss_steps:
 #  - post
@@ -64,8 +69,32 @@ classification:
   use_weights: false
 
 
+lemmatizer:
+  char_vector_size: 64
+  batch_size: 2048
+
+  encoder:
+    char_vector_size: 64
+    rnn_state_size: 64
+    rnn_layers_count: 2
+    rnn_bidirectional: True
+
+  decoder:
+    rnn_state_size: 64
+    rnn_layers_count: 2
+    rnn_bidirectional: True
+
+  max_length: 32
+  stop_training_acc_delta: 0.00005
+  learn_rate: 0.01
+  learn_rate_decay_step: 0.1
+  min_learn_rate: 0.0000001
+  return_step: 2
+  keep_dropout: 1
+  use_weights: false
 
 chars:
+  - UNDEFINED # неизвестный символ
   - а
   - б
   - в
@@ -100,7 +129,6 @@ chars:
   - ю
   - я
   - "-"
-  - UNDEFINED # неизвестный символ
 
 
 other_post_types:
