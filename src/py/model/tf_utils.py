@@ -135,10 +135,7 @@ def create_reset_metric(metric, scope='reset_metrics', **metric_args):
     return metric_op, update_op, reset_op
 
 
-def load_cls_dataset(dataset_path, devices_count, type, batch_size, use_weights, gram=None):
-
-    if gram is None:
-        gram = "classification"
+def load_cls_dataset(dataset_path, devices_count, type, batch_size, use_weights, gram="main"):
 
     path = os.path.join(dataset_path, f"{gram}_{type}_dataset.pkl")
     with open(path, 'rb') as f:
@@ -157,10 +154,10 @@ def load_cls_dataset(dataset_path, devices_count, type, batch_size, use_weights,
             yield cur_step
             cur_step = []
 
-        ##TODO remove
-        #if tttt>12:
-        #    return
-        #tttt+=1
+        #TODO remove
+        if tttt>12:
+            return
+        tttt+=1
 
         cur_step.append(dict(
             x=x,
@@ -201,10 +198,10 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
             y_seq_len=y_seq_len
         ))
 
-        ##TODO remove
-        #if tttt>12:
-        #    return
-        #tttt+=1
+        #TODO remove
+        if tttt>12:
+            return
+        tttt+=1
 
     if len(cur_step) == devices_count:
         yield cur_step

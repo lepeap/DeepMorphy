@@ -16,6 +16,8 @@ train_devices:
   - /gpu:1
   - /gpu:2
 
+filler: "############################################################################"
+
 
 
 start_token: 35
@@ -29,18 +31,12 @@ end_token: 36
 #  - tens
 #  - pers
 
-gram_classification:
+graph_part_configs:
   default:
     char_vector_size: 32
     rnn_state_size: 32
     test_batch_size:  2048
     train_batch_size: 2048
-
-    #char_vector_size: 128
-    #rnn_state_size: 128
-    #test_batch_size: 1024
-    #train_batch_size: 1014
-
     rnn_layers_count: 2
     rnn_bidirectional: True
     stop_training_acc_delta: 0.00001
@@ -48,55 +44,30 @@ gram_classification:
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
     return_step: 2
-    keep_dropout: 1
-    use_weights: false
+    keep_drop: 1
+    use_weights: true
 
-
-classification:
-  char_vector_size: 64
-  rnn_state_size: 64
-  test_batch_size: 2048
-  train_batch_size: 2048
-
-  #char_vector_size: 256
-  #rnn_state_size: 256
-  #test_batch_size: 2048
-  #train_batch_size: 4096
-
-  rnn_layers_count: 2
-  rnn_bidirectional: True
-  stop_training_acc_delta: 0.00001
-  learn_rate: 0.01
-  learn_rate_decay_step: 0.1
-  min_learn_rate: 0.00001
-  return_step: 2
-  keep_dropout: 1
-  use_weights: false
-
-
-lemmatizer:
-  char_vector_size: 64
-  batch_size: 2048
-  max_length: 34
-
-  encoder:
+  main:
     char_vector_size: 64
     rnn_state_size: 64
-    rnn_layers_count: 2
-    rnn_bidirectional: True
+    test_batch_size: 2048
+    train_batch_size: 2048
 
-  decoder:
-    rnn_state_size: 64
-    rnn_layers_count: 2
-    rnn_bidirectional: True
+  lemm:
+    char_vector_size: 64
+    batch_size: 2048
+    max_length: 34
+    encoder:
+      char_vector_size: 64
+      rnn_state_size: 64
+      rnn_layers_count: 2
+      rnn_bidirectional: True
+    decoder:
+      rnn_state_size: 64
+      rnn_layers_count: 2
+      rnn_bidirectional: True
 
-  stop_training_acc_delta: 0.00001
-  learn_rate: 0.01
-  learn_rate_decay_step: 0.1
-  min_learn_rate: 0.00001
-  return_step: 2
-  keep_dropout: 1
-  use_weights: false
+
 
 chars:
   - UNDEFINED # неизвестный символ
