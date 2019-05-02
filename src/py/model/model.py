@@ -34,7 +34,10 @@ class RNN:
         self._save_path = self.config['save_path']
         self._publish_path = self.config['publish_net_path']
         self._model_key = self.config['model_key']
+        self._lemmatizer_settings = self.config['lemmatizer']
         self._miss_steps = self.config['miss_steps'] if 'miss_steps' in self.config else []
+        self._start_char_index = self.config['start_token']
+        self._end_char_index = self.config['end_token']
         self._filler = "############################################################################"
 
         with open(os.path.join(self._dataset_path, f"classification_classes.pkl"), 'rb') as f:
@@ -44,7 +47,7 @@ class RNN:
         if for_usage:
             self._devices = ['/cpu:0']
         else:
-            self._devices = ['/gpu:0','/gpu:1','/gpu:2']
+            self._devices = self.config['train_devices']
 
         self._devices_count = len(self._devices)
         if not os.path.exists(self._save_path):
@@ -55,13 +58,14 @@ class RNN:
 
     def _build_graph(self):
         self.graph = tf.Graph()
+
+        self.prints = []
+
         self.checks = []
         self.xs = []
         self.seq_lens = []
         self.metric_funcs = [
-            ('Accuracy', tf.metrics.accuracy),
-            ('Recall', tf.metrics.recall),
-            ('Precision', tf.metrics.precision)
+            ('Accuracy', tf.metrics.accuracy)
         ]
 
         self.cls_gram_weights = {key: [] for key in self._grammemes}
@@ -78,7 +82,6 @@ class RNN:
             for cls in self._grammemes
         })
 
-
         self.cls_top_ks = []
         self.cls_weights = []
         self.cls_keep_drops = []
@@ -91,23 +94,131 @@ class RNN:
         self.cls_metrics_update = []
         self.cls_devices_metrics = {metr[0]: [] for metr in self.metric_funcs}
 
-
-
         self.lem_ys = []
-
-
-
+        self.lem_ys_seq_len = []
+        self.lem_cls = []
+        self.lem_grads = []
+        self.lem_losses = []
+        self.lem_accs = []
+        self.lem_results = []
+        self.lem_metrics_reset = []
+        self.lem_metrics_update = []
+        self.lem_devices_metrics = {metr[0]: [] for metr in self.metric_funcs}
 
         with self.graph.as_default(), tf.device('/cpu:0'):
             self.is_training = tf.placeholder(tf.bool, name="IsTraining")
-            self.cls_learn_rate = tf.placeholder(tf.float32, name="LearningRate")
-            optimiser = tf.train.AdamOptimizer(self.cls_learn_rate)
+            self.learn_rate = tf.placeholder(tf.float32, name="LearningRate")
+            optimiser = tf.train.AdamOptimizer(self.learn_rate)
             for deviceIndex, deviceName in enumerate(self._devices):
                 with tf.device(deviceName):
                     x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
                     seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='SeqLen')
                     self.seq_lens.append(seq_len)
                     self.xs.append(x)
+
+                    with tf.variable_scope('Lemmatizer', reuse=tf.AUTO_REUSE) as scope:
+                        settings = self._lemmatizer_settings
+                        lemma_cls = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
+                        lemma_y = tf.placeholder(dtype=tf.int32, shape=(None, None), name='Y')
+                        lemma_y_seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='YSeqLen')
+
+
+
+                        lemma_cls_init = tf.random_normal((self._classes_count, settings['encoder']['rnn_state_size']))
+                        lemma_cls_emb = tf.get_variable("EmbeddingsLemmaCls", initializer=lemma_cls_init)
+                        init_state = tf.nn.embedding_lookup(lemma_cls_emb, lemma_cls)
+
+
+                        x_emd_init = tf.random_normal((self._chars_count+2, settings['char_vector_size']))
+                        x_emb = tf.get_variable("EmbeddingsX", initializer=x_emd_init)
+                        encoder_input = tf.nn.embedding_lookup(x_emb, x)
+
+                        y_emd_init = tf.random_normal((self._chars_count+2, settings['char_vector_size']))
+                        y_emb = tf.get_variable("EmbeddingsY", initializer=y_emd_init)
+                        lemma_output = tf.nn.embedding_lookup(y_emb, lemma_y)
+
+                        if self._for_usage:
+                            keep_drop = tf.constant(1, dtype=tf.float32, name='KeepDrop')
+                        else:
+                            keep_drop = tf.placeholder(dtype=tf.float32, name='KeepDrop')
+
+
+                        with tf.variable_scope('Encoder', reuse=tf.AUTO_REUSE) as scope:
+                            encoder_output = tfu.build_rnn(
+                                                       encoder_input,
+                                                       keep_drop,
+                                                       seq_len,
+                                                       settings['encoder'],
+                                                       init_state,
+                                                       init_state,
+                                                       self._for_usage
+                            )
+
+                        with tf.variable_scope('Decoder', reuse=tf.AUTO_REUSE) as scope:
+
+                            if self._for_usage:
+                                helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(encoder_output,
+                                                                                  start_token=self._start_char_index,
+                                                                                  end_token=self._end_char_index)
+                            else:
+                                helper = tf.contrib.seq2seq.TrainingHelper(lemma_output,
+                                                                           [settings['max_length'] for _ in range(settings['batch_size'])])
+
+                            decoder_output = tfu.decoder(
+                                helper,
+                                encoder_output,
+                                seq_len,
+                                settings,
+                                self._chars_count+2,
+                                settings['batch_size'],
+                                self._for_usage
+                            )
+                            #self.prints.append(tf.print("decoder output", tf.shape(decoder_output.rnn_output)))
+
+                        #self.prints.append(tf.print("y output", tf.shape(lemma_y)))
+                        masks = tf.sequence_mask(
+                            lengths=lemma_y_seq_len,
+                            dtype=tf.float32,
+                            maxlen=settings['max_length']
+                        )
+                        #self.prints.append(tf.print("weight output", tf.shape(masks)))
+
+                        loss = tf.contrib.seq2seq.sequence_loss(decoder_output.rnn_output, lemma_y, masks)
+                        #self.prints.append(tf.print("loss", loss))
+                        vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='Lemmatizer')
+                        cls_grads = optimiser.compute_gradients(loss, var_list=vars)
+
+                        for metric_func in self.metric_funcs:
+                            seq_mask = tf.cast(tf.reshape(masks, (-1,)), tf.int32)
+                            nonzero_indices = tf.where(tf.not_equal(seq_mask, 0))
+
+                            labels = tf.reshape(lemma_y, (-1,))
+                            labels = tf.gather(labels, nonzero_indices)
+
+                            predictions = tf.reshape(decoder_output.sample_id, (-1,))
+                            predictions = tf.gather(predictions, nonzero_indices)
+
+                            #self.prints.append(tf.print("non zero indexes output", nonzero_indices))
+                            #self.prints.append(tf.print("labels output", labels))
+                            #self.prints.append(tf.print("predictions output", predictions))
+
+
+                            metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
+                                metric_func[1],
+                                metric_func[0],
+                                labels=labels,
+                                predictions=predictions
+                            )
+                            self.lem_metrics_reset.append(metr_reset)
+                            self.lem_metrics_update.append(metr_update)
+                            self.lem_devices_metrics[metric_func[0]].append(metr_epoch_loss)
+
+                        self.lem_ys.append(lemma_y)
+                        self.lem_ys_seq_len.append(lemma_y_seq_len)
+                        self.lem_cls.append(lemma_cls)
+                        self.lem_grads.append(cls_grads)
+                        self.lem_losses.append(loss)
+
 
                     with tf.variable_scope('GramClassification', reuse=tf.AUTO_REUSE) as scope:
                         for gram in self._grammemes:
@@ -119,7 +230,7 @@ class RNN:
 
                                 self.cls_gram_keep_drops[gram].append(cls_gram_keep_drop)
 
-                                cls_gram_y = tf.placeholder(dtype=tf.int32, shape=(None,), name='Y')
+                                cls_gram_y = tf.placeholder(dtype=tf.int32, shape=(None, len(self._grammemes[gram]['classes'])), name='Y')
                                 cls_gram_weights = tf.placeholder(dtype=tf.float32, shape=(None,), name='Weight')
 
                                 settings = self._cls_gram_settings[gram]
@@ -138,7 +249,8 @@ class RNN:
                                 if not self._for_usage:
                                     self.checks.append(tf.check_numerics(cls_gram_logits, "LogitsNullCheck"))
 
-                                cls_gram_errors = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=cls_gram_logits, labels=cls_gram_y)
+                                float_gram_y = tf.cast(cls_gram_y, tf.float32)
+                                cls_gram_errors = tf.nn.sigmoid_cross_entropy_with_logits(logits=cls_gram_logits, labels=float_gram_y)
                                 cls_gram_errors = cls_gram_errors * cls_gram_errors
 
                                 if not self._for_usage:
@@ -160,10 +272,17 @@ class RNN:
                                 self.cls_gram_dev_grads[gram].append(cls_grads)
 
                                 for metric_func in self.metric_funcs:
-                                    self._create_cls_gram_metric(gram, metric_func[1], metric_func[0], cls_gram_y, cls_gram_result)
+                                    labels = tf.math.argmax(cls_gram_y, axis=1)
+                                    predictions = cls_gram_result
+                                    self._create_cls_gram_metric(gram,
+                                                                 metric_func[1],
+                                                                 metric_func[0],
+                                                                 labels,
+                                                                 predictions
+                                                                 )
 
                     with tf.variable_scope('Classification', reuse=tf.AUTO_REUSE) as scope:
-                        cls_y = tf.placeholder(dtype=tf.int32, shape=(None,), name='Y')
+                        cls_y = tf.placeholder(dtype=tf.int32, shape=(None, self._classes_count), name='Y')
                         cls_top_k = tf.placeholder(dtype=tf.int32, name='TopK')
                         cls_weights = tf.placeholder(dtype=tf.float32, shape=(None,), name='Weight')
 
@@ -191,8 +310,9 @@ class RNN:
 
                         cls_logits = tfu.rnn_top('RnnTop', rnn_logits, settings, self._classes_count)
 
-                        cls_gram_errors = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=cls_logits,
-                                                                                         labels=cls_y)
+                        float_y = tf.cast(cls_y, tf.float32)
+                        cls_gram_errors = tf.nn.sigmoid_cross_entropy_with_logits(logits=cls_logits,
+                                                                                  labels=float_y)
                         cls_gram_errors = cls_gram_errors * cls_weights
                         if not self._for_usage:
                             self.checks.append(tf.check_numerics(cls_gram_errors, "ErrorNullCheck"))
@@ -215,17 +335,29 @@ class RNN:
                         self.cls_top_ks.append(cls_top_k)
                         self.cls_weights.append(cls_weights)
 
+
                         for metric_func in self.metric_funcs:
+                            labels = tf.math.argmax(cls_y, axis=1)
+                            predictions = tf.math.argmax(cls_probs, axis=1)
                             metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
                                 metric_func[1],
                                 metric_func[0],
-                                labels=cls_y,
-                                predictions=tf.math.argmax(cls_probs, axis=1)
+                                labels=labels,
+                                predictions=predictions
                             )
                             self.cls_metrics_reset.append(metr_reset)
                             self.cls_metrics_update.append(metr_update)
                             self.cls_devices_metrics[metric_func[0]].append(metr_epoch_loss)
 
+
+
+            self.lem_grads = tfu.average_gradients(self.lem_grads)
+            self.lem_optimize = optimiser.apply_gradients(self.lem_grads, name='LemOptimize')
+            self.lem_global_loss = tf.reduce_sum(self.lem_losses, name='LemGlobalLoss')
+            self.lem_metrics = {
+                metr: tf.reduce_mean(self.lem_devices_metrics[metr], name=f"Lem_{metr}")
+                for metr in self.lem_devices_metrics
+            }
 
 
             self.cls_gram_grads = {
@@ -249,7 +381,6 @@ class RNN:
                 for gram in self.cls_gram_devices_metrics
             }
 
-
             self.cls_grads = tfu.average_gradients(self.cls_dev_grads)
             self.cls_optimize = optimiser.apply_gradients(self.cls_grads, name='ClsOptimize')
             self.cls_global_loss = tf.reduce_sum(self.cls_losses, name='ClsGlobalLoss')
@@ -257,7 +388,6 @@ class RNN:
                 metr: tf.reduce_mean(self.cls_devices_metrics[metr], name=f"Cls_{metr}")
                 for metr in self.cls_devices_metrics
             }
-
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=self._checkpoints_keep)
 
 
@@ -301,7 +431,9 @@ class RNN:
                 if latest_checkpiont:
                     self.saver.restore(sess, latest_checkpiont)
 
+            self._train_lemmatization(sess, 0)
             tqdm.write(f"Start training")
+
             for gram in self._grammemes:
 
                 if gram in self._miss_steps:
@@ -311,8 +443,17 @@ class RNN:
                 settings = self._cls_gram_settings[gram]
                 tqdm.write(f"Loading dataset for '{gram}'")
 
-                trains = list(tfu.load_dataset(self._dataset_path, self._devices_count, 'train', settings['train_batch_size'], settings['use_weights'], gram))
-                valids = list(tfu.load_dataset(self._dataset_path, self._devices_count, 'valid', settings['test_batch_size'], settings['use_weights'], gram))
+                trains = list(tfu.load_cls_dataset(self._dataset_path,
+                                                   self._devices_count,
+                                                   'train',
+                                                   settings['train_batch_size'],
+                                                   settings['use_weights'], gram))
+
+                valids = list(tfu.load_cls_dataset(self._dataset_path,
+                                                   self._devices_count,
+                                                   'valid',
+                                                   settings['test_batch_size'],
+                                                   settings['use_weights'], gram))
 
                 tqdm.write(f"Start training classification '{gram}'")
 
@@ -328,7 +469,7 @@ class RNN:
                                                                         self.cls_gram_metrics_reset[gram],
                                                                         self.cls_gram_metrics_update[gram],
                                                                         self.cls_gram_optimize[gram],
-                                                                        self.cls_learn_rate,
+                                                                        self.learn_rate,
                                                                         f"CLASSIFICATION {gram}"
                                                                         )
 
@@ -337,9 +478,9 @@ class RNN:
 
             settings = self._cls_settings
             trains = list(
-                tfu.load_dataset(self._dataset_path, self._devices_count, 'train', settings['train_batch_size'], settings['use_weights']))
+                tfu.load_cls_dataset(self._dataset_path, self._devices_count, 'train', settings['train_batch_size'], settings['use_weights']))
             valids = list(
-                tfu.load_dataset(self._dataset_path, self._devices_count, 'valid', settings['test_batch_size'], settings['use_weights']))
+                tfu.load_cls_dataset(self._dataset_path, self._devices_count, 'valid', settings['test_batch_size'], settings['use_weights']))
 
             tqdm.write(f"Start training classification")
 
@@ -361,7 +502,7 @@ class RNN:
                                                                     self.cls_metrics_reset,
                                                                     self.cls_metrics_update,
                                                                     self.cls_optimize,
-                                                                    self.cls_learn_rate,
+                                                                    self.learn_rate,
                                                                     "CLASSIFICATION GLOBAL",
                                                                     ad_feed_dict
                                                                     )
@@ -373,9 +514,21 @@ class RNN:
             tqdm.write(self._filler)
             tqdm.write(self._filler)
             tqdm.write("Start classification testing")
+            settings = self._lemmatizer_settings
+            lem_tests = list( tfu.load_lemma_dataset(self._dataset_path,
+                                                     self._devices_count,
+                                                     'train',
+                                                     settings['batch_size']))
+            test_acc = self._test_lem_steo(sess, lem_tests, "Testing", epoch)
+            tqdm.write(f"Test acc for lemmatization: {test_acc}")
 
-            tests = list(
-                tfu.load_dataset(self._dataset_path, self._devices_count, 'test', settings['test_batch_size'], settings['use_weights']))
+
+            settings = self._cls_settings
+            tests = list(tfu.load_cls_dataset(self._dataset_path,
+                                              self._devices_count,
+                                              'test',
+                                              settings['test_batch_size'],
+                                              settings['use_weights']))
             test_acc = self._test_step(sess,
                                        tests,
                                        "Testing",
@@ -393,7 +546,7 @@ class RNN:
 
             for gram in self._grammemes:
                 settings = self._cls_gram_settings[gram]
-                tests = list(tfu.load_dataset(self._dataset_path, self._devices_count, 'test', settings['test_batch_size'], settings['use_weights'], gram))
+                tests = list(tfu.load_cls_dataset(self._dataset_path, self._devices_count, 'test', settings['test_batch_size'], settings['use_weights'], gram))
 
                 test_acc = self._test_step(sess,
                                            tests,
@@ -408,6 +561,95 @@ class RNN:
                                           )
                 tqdm.write(f"Test acc for '{gram}': {test_acc}")
 
+
+    def _train_lemmatization(self, sess, epoch):
+        settings = self._lemmatizer_settings
+        trains = list(
+            tfu.load_lemma_dataset(self._dataset_path, self._devices_count, 'train', settings['batch_size']))
+        valids = list(
+            tfu.load_lemma_dataset(self._dataset_path, self._devices_count, 'valid', settings['batch_size']))
+
+        best_model_acc = -1
+        best_epoch = -1
+        learn_rate_val = settings['learn_rate']
+        acc_delta = 100
+        return_step = 0
+        while settings['stop_training_acc_delta'] < acc_delta:
+            tqdm.write(self._filler)
+            tqdm.write(self._filler)
+            tqdm.write("Lemmatization")
+
+            sess.run(self.lem_metrics_reset)
+            for item in tqdm(trains, desc=f"Train, epoch {epoch}"):
+                launch = []
+                launch.extend(self.prints)
+                launch.append(self.lem_optimize)
+                launch.extend(self.lem_metrics_update)
+                feed_dic = {}
+                for i in range(len(item)):
+                    feed_dic[self.xs[i]] = item[i]['x']
+                    feed_dic[self.seq_lens[i]] = item[i]['x_seq_len']
+                    feed_dic[self.lem_cls[i]] = item[i]['x_cls']
+                    feed_dic[self.lem_ys[i]] = item[i]['y']
+                    feed_dic[self.lem_ys_seq_len[i]] = item[i]['y_seq_len']
+
+                feed_dic[self.learn_rate] = learn_rate_val
+                sess.run(launch, feed_dic)
+
+            train_acc = self._write_metrics_report(sess, self.lem_metrics, "Train")
+            valid_acc = self._test_lem_steo(sess, valids, "Validation", epoch)
+
+            tqdm.write(f"Epoch {epoch} Train accuracy: {train_acc} Validation accuracy: {valid_acc}")
+            need_decay = False
+            if valid_acc > best_model_acc:
+                if (valid_acc - best_model_acc) < settings['stop_training_acc_delta']:
+                    tqdm.write(f"Acc delta is less then min value")
+                    need_decay = True
+                else:
+                    return_step = 0
+
+                best_model_acc = valid_acc
+                best_epoch = epoch
+                self.saver.save(sess, self._save_path, epoch)
+                epoch += 1
+            else:
+                tqdm.write("Best epoch is better then current")
+                if return_step == settings['return_step']:
+                    tqdm.write(f"Restoring best epoch {best_epoch}")
+                    self.saver.restore(sess, os.path.join(self._save_path, f"-{best_epoch}"))
+                need_decay = True
+
+            if need_decay:
+                if return_step == settings['return_step']:
+                    learn_rate_val = learn_rate_val * settings['learn_rate_decay_step']
+                    if learn_rate_val < settings['min_learn_rate']:
+                        tqdm.write(f"Learning rate {learn_rate_val} is less then min learning rate")
+                        break
+                    tqdm.write(f"Learning rate decayed. New value: {learn_rate_val}")
+                    return_step = 0
+                else:
+                    tqdm.write(f"Return step increased")
+                    return_step += 1
+
+        return best_epoch, best_model_acc
+
+    def _test_lem_steo(self, sess, items, op_name, epoch):
+        sess.run(self.lem_metrics_reset)
+        descr = op_name if epoch is None else f"{op_name}, epoch {epoch}"
+        for item in tqdm(items, desc=descr):
+            launch = []
+            launch.extend(self.lem_metrics_update)
+            feed_dic = {}
+            for i in range(len(item)):
+                feed_dic[self.xs[i]] = item[i]['x']
+                feed_dic[self.seq_lens[i]] = item[i]['x_seq_len']
+                feed_dic[self.lem_cls[i]] = item[i]['x_cls']
+                feed_dic[self.lem_ys[i]] = item[i]['y']
+                feed_dic[self.lem_ys_seq_len[i]] = item[i]['y_seq_len']
+
+            sess.run(launch, feed_dic)
+
+        return self._write_metrics_report(sess, self.lem_metrics, op_name)
 
     def _train_classification(self,
                               sess,
@@ -546,9 +788,9 @@ class RNN:
         feed_dic = {}
         for dev_num, batch in enumerate(item):
             feed_dic[self.xs[dev_num]] = batch['x']
-            feed_dic[self.seq_lens[dev_num]] = batch['seq_len']
+            feed_dic[self.seq_lens[dev_num]] = batch['x_seq_len']
             feed_dic[keep_drops[dev_num]] = dropout_vals
-            feed_dic[ys[dev_num]] = batch['ys']
+            feed_dic[ys[dev_num]] = batch['y']
             feed_dic[weights[dev_num]] = batch['weight']
 
         return feed_dic

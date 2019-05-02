@@ -11,6 +11,11 @@ save_path: checkpoints/
 publish_net_path: ../../cs/DeepMorphy/NeuralNet/
 publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml
 publish_gramms_path: ../../cs/DeepMorphy/grams.xml
+train_devices:
+  - /gpu:0
+  - /gpu:1
+  - /gpu:2
+
 
 
 start_token: 35
@@ -41,7 +46,7 @@ gram_classification:
     stop_training_acc_delta: 0.00001
     learn_rate: 0.01
     learn_rate_decay_step: 0.1
-    min_learn_rate: 0.000001
+    min_learn_rate: 0.00001
     return_step: 2
     keep_dropout: 1
     use_weights: false
@@ -60,10 +65,10 @@ classification:
 
   rnn_layers_count: 2
   rnn_bidirectional: True
-  stop_training_acc_delta: 0.00005
+  stop_training_acc_delta: 0.00001
   learn_rate: 0.01
   learn_rate_decay_step: 0.1
-  min_learn_rate: 0.0000001
+  min_learn_rate: 0.00001
   return_step: 2
   keep_dropout: 1
   use_weights: false
@@ -72,6 +77,7 @@ classification:
 lemmatizer:
   char_vector_size: 64
   batch_size: 2048
+  max_length: 34
 
   encoder:
     char_vector_size: 64
@@ -84,11 +90,10 @@ lemmatizer:
     rnn_layers_count: 2
     rnn_bidirectional: True
 
-  max_length: 32
-  stop_training_acc_delta: 0.00005
+  stop_training_acc_delta: 0.00001
   learn_rate: 0.01
   learn_rate_decay_step: 0.1
-  min_learn_rate: 0.0000001
+  min_learn_rate: 0.00001
   return_step: 2
   keep_dropout: 1
   use_weights: false

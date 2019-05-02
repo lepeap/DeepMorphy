@@ -91,8 +91,6 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
                 i = cls_dic[form[cls_type]]
                 weights[i] = weights[i] + 1
 
-
-
     weights = normalize(np.asarray(weights).reshape(1, -1))
     weights = np.ones((len(ordered_keys),)) - weights
 
@@ -116,6 +114,7 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
 
     logging.info(f"Class '{cls_type}': {len(rez_items)}")
     save_dataset(rez_items, cls_type)
+
 
 def create_lemma_dataset(vec_words, main_cls_dic):
     def process_seq_vect(dic):
