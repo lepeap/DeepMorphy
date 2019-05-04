@@ -3,6 +3,7 @@ import yaml
 import pickle
 import shutil
 import tensorflow as tf
+import tf_utils as tfu
 from tqdm import tqdm
 from graph.gram_cls import GramCls
 from graph.main_cls import MainCls
@@ -37,6 +38,7 @@ class RNN:
             key
             for key in sorted(self._config['grammemes_types'], key=lambda x: self._config['grammemes_types'][x]['index'])
         ]
+        self._train_steps = self._config['train_steps']
 
         with open(os.path.join(self._config['dataset_path'], f"classification_classes.pkl"), 'rb') as f:
             self._config['main_classes'] = pickle.load(f)
@@ -59,9 +61,14 @@ class RNN:
         self.xs = []
         self.seq_lens = []
 
+        self.x_inds = []
+        self.x_vals = []
+        self.x_shape = []
+
         with self.graph.as_default(), tf.device('/cpu:0'):
             self.is_training = tf.placeholder(tf.bool, name="IsTraining")
             self.learn_rate = tf.placeholder(tf.float32, name="LearningRate")
+            self.batch_size = tf.placeholder(tf.int32, [], name="BatchSize") if self._for_usage else None
             self.optimiser = tf.train.AdamOptimizer(self.learn_rate)
             self.gram_graph_parts = {
                 gram: GramCls(gram, self._for_usage, self._config, self._key_configs[gram], self.optimiser)
@@ -72,10 +79,26 @@ class RNN:
 
             for device_index, device_name in enumerate(self._devices):
                 with tf.device(device_name):
-                    x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
+                    if self._for_usage:
+                        x_ind_pl = tf.placeholder(dtype=tf.int32, shape=(None, None), name='XIndexes')
+                        x_val_pl = tf.placeholder(dtype=tf.int32, shape=(None,), name='XValues')
+                        x_shape_pl = tf.placeholder(dtype=tf.int32, shape=(2,), name='XShape')
+                        x_ind =   tf.dtypes.cast(x_ind_pl, dtype=tf.int64)
+                        x_val =   tf.dtypes.cast(x_val_pl, dtype=tf.int64)
+                        x_shape = tf.dtypes.cast(x_shape_pl, dtype=tf.int64)
+
+                        x_sparse = tf.sparse.SparseTensor(x_ind, x_val, x_shape)
+                        x = tf.sparse.to_dense(x_sparse)
+                        self.x_inds.append(x_ind_pl)
+                        self.x_vals.append(x_val_pl)
+                        self.x_shape.append(x_shape_pl)
+                    else:
+                        x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
+                        self.xs.append(x)
+
                     seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='SeqLen')
                     self.seq_lens.append(seq_len)
-                    self.xs.append(x)
+
 
                     for gram in self._gram_keys:
                         self.gram_graph_parts[gram].build_graph_for_device(x, seq_len)
@@ -83,7 +106,11 @@ class RNN:
                     gram_probs = [self.gram_graph_parts[gram].probs[-1] for gram in self._gram_keys]
                     gram_keep_drops = [self.gram_graph_parts[gram].keep_drops[-1] for gram in self._gram_keys]
                     self.main_graph_part.build_graph_for_device(x, seq_len, gram_probs, gram_keep_drops)
-                    self.lem_graph_part.build_graph_for_device(x, seq_len)
+                    self.lem_graph_part.build_graph_for_device(x,
+                                                               seq_len,
+                                                               self.batch_size,
+                                                               self.main_graph_part.results[-1]
+                                                               )
 
             for gram in self._gram_keys:
                 self.gram_graph_parts[gram].build_graph_end()
@@ -106,14 +133,16 @@ class RNN:
                 if latest_checkpiont:
                     self.saver.restore(sess, latest_checkpiont)
 
-
-
             tc = TrainContext(sess, self.saver, self.learn_rate)
             for gram in self._gram_keys:
-                self.gram_graph_parts[gram].train(tc)
+                if gram in self._train_steps:
+                    self.gram_graph_parts[gram].train(tc)
 
-            self.main_graph_part.train(tc)
-            self.lem_graph_part.train(tc)
+            if self.main_graph_part.key in self._train_steps:
+                self.main_graph_part.train(tc)
+
+            if self.lem_graph_part.key in self._train_steps:
+                self.lem_graph_part.train(tc)
 
             tqdm.write(self._filler)
             tqdm.write(self._filler)
@@ -140,7 +169,8 @@ class RNN:
             # Loading checkpoint
             latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
             if latest_checkpiont:
-                self.saver.restore(sess, latest_checkpiont)
+                tfu.optimistic_restore(sess, latest_checkpiont)
+                #self.saver.restore(sess, latest_checkpiont)
 
             if os.path.isdir(self._export_path):
                 shutil.rmtree(self._export_path)
@@ -148,9 +178,9 @@ class RNN:
 
             output_dic = {}
             gram_op_dic = {}
-            for gram in self.cls_gram_results:
-                res = self.cls_gram_results[gram][0]
-                prob = self.cls_gram_probs[gram][0]
+            for gram in self._gram_keys:
+                res = self.gram_graph_parts[gram].results[0]
+                prob = self.gram_graph_parts[gram].probs[0]
                 output_dic[f'res_{gram}'] = res
                 output_dic[f'prob_{gram}'] = prob
                 gram_op_dic[gram] = {
@@ -158,15 +188,19 @@ class RNN:
                     'prob': prob.op.name
                 }
 
-            output_dic['res_values'] = self.cls_results[0][0]
-            output_dic['res_indexes'] = self.cls_results[0][1]
+            output_dic['res_values'] = self.main_graph_part.results[0].values
+            output_dic['res_indexes'] = self.main_graph_part.results[0].indices
+            output_dic['res_lem'] = self.lem_graph_part.results[0]
             # Saving model
             tf.saved_model.simple_save(sess,
                                        self._export_path,
                                        inputs={
-                                           'x': self.xs[0],
+                                           'x_ind': self.x_inds[0],
+                                           'x_val': self.x_vals[0],
+                                           'x_shape': self.x_shape[0],
                                            'seq_len': self.seq_lens[0],
-                                           'top_k': self.cls_top_ks[0]
+                                           'top_k': self.main_graph_part.top_ks[0],
+                                           'batch_size': self.batch_size
                                        },
                                        outputs=output_dic)
 
@@ -189,9 +223,21 @@ class RNN:
                                       "",
                                       input_saved_model_dir=self._export_path)
 
+            op_dic = {
+                key: output_dic[key].op.name
+                for key in output_dic
+            }
+
+            op_dic['x_ind'] = self.x_inds[0].op.name
+            op_dic['x_val'] = self.x_vals[0].op.name
+            op_dic['x_shape'] = self.x_shape[0].op.name
+
+            op_dic['seq_len'] = self.main_graph_part.seq_lens[0].op.name
+            op_dic['k'] = self.main_graph_part.top_ks[0].op.name
+            op_dic['batch_size'] = self.batch_size.op.name
 
             return frozen_path, \
-                   self._classes_dic, \
-                   gram_op_dic, \
-                   self.cls_results[0][0].op.name
+                   self._config['main_classes'], \
+                   gram_op_dic , \
+                   op_dic
 

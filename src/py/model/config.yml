@@ -15,21 +15,20 @@ train_devices:
   - /gpu:0
   - /gpu:1
   - /gpu:2
-
 filler: "############################################################################"
-
-
-
 start_token: 35
 end_token: 36
 
-#miss_steps:
+train_steps:
 #  - post
 #  - gndr
 #  - nmbr
 #  - case
 #  - tens
 #  - pers
+#  - main
+  - lemm
+
 
 graph_part_configs:
   default:
@@ -55,7 +54,7 @@ graph_part_configs:
 
   lemm:
     char_vector_size: 64
-    batch_size: 2048
+    batch_size: 4096
     max_length: 34
     encoder:
       char_vector_size: 64
@@ -66,8 +65,6 @@ graph_part_configs:
       rnn_state_size: 64
       rnn_layers_count: 2
       rnn_bidirectional: True
-
-
 
 chars:
   - UNDEFINED # неизвестный символ
@@ -105,7 +102,6 @@ chars:
   - ю
   - я
   - "-"
-
 
 other_post_types:
   punct:

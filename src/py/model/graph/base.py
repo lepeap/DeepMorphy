@@ -24,6 +24,7 @@ class GraphPartBase(ABC):
                  optimiser,
                  key
                  ):
+        self.key = key
         self.global_settings = global_settings
         self.filler = global_settings['filler']
         self.settings = current_settings

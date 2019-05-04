@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tf_utils as tfu
 from graph.base import GraphPartBase
+from tensorflow.python.ops.ragged.ragged_util import repeat
 
 
 class Lemm(GraphPartBase):
@@ -10,11 +11,12 @@ class Lemm(GraphPartBase):
         self.chars_count = self.chars_count + 2
         self.start_char_index = global_settings['start_token']
         self.end_char_index = global_settings['end_token']
+        self.results = []
         self.ys = []
         self.y_seq_lens = []
         self.cls = []
 
-    def __build_graph_for_device__(self, x, seq_len):
+    def __build_graph_for_device__(self, x, seq_len, batch_size, cls):
         self.xs.append(x)
         self.seq_lens.append(seq_len)
 
@@ -22,13 +24,13 @@ class Lemm(GraphPartBase):
         y = tf.placeholder(dtype=tf.int32, shape=(None, None), name='Y')
         y_seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='YSeqLen')
 
-        lemma_cls_init = tf.random_normal((self.main_classes_count, self.settings['encoder']['rnn_state_size']))
-        lemma_cls_emb = tf.get_variable("EmbeddingsLemmaCls", initializer=lemma_cls_init)
-        init_state = tf.nn.embedding_lookup(lemma_cls_emb, cls)
-
         x_emd_init = tf.random_normal((self.chars_count, self.settings['char_vector_size']))
         x_emb = tf.get_variable("EmbeddingsX", initializer=x_emd_init)
         encoder_input = tf.nn.embedding_lookup(x_emb, x)
+
+        lemma_cls_init = tf.random_normal((self.main_classes_count, self.settings['encoder']['rnn_state_size']))
+        lemma_cls_emb = tf.get_variable("EmbeddingsLemmaCls", initializer=lemma_cls_init)
+        init_state = tf.nn.embedding_lookup(lemma_cls_emb, cls)
 
         y_emd_init = tf.random_normal((self.chars_count, self.settings['char_vector_size']))
         y_emb = tf.get_variable("EmbeddingsY", initializer=y_emd_init)
@@ -54,18 +56,18 @@ class Lemm(GraphPartBase):
 
             if self.for_usage:
                 helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(encoder_output,
-                                                                  start_token=self.start_char_index,
+                                                                  start_tokens=tf.fill([batch_size], self.start_char_index),
                                                                   end_token=self.end_char_index)
             else:
                 helper = tf.contrib.seq2seq.TrainingHelper(lemma_output,
-                                                           [self.settings['max_length'] for _ in range(self.settings['batch_size'])])
+                                                           [self.settings['max_length'] for _ in range(batch_size)])
             decoder_output = tfu.decoder(
                 helper,
                 encoder_output,
                 seq_len,
                 self.settings,
                 self.chars_count,
-                self.settings['batch_size'],
+                batch_size,
                 self.for_usage
             )
 
@@ -97,6 +99,7 @@ class Lemm(GraphPartBase):
             self.metrics_update.append(metr_update)
             self.devices_metrics[metric_func[0]].append(metr_epoch_loss)
 
+        self.results.append(decoder_output.sample_id)
         self.ys.append(y)
         self.y_seq_lens.append(y_seq_len)
         self.cls.append(cls)

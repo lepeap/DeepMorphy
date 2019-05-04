@@ -154,10 +154,10 @@ def load_cls_dataset(dataset_path, devices_count, type, batch_size, use_weights,
             yield cur_step
             cur_step = []
 
-        #TODO remove
-        if tttt>12:
-            return
-        tttt+=1
+        ##TODO remove
+        #if tttt>12:
+        #    return
+        #tttt+=1
 
         cur_step.append(dict(
             x=x,
@@ -198,12 +198,12 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
             y_seq_len=y_seq_len
         ))
 
-        #TODO remove
-        if tttt>12:
-            return
-        tttt+=1
+        ##TODO remove
+        #if tttt>12:
+        #    return
+        #tttt+=1
 
-    if len(cur_step) == devices_count:
+    if len(cur_step) == devices_count and all([len(step['x']) == batch_size for step in cur_step]):
         yield cur_step
 
 
@@ -259,3 +259,21 @@ def seq2seq(settings, encoder_input, keep_drop, seq_len, init_state, chars_count
             helper = tf.contrib.seq2seq.TrainingHelper(encoder_output, seq_len)
 
         decoder(helper, encoder_output, seq_len, settings, chars_count, settings['batch_size'], for_usage)
+
+
+def optimistic_restore(session, save_file):
+    # src https://github.com/tensorflow/tensorflow/issues/312#issuecomment-287455836
+    reader = tf.train.NewCheckpointReader(save_file)
+    saved_shapes = reader.get_variable_to_shape_map()
+    var_names = sorted([(var.name, var.name.split(':')[0]) for var in tf.global_variables()
+        if var.name.split(':')[0] in saved_shapes])
+    restore_vars = []
+    name2var = dict(zip(map(lambda x:x.name.split(':')[0], tf.global_variables()), tf.global_variables()))
+    with tf.variable_scope('', reuse=True):
+        for var_name, saved_var_name in var_names:
+            curr_var = name2var[saved_var_name]
+            var_shape = curr_var.get_shape().as_list()
+            if var_shape == saved_shapes[saved_var_name]:
+                restore_vars.append(curr_var)
+    saver = tf.train.Saver(restore_vars)
+    saver.restore(session, save_file)
