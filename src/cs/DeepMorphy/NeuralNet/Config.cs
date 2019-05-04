@@ -22,10 +22,10 @@ namespace DeepMorphy.NeuralNet
         
         public bool UseEnTags { get; private set; }
         public bool BigModel { get; private set; }
-        public string MainClsOp { get; private set; }
         public int UndefinedCharId { get; private set; }
         public Dictionary<int, string[]> ClsDic { get; private set; } = new Dictionary<int, string[]>();
         public Dictionary<char, int> CharToId { get; private set; } = new Dictionary<char, int>();
+        public Dictionary<string, string> OpDic { get; private set; } = new Dictionary<string, string>();
         public  Dictionary<string, string>  GramOpDic { get; private set; } = new Dictionary<string, string>();
 
         private void _loadReleaseInfo()
@@ -65,7 +65,13 @@ namespace DeepMorphy.NeuralNet
                     }
                     else if (rdr.Name.Equals("Root") && rdr.NodeType == XmlNodeType.Element)
                     {
-                        MainClsOp = rdr.GetAttribute("cls_op");
+                        rdr.MoveToFirstAttribute();
+                        OpDic[rdr.Name] = rdr.Value;
+                        
+                        while (rdr.MoveToNextAttribute())
+                            OpDic[rdr.Name] = rdr.Value;
+        
+                        rdr.MoveToElement();
                     }
                 }
             }

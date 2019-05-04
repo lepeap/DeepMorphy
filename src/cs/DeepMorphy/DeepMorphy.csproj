@@ -10,6 +10,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>morphology,nlp,deep,russian</PackageTags>
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <RepositoryUrl>https://github.com/lepeap/DeepMorphy</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

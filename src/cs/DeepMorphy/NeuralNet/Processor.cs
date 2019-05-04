@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 
 namespace DeepMorphy.NeuralNet
@@ -14,21 +15,28 @@ namespace DeepMorphy.NeuralNet
         public Processor(bool useEnTags = false, bool bigModel = false, int k = 8)
         {
             _config = new Config(useEnTags, bigModel);
-            _net = new TfNeuralNet(_config.MainClsOp, _config.GramOpDic, bigModel);
+            _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, bigModel);
             _k = k;
         }
 
         public char[] AvailableChars => _config.CharToId.Keys.ToArray();
-        public IEnumerable<Token> Parse(IEnumerable<string> words)
+
+        public void _vectorize(string[] srcMas,
+                               out int maxLength,
+                               out List<int[]> indexes,
+                               out List<int> values,
+                               out int[] seqLens
+                               )
         {
-            var srcMas = words.ToArray();
-            var maxLen = srcMas.Max(x => x.Length);
-            var wordsVectors = new int[srcMas.Length, maxLen];
-            var seqLens = new int[srcMas.Length];
+            maxLength = 0;
+            indexes = new List<int[]>();
+            values = new List<int>();
+            seqLens = new int[srcMas.Length];
             for (int i = 0; i < srcMas.Length; i++)
             {
                 for (int j = 0; j < srcMas[i].Length; j++)
                 {
+                    indexes.Add(new int[]{i,j});
                     var curChar = srcMas[i][j];
                     int rezId;
                     if (_config.CharToId.ContainsKey(curChar))
@@ -36,13 +44,28 @@ namespace DeepMorphy.NeuralNet
                     else
                         rezId = _config.UndefinedCharId;
 
-                    wordsVectors[i, j] = rezId;
+                    values.Add(rezId);
                 }
+
+                if (maxLength < srcMas[i].Length)
+                    maxLength = srcMas[i].Length;
 
                 seqLens[i] = srcMas[i].Length;
             }
-
-            var result = _net.Classify(wordsVectors, seqLens, _k);
+        }
+        public IEnumerable<Token> Parse(IEnumerable<string> words)
+        {
+            var srcMas = words.ToArray();
+            
+            _vectorize(srcMas, 
+                       out int maxLength, 
+                       out List<int[]> indexes,
+                       out List<int> values,
+                       out int[] seqLens
+                       );
+            
+            
+            var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, _k);
             for (int i = 0; i < srcMas.Length; i++)
             {
                 yield return new Token(
