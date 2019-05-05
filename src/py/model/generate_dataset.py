@@ -18,15 +18,13 @@ GRAMMEMES_TYPES = CONFIG['grammemes_types']
 CHARS = CONFIG['chars']
 SRC_CONVERT, CLASSES_INDEXES = get_grams_info(CONFIG)
 CHARS_INDEXES = {c: index for index, c in enumerate(CHARS)}
-
 START_TOKEN = CONFIG['start_token']
 END_TOKEN = CONFIG['end_token']
 
 
 
 def vectorize_text(text):
-
-    word_vect = np.zeros((MAX_WORD_SIZE,))
+    word_vect = np.full((MAX_WORD_SIZE,), END_TOKEN, dtype=np.int32)
     for index, c in enumerate(text):
         if c in CHARS:
             word_vect[index] = CHARS_INDEXES[c]
@@ -119,41 +117,35 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
 def create_lemma_dataset(vec_words, main_cls_dic):
     def process_seq_vect(dic):
         vect = list(dic['vect'][0])
-        vect.insert(dic['vect'][1], END_TOKEN)
-        vect.insert(0, START_TOKEN)
-        vect_len = dic['vect'][1] + 2
+        vect_len = dic['vect'][1]
         return np.asarray(vect), vect_len
 
     seq_vecs = {}
     rez_items = []
     for word in tqdm(vec_words, desc="Generating lemma dataset"):
         dic = vec_words[word]
-        if word in seq_vecs:
-            x_vec = seq_vecs[word]
-        else:
-            x_vec = process_seq_vect(dic)
-            seq_vecs[word] = x_vec
+        x_vec = dic['vect']
 
         for form in dic['forms']:
             main_cls = main_cls_dic[form['main']]
 
             if 'lemma' in form:
-                word = form['lemma']
-                y_src = word
-                if word in seq_vecs:
-                    y_vec = seq_vecs[word]
-                else:
-                    y_vec = process_seq_vect(vec_words[word])
-                    seq_vecs[word] = y_vec
+                word_y = form['lemma']
             else:
-                y_src = word
-                y_vec = x_vec
+                word_y = word
+
+            if word_y in seq_vecs:
+                y_vec = seq_vecs[word_y]
+            else:
+                y_vec = process_seq_vect(vec_words[word_y])
+                seq_vecs[word_y] = y_vec
+
 
             rez_items.append({
                 'x_src': word,
                 'x': x_vec[0],
                 'x_len': x_vec[1],
-                'y_src': y_src,
+                'y_src': word_y,
                 'y': y_vec[0],
                 'y_len': y_vec[1],
                 'main_cls': main_cls
@@ -171,9 +163,9 @@ def create_datasets(words):
     os.mkdir(DATASET_PATH)
     vec_words = vectorize_words(words)
 
-    for cls_type in CLASSES_INDEXES:
-        cls_dic = CLASSES_INDEXES[cls_type]
-        generate_classification_dataset(vec_words, cls_type, cls_dic)
+    #for cls_type in CLASSES_INDEXES:
+    #    cls_dic = CLASSES_INDEXES[cls_type]
+    #    generate_classification_dataset(vec_words, cls_type, cls_dic)
 
     un_classes = []
     for word in tqdm(vec_words, desc="Setting main class"):
@@ -190,7 +182,7 @@ def create_datasets(words):
         tpl: index
         for index, tpl in enumerate(un_classes)
     }
-    generate_classification_dataset(vec_words, 'main', cls_dic)
+    #generate_classification_dataset(vec_words, 'main', cls_dic)
     logging.info(f"Main classes count: {len(cls_dic)}")
     with open(os.path.join(DATASET_PATH, f"classification_classes.pkl"), 'wb+') as f:
         pickle.dump(cls_dic, f)

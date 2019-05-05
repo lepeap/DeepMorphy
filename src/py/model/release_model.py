@@ -14,6 +14,8 @@ GRAM_TYPES = CONFIG['grammemes_types']
 
 rnn = RNN(True)
 
+rnn.infer()
+
 pd_publish_path = os.path.join(RELEASE_PATH, f"frozen_model_{MODEL_KEY}.pb")
 pd_release_path, classes_dic, gram_ops, out_ops = rnn.release()
 copyfile(pd_release_path, pd_publish_path)
@@ -25,6 +27,10 @@ for key in out_ops:
     root.set(key, out_ops[key])
 
 chars_el = etree.Element('Chars')
+chars_el.set("start_char", str(CONFIG['start_token']))
+chars_el.set("end_char", str(CONFIG['end_token']))
+
+
 for index, value in enumerate(CHARS):
     char_el = etree.Element("Char")
     char_el.set('index', str(index))

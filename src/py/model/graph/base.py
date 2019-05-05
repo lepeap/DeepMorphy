@@ -52,6 +52,7 @@ class GraphPartBase(ABC):
         self.dataset_path = global_settings['dataset_path']
         self.xs = []
         self.seq_lens = []
+        self.prints = []
 
     def train(self, tc):
         best_model_acc = -1
@@ -72,6 +73,9 @@ class GraphPartBase(ABC):
                     self.optimize
                 ]
                 launch.extend(self.metrics_update)
+                if len(self.prints):
+                    launch.extend(self.prints)
+
                 feed_dic = self.__create_feed_dict__('train', item)
                 feed_dic[tc.learn_rate_op] = learn_rate_val
                 tc.sess.run(launch, feed_dic)
@@ -82,6 +86,8 @@ class GraphPartBase(ABC):
             for item in tqdm(valids, desc=f"Validation, epoch {tc.epoch}"):
                 launch = []
                 launch.extend(self.metrics_update)
+                if len(self.prints):
+                    launch.extend(self.prints)
                 feed_dic = self.__create_feed_dict__('valid', item)
                 tc.sess.run(launch, feed_dic)
 

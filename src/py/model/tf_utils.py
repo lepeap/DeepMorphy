@@ -44,7 +44,7 @@ def rnn_cell(settings, for_usage, keep_drop=None):
     return cell
 
 
-def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, initial_state_bw=None, for_usage=False):
+def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, initial_state_bw=None, for_usage=False, with_seq=False):
     if settings['rnn_layers_count'] > 1 and initial_state_fw is not None:
         initial_state_fw = tuple([initial_state_fw for i in range(settings['rnn_layers_count'])])
 
@@ -57,19 +57,25 @@ def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, in
                 fw_cell = rnn_cell(settings, for_usage, keep_drop)
             with tf.variable_scope('BCell', reuse=tf.AUTO_REUSE) as scope:
                 bw_cell = rnn_cell(settings, for_usage, keep_drop)
-            _, (final_fw, final_bw) = tf.nn.bidirectional_dynamic_rnn(cell_fw=fw_cell,
+            seq_val, (final_fw, final_bw) = tf.nn.bidirectional_dynamic_rnn(cell_fw=fw_cell,
                                                                    cell_bw=bw_cell,
                                                                    sequence_length=seq_len,
                                                                    initial_state_fw = initial_state_fw,
                                                                    initial_state_bw = initial_state_bw,
                                                                    inputs=rnn_input,
                                                                    dtype=tf.float32)
+
             if settings['rnn_layers_count'] > 1:
                 final_fw = final_fw[-1]
                 final_bw = final_bw[-1]
 
             final_state = tf.add(final_fw, final_bw)
-            return final_state
+
+            if with_seq:
+                seq_val = tf.add(seq_val[0], seq_val[1])
+                return final_state, seq_val
+            else:
+                return final_state
 
     else:
         with tf.variable_scope('Rnn', reuse=tf.AUTO_REUSE) as scope:
@@ -113,7 +119,7 @@ def average_gradients(tower_grads):
     return average_grads
 
 
-def create_reset_metric(metric, scope='reset_metrics', **metric_args):
+def create_reset_metric(metric, scope='reset_metrics', *args, **metric_args):
     """
     Source: https://github.com/tensorflow/tensorflow/issues/4814#issuecomment-314801758
 
@@ -128,7 +134,7 @@ def create_reset_metric(metric, scope='reset_metrics', **metric_args):
     :return:
     """
     with tf.variable_scope(scope) as scope:
-        metric_op, update_op = metric(**metric_args)
+        metric_op, update_op = metric(*args, **metric_args)
         vars = tf.contrib.framework.get_variables(
             scope, collection=tf.GraphKeys.LOCAL_VARIABLES)
         reset_op = tf.variables_initializer(vars)

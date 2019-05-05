@@ -11,7 +11,6 @@ class MainCls(GraphPartBase):
                  ):
         super().__init__(for_usage, global_settings, current_settings, optimiser, 'main')
         self.checks = []
-        self.top_ks = []
         self.weights = []
         self.keep_drops = []
         self.losses = []
@@ -19,6 +18,7 @@ class MainCls(GraphPartBase):
         self.results = []
         self.ys = []
         self.drops = []
+        self.top_k = global_settings['main_class_k']
 
     def __build_graph_for_device__(self, x, seq_len, gram_probs, gram_drop):
         self.xs.append(x)
@@ -26,7 +26,6 @@ class MainCls(GraphPartBase):
         self.drops.append(gram_drop)
 
         y = tf.placeholder(dtype=tf.int32, shape=(None, self.main_classes_count), name='Y')
-        top_k = tf.placeholder(dtype=tf.int32, name='TopK')
         weights = tf.placeholder(dtype=tf.float32, shape=(None,), name='Weight')
 
         x_emd_init = tf.random_normal((self.chars_count, self.settings['char_vector_size']))
@@ -69,7 +68,7 @@ class MainCls(GraphPartBase):
             self.checks.append(tf.check_numerics(errors, "ErrorNullCheck"))
 
         probs = tf.nn.softmax(logits)
-        result = tf.math.top_k(probs, top_k, name="Results")
+        result = tf.math.top_k(probs, self.top_k, name="Results")
         loss = tf.reduce_sum(errors)
 
         if not self.for_usage:
@@ -83,7 +82,6 @@ class MainCls(GraphPartBase):
         self.results.append(result)
         self.ys.append(y)
         self.dev_grads.append(grads)
-        self.top_ks.append(top_k)
         self.weights.append(weights)
 
         for metric_func in self.metric_funcs:

@@ -16,8 +16,9 @@ train_devices:
   - /gpu:1
   - /gpu:2
 filler: "############################################################################"
-start_token: 35
-end_token: 36
+start_token: 36
+end_token: 35
+main_class_k: 2
 
 train_steps:
 #  - post
@@ -54,8 +55,8 @@ graph_part_configs:
 
   lemm:
     char_vector_size: 64
-    batch_size: 4096
-    max_length: 34
+    batch_size: 4086
+    max_length: 33
     encoder:
       char_vector_size: 64
       rnn_state_size: 64
@@ -63,7 +64,7 @@ graph_part_configs:
       rnn_bidirectional: True
     decoder:
       rnn_state_size: 64
-      rnn_layers_count: 2
+      rnn_layers_count: 1
       rnn_bidirectional: True
 
 chars:
