@@ -134,7 +134,7 @@ class RNN:
                             lem_part.build_graph_for_device(x, seq_len, self.batch_size, self.main_pl_classes)
 
                             lem_results.append(lem_part.results[0])
-                            lem_results_lengths.append(lem_part.results_lengths[0])
+                            #lem_results_lengths.append(lem_part.results_lengths[0])
                             #self.prints.extend(lem_part.prints)
 
                         self.lem_result = tf.stack(lem_results)
