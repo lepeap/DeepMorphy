@@ -167,6 +167,27 @@ class GraphPartBase(ABC):
         tqdm.write(result)
         return launch_results["Accuracy"]
 
+    def __create_mean_metric__(self, metric_index, values):
+        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
+            tf.metrics.mean,
+            self.metric_names[metric_index],
+            values
+        )
+        self.metrics_reset.append(metr_reset)
+        self.metrics_update.append(metr_update)
+        self.devices_metrics[self.metric_names[metric_index]].append(metr_epoch_loss)
+
+    def __create_accuracy_metric__(self, metric_index, labels, predictions):
+        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
+            tf.metrics.accuracy,
+            self.metric_names[metric_index],
+            labels=labels,
+            predictions=predictions
+        )
+        self.metrics_reset.append(metr_reset)
+        self.metrics_update.append(metr_update)
+        self.devices_metrics[self.metric_names[metric_index]].append(metr_epoch_loss)
+
     def __create_feed_dict__(self, op_name, item):
         feed_dic = {}
         for dev_num, batch in enumerate(item):

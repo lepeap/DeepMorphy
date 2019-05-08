@@ -74,30 +74,18 @@ class Lemm(GraphPartBase):
         with tf.variable_scope('Decoder', reuse=tf.AUTO_REUSE) as scope:
 
             if self.for_usage:
-
-                #self.prints.append(tf.print("start_tokens \n", start_tokens))
-                #helper = tf.contrib.seq2seq.SampleEmbeddingHelper(embeddings,
-                #                                                  start_tokens=start_tokens,
-                #                                                  end_token=self.end_char_index,
-                #                                                  seed=1917)
-
                 helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(embedding_decoder,
                                                                   start_tokens=start_tokens,
                                                                   end_token=self.end_char_index)
             else:
                 start_tokens_emd = tf.nn.embedding_lookup(embedding_decoder, start_tokens)
-                #self.prints.append(tf.print("start_tokens emb\n", start_tokens_emd))
                 start_tokens_emd = tf.reshape(start_tokens_emd, (batch_size, -1, self.settings['char_vector_size']))
-                #self.prints.append(tf.print("encoder_output before\n", encoder_output))
                 encoder_output = tf.concat(values=[start_tokens_emd, encoder_output], axis=1)
-                #self.prints.append(tf.print("encoder_output after\n", encoder_output))
 
                 end_tokens = tf.fill([batch_size], self.end_char_index)
                 end_tokens_emd = tf.nn.embedding_lookup(embedding_decoder, end_tokens)
                 end_tokens_emd = tf.reshape(end_tokens_emd, (batch_size, -1, self.settings['char_vector_size']))
-                #self.prints.append(tf.print("lemma_output before\n", lemma_output))
                 decoder_output = tf.concat([decoder_output, end_tokens_emd], axis=1)
-                #self.prints.append(tf.print("lemma_output after\n", lemma_output))
                 helper = tf.contrib.seq2seq.TrainingHelper(decoder_output,
                                                            [self.settings['max_length'] for _ in range(batch_size)],
                                                            time_major=False)
@@ -107,7 +95,7 @@ class Lemm(GraphPartBase):
 
 
             attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
-               num_units=self.settings['encoder']['rnn_state_size'],
+               num_units=self.settings['decoder']['rnn_state_size'],
                memory=encoder_output,
                memory_sequence_length=seq_len
             )
@@ -124,7 +112,11 @@ class Lemm(GraphPartBase):
                 attn_cell,
                 self.chars_count,
             )
-            init_state = attn_cell.zero_state(dtype=tf.float32, batch_size=batch_size)#.clone(cell_state=encoder_state)
+
+            encoder_state = tf.layers.dense(encoder_state, self.settings['decoder']['rnn_state_size'])
+            init_state = attn_cell.zero_state(dtype=tf.float32, batch_size=batch_size)\
+                                  .clone(cell_state=encoder_state)
+
             decoder = tf.contrib.seq2seq.BasicDecoder(
                 cell=out_cell,
                 helper=helper,
@@ -141,9 +133,6 @@ class Lemm(GraphPartBase):
             decoder_logits = outputs[0].rnn_output
             decoder_length = outputs[2]
 
-            #self.prints.append(tf.print("inputs \n", x))
-            #self.prints.append(tf.print("results \n", decoder_ids))
-            #self.prints.append(tf.print("lengths \n", decoder_length))
 
         masks = tf.sequence_mask(
             lengths=y_seq_len,
@@ -157,69 +146,27 @@ class Lemm(GraphPartBase):
         vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.main_scope_name)
         grads = self.optimiser.compute_gradients(loss, var_list=vars)
 
-        # loss accuracy
-        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
-            tf.metrics.mean,
-            self.metric_names[0],
-            loss
-        )
-        self.metrics_reset.append(metr_reset)
-        self.metrics_update.append(metr_update)
-        self.devices_metrics[self.metric_names[0]].append(metr_epoch_loss)
+        self.__create_mean_metric__(0, loss)
 
         # seq accuracy
         seq_mask = tf.cast(masks, tf.int32)
-        #self.prints.append((tf.print("seq_mask", seq_mask)))
-        self.prints.append(seq_mask)
         labels = y * seq_mask
-        #self.prints.append((tf.print("labels", labels)))
-        self.prints.append(labels)
         predictions = decoder_ids * seq_mask
-        #self.prints.append((tf.print("predictions", predictions)))
-        self.prints.append(predictions)
         delta = labels - predictions
-        #self.prints.append((tf.print("delta", delta)))
-        self.prints.append(delta)
         labels = tf.reduce_sum(delta * delta, 1)
-        #self.prints.append((tf.print("labels", labels)))
-        self.prints.append(labels)
         predictions = tf.zeros(batch_size)
-        #self.prints.append((tf.print("rez predictions", predictions)))
-        self.prints.append(predictions)
-        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
-            tf.metrics.accuracy,
-            self.metric_names[1],
-            labels=labels,
-            predictions=predictions
-        )
-        self.metrics_reset.append(metr_reset)
-        self.metrics_update.append(metr_update)
-        self.devices_metrics[self.metric_names[1]].append(metr_epoch_loss)
+        self.__create_accuracy_metric__(1, labels, predictions)
 
         # char accuracy
         seq_mask = tf.cast(tf.reshape(masks, (-1,)), tf.int32)
-        self.prints.append(seq_mask)
         nonzero_indices = tf.where(tf.not_equal(seq_mask, 0))
-        self.prints.append(nonzero_indices)
         labels = tf.reshape(y, (-1,))
         labels = tf.gather(labels, nonzero_indices)
         labels = tf.reshape(labels, (-1,))
-        #self.prints.append((tf.print("char labels", labels)))
-        self.prints.append(labels)
         predictions = tf.reshape(decoder_ids, (-1,))
         predictions = tf.gather(predictions, nonzero_indices)
         predictions = tf.reshape(predictions, (-1,))
-        #self.prints.append((tf.print("char predictions", predictions)))
-        self.prints.append(predictions)
-        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
-            tf.metrics.accuracy,
-            self.metric_names[2],
-            labels=labels,
-            predictions=predictions
-        )
-        self.metrics_reset.append(metr_reset)
-        self.metrics_update.append(metr_update)
-        self.devices_metrics[self.metric_names[2]].append(metr_epoch_loss)
+        self.__create_accuracy_metric__(2, labels, predictions)
 
         self.results.append(decoder_ids)
         self.results_lengths.append(decoder_length)

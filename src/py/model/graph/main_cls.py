@@ -84,29 +84,14 @@ class MainCls(GraphPartBase):
         self.dev_grads.append(grads)
         self.weights.append(weights)
 
-
-        # loss
-        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
-            tf.metrics.mean,
-            self.metric_names[0],
-            loss
-        )
-        self.metrics_reset.append(metr_reset)
-        self.metrics_update.append(metr_update)
-        self.devices_metrics[self.metric_names[0]].append(metr_epoch_loss)
-
-        # accuracy
+        # metrics
+        self.__create_mean_metric__(0, loss)
         labels = tf.math.argmax(y, axis=1)
         predictions = tf.math.argmax(probs, axis=1)
-        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
-            tf.metrics.accuracy,
-            self.metric_names[1],
-            labels=labels,
-            predictions=predictions
-        )
-        self.metrics_reset.append(metr_reset)
-        self.metrics_update.append(metr_update)
-        self.devices_metrics[self.metric_names[1]].append(metr_epoch_loss)
+        self.__create_accuracy_metric__(1, labels, predictions)
+
+
+
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         for gram_drop in self.drops[dev_num]:
