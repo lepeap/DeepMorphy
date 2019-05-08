@@ -123,6 +123,7 @@ class RNN:
                         lem_results_lengths = []
                         flat_cls_indexes = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
                         seq_len = seq_len
+                        self.main_pl_classes = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
                         #self.prints.append(tf.print("seq_len", seq_len))
                         for i in range(self._main_class_k):
                             indexes = tf.range(i, self.batch_size * self._main_class_k, self._main_class_k)
@@ -130,10 +131,11 @@ class RNN:
                             classes = tf.gather(flat_cls_indexes, indexes)
                             #self.prints.append(tf.print("classes", classes))
                             lem_part = Lemm(self._for_usage, self._config, self._key_configs["lemm"], self.optimiser)
-                            lem_part.build_graph_for_device(x, seq_len, self.batch_size, classes)
+                            lem_part.build_graph_for_device(x, seq_len, self.batch_size, self.main_pl_classes)
+
                             lem_results.append(lem_part.results[0])
                             lem_results_lengths.append(lem_part.results_lengths[0])
-                            self.prints.extend(lem_part.prints)
+                            #self.prints.extend(lem_part.prints)
 
                         self.lem_result = tf.stack(lem_results)
                         self.lem_result_length = tf.stack(lem_results_lengths)
@@ -199,11 +201,11 @@ class RNN:
             # Loading checkpoint
             latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
             if latest_checkpiont:
-                tfu.optimistic_restore(sess, latest_checkpiont)
+                self.saver.restore(sess, latest_checkpiont)
                 #self.saver.restore(sess, latest_checkpiont)
 
 
-            bs = 9
+            bs = 128
             item = next(tfu.load_lemma_dataset(
                 "dataset",
                 1,
@@ -228,7 +230,7 @@ class RNN:
             ])
             seq_len = np.asarray([9])
 
-            launch = [self.lem_result, self.lem_result_length]
+            launch = [self.lem_result]
             launch.extend(self.prints)
 
             res = sess.run(
@@ -236,6 +238,7 @@ class RNN:
                 {
                     self.xs[0]: item[0]['x'],
                     self.seq_lens[0]: item[0]['x_seq_len'],
+                    self.main_pl_classes: item[0]['x_cls'],
                     self.batch_size: bs
                 }
             )

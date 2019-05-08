@@ -36,11 +36,11 @@ graph_part_configs:
     char_vector_size: 32
     rnn_state_size: 32
     test_batch_size:  2048
-    train_batch_size: 2048
+    train_batch_size: 1
     rnn_layers_count: 2
     rnn_bidirectional: True
     stop_training_acc_delta: 0.00001
-    learn_rate: 0.01
+    learn_rate: 0.001
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
     return_step: 2
@@ -54,16 +54,17 @@ graph_part_configs:
     train_batch_size: 2048
 
   lemm:
-    char_vector_size: 64
-    batch_size: 4086
+    char_vector_size: 128
+    batch_size: 4096 #1
     max_length: 33
+    return_step: 2
     encoder:
-      char_vector_size: 64
-      rnn_state_size: 64
+      char_vector_size: 128
+      rnn_state_size: 128
       rnn_layers_count: 2
       rnn_bidirectional: True
     decoder:
-      rnn_state_size: 64
+      rnn_state_size: 128
       rnn_layers_count: 1
       rnn_bidirectional: True
 

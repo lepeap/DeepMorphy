@@ -205,7 +205,7 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
         ))
 
         ##TODO remove
-        #if tttt>12:
+        #if tttt>0:
         #    return
         #tttt+=1
 

@@ -9,7 +9,7 @@ class MainCls(GraphPartBase):
                        current_settings,
                        optimiser
                  ):
-        super().__init__(for_usage, global_settings, current_settings, optimiser, 'main')
+        super().__init__(for_usage, global_settings, current_settings, optimiser, 'main', ['Loss', 'Accuracy'])
         self.checks = []
         self.weights = []
         self.keep_drops = []
@@ -84,18 +84,29 @@ class MainCls(GraphPartBase):
         self.dev_grads.append(grads)
         self.weights.append(weights)
 
-        for metric_func in self.metric_funcs:
-            labels = tf.math.argmax(y, axis=1)
-            predictions = tf.math.argmax(probs, axis=1)
-            metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
-                metric_func[1],
-                metric_func[0],
-                labels=labels,
-                predictions=predictions
-            )
-            self.metrics_reset.append(metr_reset)
-            self.metrics_update.append(metr_update)
-            self.devices_metrics[metric_func[0]].append(metr_epoch_loss)
+
+        # loss
+        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
+            tf.metrics.mean,
+            self.metric_names[0],
+            loss
+        )
+        self.metrics_reset.append(metr_reset)
+        self.metrics_update.append(metr_update)
+        self.devices_metrics[self.metric_names[0]].append(metr_epoch_loss)
+
+        # accuracy
+        labels = tf.math.argmax(y, axis=1)
+        predictions = tf.math.argmax(probs, axis=1)
+        metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
+            tf.metrics.accuracy,
+            self.metric_names[1],
+            labels=labels,
+            predictions=predictions
+        )
+        self.metrics_reset.append(metr_reset)
+        self.metrics_update.append(metr_update)
+        self.devices_metrics[self.metric_names[1]].append(metr_epoch_loss)
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         for gram_drop in self.drops[dev_num]:

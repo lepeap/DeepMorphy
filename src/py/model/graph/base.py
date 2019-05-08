@@ -22,7 +22,8 @@ class GraphPartBase(ABC):
                  global_settings,
                  current_settings,
                  optimiser,
-                 key
+                 key,
+                 metric_names
                  ):
         self.key = key
         self.global_settings = global_settings
@@ -30,9 +31,7 @@ class GraphPartBase(ABC):
         self.settings = current_settings
         self.for_usage = for_usage
         self.optimiser = optimiser
-        self.metric_funcs = [
-            ('Accuracy', tf.metrics.accuracy)
-        ]
+        self.metric_names = metric_names
         self.max_word_size = global_settings['max_word_size']
         self.checkpoints_keep = 10000
         self.chars_count = len(global_settings['chars']) + 1
@@ -42,7 +41,7 @@ class GraphPartBase(ABC):
         self.main_classes_count = len(self.main_classes)
         self.metrics_reset = []
         self.metrics_update = []
-        self.devices_metrics = {metr[0]: [] for metr in self.metric_funcs}
+        self.devices_metrics = {metr: [] for metr in self.metric_names}
         self.main_scope_name = key.title()
         self.save_path = global_settings['save_path']
         self.dev_grads = []
@@ -78,7 +77,7 @@ class GraphPartBase(ABC):
 
                 feed_dic = self.__create_feed_dict__('train', item)
                 feed_dic[tc.learn_rate_op] = learn_rate_val
-                tc.sess.run(launch, feed_dic)
+                rez = tc.sess.run(launch, feed_dic)
 
             train_acc = self.__write_metrics_report__(tc.sess, "Train")
             tc.sess.run(self.metrics_reset)
@@ -155,12 +154,11 @@ class GraphPartBase(ABC):
 
     def __write_metrics_report__(self, sess, step_name):
         tqdm.write('')
-        tqdm.write(f"{step_name}")
         launch_results = sess.run(self.metrics)
-        result = []
+        result = [f"{step_name} metrics: "]
 
-        for metr in self.metrics:
-            result.append('{:>8}'.format(metr))
+        for index, metr in enumerate(self.metrics):
+            result.append('{:>8}'.format(self.metric_names[index]))
             result.append("=")
             result.append("{0:.7f}".format(launch_results[metr]))
             result.append(" ")
