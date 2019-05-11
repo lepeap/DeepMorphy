@@ -44,7 +44,7 @@ def rnn_cell(settings, for_usage, keep_drop=None):
     return cell
 
 
-def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, initial_state_bw=None, for_usage=False, with_seq=False):
+def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, initial_state_bw=None, for_usage=False, with_seq=False, top_concat=False):
     if settings['rnn_layers_count'] > 1 and initial_state_fw is not None:
         initial_state_fw = tuple([initial_state_fw for i in range(settings['rnn_layers_count'])])
 
@@ -69,10 +69,16 @@ def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, in
                 final_fw = final_fw[-1]
                 final_bw = final_bw[-1]
 
-            final_state = tf.add(final_fw, final_bw)
+            if top_concat:
+                final_state = tf.concat([final_fw, final_bw], axis=1)
+                final_state = tf.layers.dense(final_state, settings['rnn_state_size'])
+                seq_val = tf.concat([seq_val[0], seq_val[1]], axis=2)
+                seq_val = tf.layers.dense(seq_val, settings['rnn_state_size'])
+            else:
+                final_state = tf.add(final_fw, final_bw)
+                seq_val = tf.add(seq_val[0], seq_val[1])
 
             if with_seq:
-                seq_val = tf.add(seq_val[0], seq_val[1])
                 return final_state, seq_val
             else:
                 return final_state
@@ -189,8 +195,12 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
         x = np.stack([item['x'] for item in batch])
         x_seq_len = np.asarray([item['x_len'] for item in batch], np.int)
         x_cls = np.asarray([item['main_cls'] for item in batch], np.int)
-        y = np.asarray([item['y'] for item in batch])
         y_seq_len = np.asarray([item['y_len'] for item in batch], np.int)
+        max_len = y_seq_len.max()
+        y = np.asarray([item['y'][:max_len] for item in batch])
+
+        x_src = [item['x_src'] for item in batch]
+        y_src = [item['y_src'] for item in batch]
 
         if len(cur_step) == devices_count:
             yield cur_step
@@ -201,10 +211,12 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
             x_seq_len=x_seq_len,
             x_cls=x_cls,
             y=y,
-            y_seq_len=y_seq_len
+            y_seq_len=y_seq_len,
+            x_src=x_src,
+            y_src=y_src
         ))
 
-        ##TODO remove
+        #TODO remove
         #if tttt>0:
         #    return
         #tttt+=1

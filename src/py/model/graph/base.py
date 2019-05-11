@@ -1,6 +1,7 @@
 import os
 import tensorflow as tf
 import tf_utils as tfu
+from utils import decode_word
 from tqdm import tqdm
 from abc import ABC, abstractmethod
 
@@ -78,6 +79,9 @@ class GraphPartBase(ABC):
                 feed_dic = self.__create_feed_dict__('train', item)
                 feed_dic[tc.learn_rate_op] = learn_rate_val
                 rez = tc.sess.run(launch, feed_dic)
+                #for ttt in rez[-3:]:
+                #    ttt =[decode_word(word) for word in ttt]
+                #    print()
 
             train_acc = self.__write_metrics_report__(tc.sess, "Train")
             tc.sess.run(self.metrics_reset)
@@ -108,9 +112,8 @@ class GraphPartBase(ABC):
                 tc.epoch += 1
             else:
                 tqdm.write("Best epoch is better then current")
-                if return_step == self.settings['return_step']:
-                    tqdm.write(f"Restoring best epoch {best_epoch}")
-                    tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{best_epoch}"))
+                tqdm.write(f"Restoring best epoch {best_epoch}")
+                tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{best_epoch}"))
                 need_decay = True
 
             if need_decay:
@@ -141,6 +144,8 @@ class GraphPartBase(ABC):
     def build_graph_end(self):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
             self.grads = tfu.average_gradients(self.dev_grads)
+            if self.settings['clip_grads']:
+                self.grads = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in self.grads]
             self.optimize = self.optimiser.apply_gradients(self.grads, name='Optimize')
             self.loss = tf.reduce_sum(self.losses, name='GlobalLoss')
             self.metrics = {

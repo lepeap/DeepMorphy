@@ -115,10 +115,6 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
 
 
 def create_lemma_dataset(vec_words, main_cls_dic):
-    def process_seq_vect(dic):
-        vect = list(dic['vect'][0])
-        vect_len = dic['vect'][1]
-        return np.asarray(vect), vect_len
 
     seq_vecs = {}
     rez_items = []
@@ -134,12 +130,8 @@ def create_lemma_dataset(vec_words, main_cls_dic):
             else:
                 word_y = word
 
-            if word_y in seq_vecs:
-                y_vec = seq_vecs[word_y]
-            else:
-                y_vec = process_seq_vect(vec_words[word_y])
-                seq_vecs[word_y] = y_vec
-
+            y_vec = vec_words[word_y]
+            seq_vecs[word_y] = y_vec
 
             rez_items.append({
                 'x_src': word,

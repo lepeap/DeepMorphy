@@ -18,16 +18,16 @@ train_devices:
 filler: "############################################################################"
 start_token: 36
 end_token: 35
-main_class_k: 2
+main_class_k: 1
 
 train_steps:
-#  - post
-#  - gndr
-#  - nmbr
-#  - case
-#  - tens
-#  - pers
-#  - main
+  #- post
+  #- gndr
+  #- nmbr
+  #- case
+  #- tens
+  #- pers
+  #- main
   - lemm
 
 
@@ -46,7 +46,7 @@ graph_part_configs:
     return_step: 2
     keep_drop: 1
     use_weights: true
-
+    clip_grads: true
   main:
     char_vector_size: 64
     rnn_state_size: 64
@@ -54,20 +54,23 @@ graph_part_configs:
     train_batch_size: 2048
 
   lemm:
+    with_beam: false
     beam_width: 8
-    char_vector_size: 32
-    batch_size: 4096 #1
+    char_vector_size: 64
+    batch_size: 4096
     max_length: 33
-    return_step: 2
+    stop_training_acc_delta: 0.00001 # 0.00001
+    return_step: 10
+    learn_rate: 0.001
     encoder:
-      char_vector_size: 32
-      rnn_state_size: 32
+      char_vector_size: 64
+      rnn_state_size: 64
       rnn_layers_count: 2
-      rnn_bidirectional: True
+      rnn_bidirectional: true
     decoder:
       rnn_state_size: 128
       rnn_layers_count: 1
-      rnn_bidirectional: True
+      keep_drop: 1
 
 chars:
   - UNDEFINED # неизвестный символ

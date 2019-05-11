@@ -6,7 +6,7 @@ from graph.base import GraphPartBase
 class Lemm(GraphPartBase):
 
     def __init__(self, for_usage, global_settings, current_settings, optimiser):
-        super().__init__(for_usage, global_settings, current_settings, optimiser, 'lemm',["Loss","Accuracy","AccuracyByChar"])
+        super().__init__(for_usage, global_settings, current_settings, optimiser, 'lemm',["Loss", "Accuracy", "AccuracyByWord"])
         self.chars_count = self.chars_count + 1
         self.start_char_index = global_settings['start_token']
         self.end_char_index = global_settings['end_token']
@@ -16,6 +16,7 @@ class Lemm(GraphPartBase):
         self.y_seq_lens = []
         self.cls = []
         self.keep_drops = []
+        self.decoder_keep_drops = []
         self.beam_width = self.settings['beam_width']
 
     def __build_graph_for_device__(self, x, seq_len, batch_size, cls=None):
@@ -30,101 +31,106 @@ class Lemm(GraphPartBase):
 
         y = tf.placeholder(dtype=tf.int32, shape=(None, None), name='Y')
         y_seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='YSeqLen')
-        lemma_cls_init = tf.random_normal((self.main_classes_count, self.settings['encoder']['rnn_state_size']))
-        lemma_cls_emb = tf.get_variable("EmbeddingsLemmaCls", initializer=lemma_cls_init)
-        init_state = tf.nn.embedding_lookup(lemma_cls_emb, cls)
-        start_tokens = tf.fill([batch_size], self.start_char_index)
 
         self.ys.append(y)
         self.y_seq_lens.append(y_seq_len)
+        start_tokens = tf.fill([batch_size], self.start_char_index)
         y_seq_len += 1
 
-        with tf.variable_scope("encoder", reuse=tf.AUTO_REUSE):
-            embedding_encoder = tf.get_variable(
-                "embedding_encoder", [self.chars_count, self.settings['char_vector_size']])
+        with tf.variable_scope("Encoder", reuse=tf.AUTO_REUSE):
+            encoder_char_embeddings = tf.get_variable("CharEmbeddings", [self.chars_count, self.settings['char_vector_size']])
+            encoder_cls_init = tf.random_normal((self.main_classes_count, self.settings['encoder']['rnn_state_size']))
+            encoder_cls_emb = tf.get_variable("ClsEmbeddings", initializer=encoder_cls_init)
+            encoder_init_state = tf.nn.embedding_lookup(encoder_cls_emb, cls)
+            encoder_input = tf.nn.embedding_lookup(encoder_char_embeddings, x)
 #
-        with tf.variable_scope("decoder", reuse=tf.AUTO_REUSE):
-            embedding_decoder = tf.get_variable(
-                "embedding_decoder", [self.chars_count, self.settings['char_vector_size']])
-
-        encoder_input = tf.nn.embedding_lookup(embedding_encoder, x)
-
-        decoder_output = tf.nn.embedding_lookup(embedding_decoder, x)
+        with tf.variable_scope("Decoder", reuse=tf.AUTO_REUSE):
+            decoder_char_embeddings = tf.get_variable("CharEmbeddings", [self.chars_count, self.settings['char_vector_size']])
+            decoder_cls_init = tf.random_normal((self.main_classes_count, self.settings['decoder']['rnn_state_size']))
+            decoder_cls_emb = tf.get_variable("ClsEmbeddings", initializer=decoder_cls_init)
+            decoder_init_state = tf.nn.embedding_lookup(decoder_cls_emb, cls)
+            decoder_output = tf.nn.embedding_lookup(decoder_char_embeddings, x)
 
         if self.for_usage:
             keep_drop = tf.constant(1, dtype=tf.float32, name='KeepDrop')
+            decoder_keep_drop = tf.constant(1, dtype=tf.float32, name='DecoderKeepDrop')
         else:
             keep_drop = tf.placeholder(dtype=tf.float32, name='KeepDrop')
+            decoder_keep_drop = tf.placeholder(dtype=tf.float32, name='DecoderKeepDrop')
 
         with tf.variable_scope('Encoder', reuse=tf.AUTO_REUSE) as scope:
-            encoder_state, encoder_output = tfu.build_rnn(
+            _, encoder_output = tfu.build_rnn(
                 encoder_input,
                 keep_drop,
                 seq_len,
                 self.settings['encoder'],
-                init_state,
-                init_state,
-                self.for_usage,
+                encoder_init_state,
+                encoder_init_state,
+                top_concat=False,
+                for_usage=self.for_usage,
                 with_seq=True
             )
 
-        if self.for_usage:
+        if self.for_usage and self.settings['with_beam']:
             encoder_output = tf.contrib.seq2seq.tile_batch(encoder_output, multiplier=self.beam_width)
-            encoder_state = tf.contrib.seq2seq.tile_batch(encoder_state, multiplier=self.beam_width)
             seq_len = tf.contrib.seq2seq.tile_batch(seq_len, multiplier=self.beam_width)
+            decoder_init_state = tf.contrib.seq2seq.tile_batch(decoder_init_state, multiplier=self.beam_width)
 #
         with tf.variable_scope('Decoder', reuse=tf.AUTO_REUSE) as scope:
 
             if self.for_usage:
-                helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(embedding_decoder,
-                                                                  start_tokens=start_tokens,
-                                                                  end_token=self.end_char_index)
+                helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(decoder_char_embeddings,
+                                                                 start_tokens=start_tokens,
+                                                                 end_token=self.end_char_index)
             else:
-                start_tokens_emd = tf.nn.embedding_lookup(embedding_decoder, start_tokens)
+                start_tokens_emd = tf.nn.embedding_lookup(decoder_char_embeddings, start_tokens)
                 start_tokens_emd = tf.reshape(start_tokens_emd, (batch_size, -1, self.settings['char_vector_size']))
                 encoder_output = tf.concat(values=[start_tokens_emd, encoder_output], axis=1)
 
                 end_tokens = tf.fill([batch_size], self.end_char_index)
-                end_tokens_emd = tf.nn.embedding_lookup(embedding_decoder, end_tokens)
+                end_tokens_emd = tf.nn.embedding_lookup(decoder_char_embeddings, end_tokens)
                 end_tokens_emd = tf.reshape(end_tokens_emd, (batch_size, -1, self.settings['char_vector_size']))
                 decoder_output = tf.concat([decoder_output, end_tokens_emd], axis=1)
-                helper = tf.contrib.seq2seq.TrainingHelper(decoder_output,
-                                                           [self.settings['max_length'] for _ in range(batch_size)],
-                                                           time_major=False)
-#
+                #helper = tf.contrib.seq2seq.TrainingHelper(decoder_output,
+                #                                           y_seq_len,
+                #                                           time_major=False)
+
+                helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_output,
+                                                                          y_seq_len,
+                                                                          decoder_char_embeddings,
+                                                                          0.25)
+
                 end_tokens = tf.reshape(end_tokens, (batch_size, 1))
                 y = tf.concat([y, end_tokens], axis=1)
 
-            attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+            attention_mechanism = tf.contrib.seq2seq.LuongAttention(
                 num_units=self.settings['decoder']['rnn_state_size'],
                 memory=encoder_output,
-                memory_sequence_length=seq_len,
-                normalize=True
+                memory_sequence_length=seq_len
             )
 
             cell = tfu.rnn_cell(self.settings['decoder'],
-                                self.for_usage)
+                                self.for_usage,
+                                decoder_keep_drop)
 
-            attn_cell = tf.contrib.seq2seq.AttentionWrapper(
+            cell = tf.contrib.seq2seq.AttentionWrapper(
                cell,
                attention_mechanism,
                attention_layer_size=self.settings['decoder']['rnn_state_size']/2
             )
+
             out_cell = tf.contrib.rnn.OutputProjectionWrapper(
-                attn_cell,
+                cell,
                 self.chars_count,
             )
 
-            encoder_state = tf.layers.dense(encoder_state, self.settings['decoder']['rnn_state_size'])
+            if self.for_usage and self.settings['with_beam']:
+                init_state = cell.zero_state(dtype=tf.float32, batch_size=batch_size*self.beam_width) \
+                    .clone(cell_state=decoder_init_state)
 
-
-            if self.for_usage:
-                init_state = attn_cell.zero_state(dtype=tf.float32, batch_size=batch_size*self.beam_width) \
-                    .clone(cell_state=encoder_state)
-#
                 decoder = tf.contrib.seq2seq.BeamSearchDecoder(
                     cell=out_cell,
-                    embedding=embedding_decoder,
+                    embedding=decoder_char_embeddings,
                     start_tokens=start_tokens,
                     end_token=self.end_char_index,
                     initial_state=init_state,
@@ -132,8 +138,9 @@ class Lemm(GraphPartBase):
                     length_penalty_weight=0.0,
                     coverage_penalty_weight=0.0)
             else:
-                init_state = attn_cell.zero_state(dtype=tf.float32, batch_size=batch_size) \
-                    .clone(cell_state=encoder_state)
+                init_state = cell.zero_state(dtype=tf.float32, batch_size=batch_size) \
+                    .clone(cell_state=decoder_init_state)
+
                 decoder = tf.contrib.seq2seq.BasicDecoder(
                     cell=out_cell,
                     helper=helper,
@@ -144,11 +151,13 @@ class Lemm(GraphPartBase):
                 decoder=decoder,
                 impute_finished=False if self.for_usage else True,
                 output_time_major=False,
-                maximum_iterations=self.settings['max_length']
+                maximum_iterations= self.settings['max_length'] if self.for_usage else tf.reduce_max(y_seq_len)
             )
 
-            if self.for_usage:
+            if self.for_usage and self.settings['with_beam']:
                 decoder_ids = outputs[0].predicted_ids
+            elif self.for_usage and not self.settings['with_beam']:
+                decoder_ids = outputs[0].sample_id
             else:
                 decoder_ids = outputs[0].sample_id
                 decoder_logits = outputs[0].rnn_output
@@ -157,44 +166,53 @@ class Lemm(GraphPartBase):
                 masks = tf.sequence_mask(
                     lengths=y_seq_len,
                     dtype=tf.float32,
-                    maxlen=self.settings['max_length']
+                    maxlen=tf.reduce_max(y_seq_len)
                 )
+                seq_mask_int = tf.cast(masks, tf.int32)
+                seq_mask_flat = tf.cast(tf.reshape(masks, (-1,)), tf.int32)
+
+                # seq loss
                 loss = tf.contrib.seq2seq.sequence_loss(
                     decoder_logits,
                     y,
-                    masks)
+                    masks,
+                    name="SeqLoss"
+                )
                 vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=self.main_scope_name)
                 grads = self.optimiser.compute_gradients(loss, var_list=vars)
-
                 self.__create_mean_metric__(0, loss)
 
-                # seq accuracy
-                seq_mask = tf.cast(masks, tf.int32)
-                labels = y * seq_mask
-                predictions = decoder_ids * seq_mask
-                delta = labels - predictions
-                labels = tf.reduce_sum(delta * delta, 1)
-                predictions = tf.zeros(batch_size)
-                self.__create_accuracy_metric__(1, labels, predictions)
 
                 # char accuracy
-                seq_mask = tf.cast(tf.reshape(masks, (-1,)), tf.int32)
-                nonzero_indices = tf.where(tf.not_equal(seq_mask, 0))
+                nonzero_indices = tf.where(tf.not_equal(seq_mask_flat, 0))
                 labels = tf.reshape(y, (-1,))
                 labels = tf.gather(labels, nonzero_indices)
                 labels = tf.reshape(labels, (-1,))
                 predictions = tf.reshape(decoder_ids, (-1,))
                 predictions = tf.gather(predictions, nonzero_indices)
                 predictions = tf.reshape(predictions, (-1,))
+                self.__create_accuracy_metric__(1, labels, predictions)
+
+                # seq accuracy
+                labels = y * seq_mask_int
+                #self.prints.append(labels)
+                predictions = decoder_ids * seq_mask_int
+                #self.prints.append(predictions)
+                delta = labels - predictions
+                #self.prints.append(delta)
+                labels = tf.reduce_sum(delta * delta, 1)
+                #self.prints.append(labels)
+                predictions = tf.zeros(batch_size)
                 self.__create_accuracy_metric__(2, labels, predictions)
 
-
                 self.results_lengths.append(decoder_length)
-                self.cls.append(cls)
                 self.dev_grads.append(grads)
                 self.losses.append(loss)
                 self.keep_drops.append(keep_drop)
+                self.decoder_keep_drops.append(decoder_keep_drop)
 
+            #self.prints.append(decoder_ids)
+            self.cls.append(cls)
             self.results.append(decoder_ids)
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
@@ -202,6 +220,7 @@ class Lemm(GraphPartBase):
         feed_dict[self.ys[dev_num]] = batch['y']
         feed_dict[self.y_seq_lens[dev_num]] = batch['y_seq_len']
         feed_dict[self.keep_drops[dev_num]] = self.settings['keep_drop']
+        feed_dict[self.decoder_keep_drops[dev_num]] = self.settings['decoder']['keep_drop']
 
     def __load_dataset__(self, operation_name):
         return list(

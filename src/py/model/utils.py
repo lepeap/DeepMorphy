@@ -1,6 +1,5 @@
 import yaml
 import logging
-
 from collections import defaultdict
 
 class MyDefaultDict(defaultdict):
@@ -12,14 +11,21 @@ class MyDefaultDict(defaultdict):
             ret = self[key] = self.default_factory(key)
             return ret
 
+__config__ = None
+
 def config():
+    global __config__
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s %(levelname)s: %(message)s',
         datefmt='%d.%m.%Y %H:%M:%S'
     )
-    with open('config.yml', 'r') as f:
-        return yaml.load(f)
+    if __config__ is None:
+        with open('config.yml', 'r') as f:
+            __config__ = yaml.load(f)
+
+    return __config__
 
 
 def get_flat_words(words):
@@ -32,9 +38,6 @@ def get_flat_words(words):
                 word[key] = form[key]
 
             yield word
-
-
-
 
 
 def get_grams_info(config):
@@ -61,3 +64,14 @@ def get_grams_info(config):
             src_convert[key.lower()] = p_key
 
     return src_convert, classes_indexes
+
+
+def decode_word(vect_mas):
+    conf = config()
+
+    word = []
+    for ci in vect_mas:
+        char = conf['chars'][ci] if ci < len((conf['chars'])) else "0"
+        word.append(char)
+
+    return "".join(word)

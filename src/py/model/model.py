@@ -10,7 +10,7 @@ from graph.gram_cls import GramCls
 from graph.main_cls import MainCls
 from graph.lemm import Lemm
 from graph.base import TrainContext
-from utils import MyDefaultDict
+from utils import MyDefaultDict, decode_word
 from tensorflow.python.tools import freeze_graph
 
 
@@ -116,34 +116,34 @@ class RNN:
                     gram_keep_drops = [self.gram_graph_parts[gram].keep_drops[-1] for gram in self._gram_keys]
                     self.main_graph_part.build_graph_for_device(x, seq_len, gram_probs, gram_keep_drops)
                     #self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
-                    if self._for_usage:
-                        #self.prints.append(tf.print("xs", x))
-                        #self.prints.append(tf.print("seq_len", seq_len))
-                        lem_results = []
-                        lem_results_lengths = []
-                        flat_cls_indexes = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
-                        seq_len = seq_len
-                        self.main_pl_classes = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
-                        #self.prints.append(tf.print("seq_len", seq_len))
-                        for i in range(self._main_class_k):
-                            indexes = tf.range(i, self.batch_size * self._main_class_k, self._main_class_k)
-                            #self.prints.append(tf.print("indexes", indexes))
-                            classes = tf.gather(flat_cls_indexes, indexes)
-                            #self.prints.append(tf.print("classes", classes))
-                            lem_part = Lemm(self._for_usage, self._config, self._key_configs["lemm"], self.optimiser)
-                            lem_part.build_graph_for_device(x, seq_len, self.batch_size, self.main_pl_classes)
-
-                            lem_results.append(lem_part.results[0])
-                            #lem_results_lengths.append(lem_part.results_lengths[0])
-                            #self.prints.extend(lem_part.prints)
-
-                        self.lem_result = tf.stack(lem_results)
-                        self.lem_result_length = tf.stack(lem_results_lengths)
-
-                    else:
-                        self.lem_graph_part.build_graph_for_device(x,
-                                                                   seq_len,
-                                                                   self.batch_size
+                    #if self._for_usage:
+                    #    #self.prints.append(tf.print("xs", x))
+                    #    #self.prints.append(tf.print("seq_len", seq_len))
+                    #    lem_results = []
+                    #    lem_results_lengths = []
+                    #    flat_cls_indexes = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
+                    #    seq_len = seq_len
+                    #    self.main_pl_classes = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
+                    #    #self.prints.append(tf.print("seq_len", seq_len))
+                    #    for i in range(self._main_class_k):
+                    #        indexes = tf.range(i, self.batch_size * self._main_class_k, self._main_class_k)
+                    #        #self.prints.append(tf.print("indexes", indexes))
+                    #        classes = tf.gather(flat_cls_indexes, indexes)
+                    #        #self.prints.append(tf.print("classes", classes))
+                    #        lem_part = Lemm(self._for_usage, self._config, self._key_configs["lemm"], self.optimiser)
+                    #        lem_part.build_graph_for_device(x, seq_len, self.batch_size, self.main_pl_classes)
+#
+                    #        lem_results.append(lem_part.results[0])
+                    #        #lem_results_lengths.append(lem_part.results_lengths[0])
+                    #        #self.prints.extend(lem_part.prints)
+#
+                    #    self.lem_result = tf.stack(lem_results)
+                    #    self.lem_result_length = tf.stack(lem_results_lengths)
+#
+                    #else:
+                    self.lem_graph_part.build_graph_for_device(x,
+                                                               seq_len,
+                                                               self.batch_size
                                                                    )
             if not self._for_usage:
                 for gram in self._gram_keys:
@@ -213,24 +213,7 @@ class RNN:
                 bs
             ))
 
-            values = np.asarray([
-                20,16,14,13,6,15,16,4,16
-            ]
-            )
-            indexes = np.asarray([
-                [0, 0],
-                [0, 1],
-                [0, 2],
-                [0, 3],
-                [0, 4],
-                [0, 5],
-                [0, 6],
-                [0, 7],
-                [0, 8],
-            ])
-            seq_len = np.asarray([9])
-
-            launch = [self.lem_result]
+            launch = [self.lem_graph_part.results[0]]
             launch.extend(self.prints)
 
             res = sess.run(
@@ -238,15 +221,31 @@ class RNN:
                 {
                     self.xs[0]: item[0]['x'],
                     self.seq_lens[0]: item[0]['x_seq_len'],
-                    self.main_pl_classes: item[0]['x_cls'],
+                    self.lem_graph_part.cls[0]: item[0]['x_cls'],
+                    #self.lem_graph_part.y_seq_lens[0]: item[0]['y_seq_len'],
+                    #self.lem_graph_part.ys[0]: item[0]['y'],
                     self.batch_size: bs
                 }
             )
-            #self.xs[0]: item['x'],
-            #self.x_inds[0]: indexes,
-            #self.x_shape[0]: np.asarray([1, 9]),
-            #self.seq_lens[0]: item['x_seq_len'],
-            #self.batch_size: bs
+            words = []
+            if self._config['graph_part_configs']['lemm']['with_beam']:
+                for mas in res[0]:
+                    var = []
+                    for vars in mas:
+                        word = []
+                        for ci in vars:
+                            char = self._config['chars'][ci] if ci < len((self._config['chars'])) else "0"
+                            word.append(char)
+
+                        var.append("".join(word))
+                    words.append(var)
+            else:
+                words = [decode_word(word) for word in res[0]]
+
+            words = [
+                (item[0]['x_src'][index], item[0]['y_src'][index], word)
+                for index, word in enumerate(words)
+            ]
             print()
 
 
