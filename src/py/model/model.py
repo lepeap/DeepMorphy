@@ -9,7 +9,7 @@ from tqdm import tqdm
 from graph.gram_cls import GramCls
 from graph.main_cls import MainCls
 from graph.lemm import Lemm
-from graph.base import TrainContext
+from graph.base import TfContext
 from utils import MyDefaultDict, decode_word
 from tensorflow.python.tools import freeze_graph
 
@@ -135,7 +135,7 @@ class RNN:
             self.lem_graph_part.build_graph_end()
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=self._checkpoints_keep)
 
-    def train(self, with_restore=True):
+    def train(self):
         config = tf.ConfigProto(allow_soft_placement=True)
         if not os.path.isdir(self._save_path):
             os.mkdir(self._save_path)
@@ -144,12 +144,9 @@ class RNN:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
 
-            if with_restore:
-                latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
-                if latest_checkpiont:
-                    self.saver.restore(sess, latest_checkpiont)
+            tc = TfContext(sess, self.saver, self.learn_rate)
+            self.__restore__(tc)
 
-            tc = TrainContext(sess, self.saver, self.learn_rate)
             for gram in self._gram_keys:
                 if gram in self._train_steps:
                     self.gram_graph_parts[gram].train(tc)
@@ -172,6 +169,14 @@ class RNN:
             self.main_graph_part.test(tc)
             self.lem_graph_part.test(tc)
 
+    def __restore__(self, tc):
+        latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
+        for gram in self._gram_keys:
+            self.gram_graph_parts[gram].restore(tc, latest_checkpiont)
+
+        self.main_graph_part.restore(tc, latest_checkpiont)
+        self.lem_graph_part.restore(tc, latest_checkpiont)
+
     def test(self):
         config = tf.ConfigProto(allow_soft_placement=True)
 
@@ -179,11 +184,10 @@ class RNN:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
 
-            latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
-            if latest_checkpiont:
-                self.saver.restore(sess, latest_checkpiont)
 
-            tc = TrainContext(sess, self.saver, self.learn_rate)
+            tc = TfContext(sess, self.saver, self.learn_rate)
+            self.__restore__(tc)
+
             tqdm.write(self._filler)
             tqdm.write(self._filler)
             tqdm.write(self._filler)

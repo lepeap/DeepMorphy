@@ -8,7 +8,7 @@ from graph.base import GraphPartBase
 class Lemm(GraphPartBase):
 
     def __init__(self, for_usage, global_settings, current_settings, optimiser):
-        super().__init__(for_usage, global_settings, current_settings, optimiser, 'lemm', ["Loss", "Accuracy", "AccuracyByWord"])
+        super().__init__(for_usage, global_settings, current_settings, optimiser, 'lemm', ["Loss", "AccuracyByChar", "Accuracy"])
         self.chars_count = self.chars_count + 1
         self.start_char_index = global_settings['start_token']
         self.end_char_index = global_settings['end_token']
@@ -19,8 +19,7 @@ class Lemm(GraphPartBase):
         self.keep_drops = []
         self.decoder_keep_drops = []
         self.sampling_probability = None
-        self.sampling_probability_value = 0.75
-        self.decay_step = 0
+        self.sampling_probability_value = current_settings['sampling_probability']
 
     def __build_graph_for_device__(self, x, seq_len, batch_size, cls=None):
         self.xs.append(x)
@@ -202,15 +201,15 @@ class Lemm(GraphPartBase):
             self.cls.append(cls)
             self.results.append(decoder_ids)
 
-    def __before_finish__(self):
-        self.decay_step += 1
-        if self.decay_step == 3:
-            return True
-        else:
-            tqdm.write("Sampling probobality dacayed")
-            self.sampling_probability_value = self.sampling_probability_value * 0.75
-            self.__init_learn_params__()
-            return False
+    #def __before_finish__(self):
+    #    self.decay_step += 1
+    #    if self.decay_step == 3:
+    #        return True
+    #    else:
+    #        tqdm.write("Sampling probobality dacayed")
+    #        self.sampling_probability_value = self.sampling_probability_value * 2
+    #        self.__init_learn_params__()
+    #        return False
 
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):

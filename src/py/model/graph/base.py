@@ -5,7 +5,7 @@ from tqdm import tqdm
 from abc import ABC, abstractmethod
 
 
-class TrainContext:
+class TfContext:
     def __init__(self,
                  sess,
                  saver,
@@ -108,7 +108,7 @@ class GraphPartBase(ABC):
             else:
                 tqdm.write("Best epoch is better then current")
                 tqdm.write(f"Restoring best epoch {self.best_epoch}")
-                tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
+                tc.saver.__restore__(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
                 need_decay = True
 
             if need_decay:
@@ -167,6 +167,15 @@ class GraphPartBase(ABC):
     def build_graph_for_device(self, *args):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
             self.__build_graph_for_device__(*args)
+
+    def restore(self, tc, check_point):
+        try:
+            vars = tf.global_variables(self.main_scope_name)
+            saver = tf.train.Saver(var_list=vars)
+            saver.restore(tc.sess, check_point)
+            tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} success")
+        except Exception as ex:
+            tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} failed. Error: {ex}")
 
     def __write_metrics_report__(self, sess, step_name):
         tqdm.write('')
