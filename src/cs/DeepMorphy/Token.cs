@@ -12,14 +12,17 @@ namespace DeepMorphy
         internal Token(
             string text,
             TagsCombination[] tagsCombination,
-            Dictionary<string, TagCollection> grams
+            Dictionary<string, TagCollection> grams,
+            string lemma=null
         )
         {
             Text = text;
+            Lemma = lemma;
             TagsCombination = tagsCombination;
             _grams = grams;
         }
         public string Text { get; }
+        public string Lemma { get; }
         public TagsCombination[] TagsCombination { get; }       
         public TagsCombination BestTagsCombination => TagsCombination?.First();
         public Tag this[string gramKey, string tag]

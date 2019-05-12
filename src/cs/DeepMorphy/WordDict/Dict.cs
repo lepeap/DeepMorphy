@@ -33,13 +33,14 @@ namespace DeepMorphy.WordDict
                     else if (rdr.IsStartElement("G") )
                     {
                         var leaf = leafStack.Peek();
+                        var lemma = rdr.GetAttribute("l");
                         var keys = rdr.GetAttribute("v").Split(CommmaSplitDict);
                         
                         if (!useEnTags)
                             keys = keys.Select(x => string.IsNullOrEmpty(x) ? null : Gram.EnRuDic[x])
                                 .ToArray();
                         
-                        leaf.AddResult(keys);
+                        leaf.AddResult(new Leaf.LeafResult(keys, lemma));
                     }
                     else if (rdr.Name == "L")
                     {

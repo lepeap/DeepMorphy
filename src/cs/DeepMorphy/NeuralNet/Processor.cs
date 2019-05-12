@@ -2,21 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
+using System.Text;
 
 namespace DeepMorphy.NeuralNet
 {
     class Processor
     {
-        private TfNeuralNet _net;
-        private Config _config;
-        private int _k;
+        private readonly TfNeuralNet _net;
+        private readonly Config _config;
+        private const int K = 4;
 
-
-        public Processor(bool useEnTags = false, bool bigModel = false, int k = 8)
+        public Processor(bool withLemmatization = false, bool useEnTags = false, bool bigModel = false)
         {
             _config = new Config(useEnTags, bigModel);
-            _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, bigModel);
-            _k = k;
+            _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, bigModel, withLemmatization);
         }
 
         public char[] AvailableChars => _config.CharToId.Keys.ToArray();
@@ -36,6 +35,7 @@ namespace DeepMorphy.NeuralNet
             {
                 for (int j = 0; j < srcMas[i].Length; j++)
                 {
+                    
                     indexes.Add(new int[]{i,j});
                     var curChar = srcMas[i][j];
                     int rezId;
@@ -53,7 +53,29 @@ namespace DeepMorphy.NeuralNet
                 seqLens[i] = srcMas[i].Length;
             }
         }
-        public IEnumerable<Token> Parse(IEnumerable<string> words)
+
+        private string _parseLemma(int[,,] src, int wordIndex, int kIndex)
+        {
+            int cIndex = 0;
+            var maxLength = src.GetLength(2);
+            var sb = new StringBuilder();
+            while (cIndex < maxLength)
+            {
+                var cVal = src[wordIndex, kIndex, cIndex];
+
+                if (cVal == _config.EndCharIndex)
+                    break;
+                
+                if (cVal == _config.UndefinedCharId)
+                    return null;
+
+                sb.Append(_config.IdToChar[cVal]);
+                cIndex++;
+            }
+            return sb.ToString();
+        }
+        
+        public IEnumerable<Token> Parse(IEnumerable<string> words, bool lemmatize=true)
         {
             var srcMas = words.ToArray();
             
@@ -65,27 +87,37 @@ namespace DeepMorphy.NeuralNet
                        );
             
             
-            var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, _k);
+            var clsResult = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, K);
+            var result = _processTokenResult(srcMas, clsResult);
+            return result;
+        }
+
+
+        private IEnumerable<Token> _processTokenResult(string[] srcMas, TfNeuralNet.Result result)
+        {
             for (int i = 0; i < srcMas.Length; i++)
             {
                 yield return new Token(
                     srcMas[i],
-                    Enumerable.Range(0, _k)
+                    Enumerable.Range(0, K)
                         .Select(j => new TagsCombination(
-                            _config.ClsDic[result.ResultIndexes[i, j]],
-                            result.ResultProbs[i, j])
+                                _config.ClsDic[result.ResultIndexes[i, j]],
+                                result.ResultProbs[i, j],
+                                lemma: _parseLemma(result.Lemmas, i,j),
+                                classIndex: result.ResultIndexes[i, j]
+                            )
                         )
                         .ToArray(),
                     result.GramProbs.ToDictionary(
                         kp => kp.Key,
                         kp => new TagCollection(
                             Enumerable.Range(0, _config[kp.Key].NnClassesCount)
-                            .Select(j => new Tag(
-                                _config[kp.Key, j],
-                                result.GramProbs[kp.Key][i, j++]
-                            ))
-                            .OrderByDescending(x => x.Power)
-                            .ToArray()
+                                .Select(j => new Tag(
+                                    _config[kp.Key, j],
+                                    result.GramProbs[kp.Key][i, j++]
+                                ))
+                                .OrderByDescending(x => x.Power)
+                                .ToArray()
                         )
                     )
                 );

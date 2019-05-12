@@ -19,12 +19,17 @@ namespace DeepMorphy.NeuralNet
             _loadReleaseInfo();
         }
         
-        
         public bool UseEnTags { get; private set; }
         public bool BigModel { get; private set; }
         public int UndefinedCharId { get; private set; }
+        public int StartCharIndex { get; private set; }
+        public int EndCharIndex { get; private set; }
+        
+        public int MainClassK { get; private set; }
         public Dictionary<int, string[]> ClsDic { get; private set; } = new Dictionary<int, string[]>();
         public Dictionary<char, int> CharToId { get; private set; } = new Dictionary<char, int>();
+        
+        public Dictionary<int, char> IdToChar { get; private set; } = new Dictionary<int, char>();
         public Dictionary<string, string> OpDic { get; private set; } = new Dictionary<string, string>();
         public  Dictionary<string, string>  GramOpDic { get; private set; } = new Dictionary<string, string>();
 
@@ -42,7 +47,10 @@ namespace DeepMorphy.NeuralNet
                         if (val == "UNDEFINED")
                             UndefinedCharId = index;
                         else
+                        {
                             CharToId[val[0]] = index;
+                            IdToChar[index] = val[0];
+                        }
                     }
                     else if (rdr.Name.Equals("G") && rdr.NodeType == XmlNodeType.Element)
                     {
@@ -62,6 +70,11 @@ namespace DeepMorphy.NeuralNet
                             keys = keys.Select(x => Gram.EnRuDic[x]).ToArray();
                         
                         ClsDic[index] = keys;
+                    }
+                    else if (rdr.Name.Equals("Chars") && rdr.NodeType == XmlNodeType.Element)
+                    {
+                        StartCharIndex =  int.Parse(rdr.GetAttribute("start_char"));
+                        EndCharIndex =  int.Parse(rdr.GetAttribute("end_char"));
                     }
                     else if (rdr.Name.Equals("Root") && rdr.NodeType == XmlNodeType.Element)
                     {

@@ -10,10 +10,10 @@ namespace DeepMorphy
         private IPreProcessor[] _preProcessors;
         private NeuralNet.Processor _net;
         private bool _withTrimAndLower;
-        public MorphAnalyzer(bool useEnTags=false, int variantsCount=8, bool withTrimAndLower=true)
+        public MorphAnalyzer(bool withLemmatization = false, bool useEnTags=false, bool withTrimAndLower=true)
         {
             var dict = new Dict(useEnTags);
-            _net = new NeuralNet.Processor(useEnTags, false, variantsCount);
+            _net = new NeuralNet.Processor(withLemmatization, useEnTags, false);
             _withTrimAndLower = withTrimAndLower;
             _preProcessors = new IPreProcessor[]
             {

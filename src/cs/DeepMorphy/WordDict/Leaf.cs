@@ -8,19 +8,27 @@ namespace DeepMorphy.WordDict
 {
     class Leaf
     {
-        private bool _useEnTags;
+        internal struct LeafResult
+        {
+            public LeafResult(string[] tags, string lemma=null)
+            {
+                Lemma = lemma;
+                Tags = tags;
+            }
+            public string Lemma { get; }
+            public string[] Tags { get; }
+        }
+        
+        private readonly bool _useEnTags;
         public Leaf(){}
         public Leaf(string text, bool useEnTags)
         {
             Text = text;
             _useEnTags = useEnTags;
         }
-        public class LeafResult
-        {
-            public string[] Tags { get; set; }
-        }
+        
         private Dictionary<char, Leaf> _leaves = new Dictionary<char, Leaf>();
-        private List<string[]> _results = new List<string[]>();
+        private List<LeafResult> _results = new List<LeafResult>();
         
         public string Text { get; set; }
         public char Char { get; set; }
@@ -35,16 +43,20 @@ namespace DeepMorphy.WordDict
                 if (_token == null)
                 {
                     var combs = _results.Select(x => 
-                            new TagsCombination(x.Where(y => y != null).ToArray(), (float)1.0 / _results.Count)
+                            new TagsCombination(x.Tags.Where(y => y != null).ToArray(), 
+                                                (float)1.0 / _results.Count,
+                                                x.Lemma)
                     ).ToArray();
 
                     var gDic = new Dictionary<string, TagCollection>();
                     foreach (var gram in Gram.Grams)
                     {
                         var gramName = _useEnTags ? gram.KeyEn : gram.KeyRu;
-                        var tags = _results.Select(x => x[gram.Index])
+                        var tags = _results.Select(x => x.Tags[gram.Index])
                                            .Where(x => x != null)
                                            .ToArray();
+                        var lemmas = _results.Select(x => x.Lemma);
+                                             
                         if (tags.Length==0)
                             continue;
                         
@@ -62,7 +74,7 @@ namespace DeepMorphy.WordDict
             _leaves[l.Char] = l;
         }
 
-        public void AddResult(string[] lr)
+        public void AddResult(LeafResult lr)
         {
             _results.Add(lr);
         }
