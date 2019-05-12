@@ -116,7 +116,6 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
 
 def create_lemma_dataset(vec_words, main_cls_dic):
 
-    seq_vecs = {}
     rez_items = []
     for word in tqdm(vec_words, desc="Generating lemma dataset"):
         dic = vec_words[word]
@@ -130,8 +129,7 @@ def create_lemma_dataset(vec_words, main_cls_dic):
             else:
                 word_y = word
 
-            y_vec = vec_words[word_y]
-            seq_vecs[word_y] = y_vec
+            y_vec = vec_words[word_y]['vect']
 
             rez_items.append({
                 'x_src': word,

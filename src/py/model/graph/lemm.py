@@ -1,5 +1,7 @@
+
 import tensorflow as tf
 import tf_utils as tfu
+from tqdm import tqdm
 from graph.base import GraphPartBase
 
 
@@ -18,6 +20,9 @@ class Lemm(GraphPartBase):
         self.keep_drops = []
         self.decoder_keep_drops = []
         self.beam_width = self.settings['beam_width']
+        self.sampling_probability = None
+        self.sampling_probability_value = 0.75
+        self.decay_step = 0
 
     def __build_graph_for_device__(self, x, seq_len, batch_size, cls=None):
         self.xs.append(x)
@@ -31,6 +36,8 @@ class Lemm(GraphPartBase):
 
         y = tf.placeholder(dtype=tf.int32, shape=(None, None), name='Y')
         y_seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='YSeqLen')
+        if self.sampling_probability is None:
+            self.sampling_probability = tf.placeholder(tf.float32, [], name='SamplingProbability')
 
         self.ys.append(y)
         self.y_seq_lens.append(y_seq_len)
@@ -98,7 +105,7 @@ class Lemm(GraphPartBase):
                 helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_output,
                                                                           y_seq_len,
                                                                           decoder_char_embeddings,
-                                                                          0.25)
+                                                                          self.sampling_probability)
 
                 end_tokens = tf.reshape(end_tokens, (batch_size, 1))
                 y = tf.concat([y, end_tokens], axis=1)
@@ -146,12 +153,12 @@ class Lemm(GraphPartBase):
                     helper=helper,
                     initial_state=init_state
                 )
-
+            max_len = self.settings['max_length'] if self.for_usage else tf.reduce_max(y_seq_len)
             outputs = tf.contrib.seq2seq.dynamic_decode(
                 decoder=decoder,
                 impute_finished=False if self.for_usage else True,
                 output_time_major=False,
-                maximum_iterations= self.settings['max_length'] if self.for_usage else tf.reduce_max(y_seq_len)
+                maximum_iterations=max_len
             )
 
             if self.for_usage and self.settings['with_beam']:
@@ -160,7 +167,9 @@ class Lemm(GraphPartBase):
                 decoder_ids = outputs[0].sample_id
             else:
                 decoder_ids = outputs[0].sample_id
+                self.prints.append(decoder_ids)
                 decoder_logits = outputs[0].rnn_output
+                self.prints.append(decoder_logits)
                 decoder_length = outputs[2]
 
                 masks = tf.sequence_mask(
@@ -182,26 +191,39 @@ class Lemm(GraphPartBase):
                 grads = self.optimiser.compute_gradients(loss, var_list=vars)
                 self.__create_mean_metric__(0, loss)
 
-
                 # char accuracy
                 nonzero_indices = tf.where(tf.not_equal(seq_mask_flat, 0))
-                labels = tf.reshape(y, (-1,))
-                labels = tf.gather(labels, nonzero_indices)
-                labels = tf.reshape(labels, (-1,))
-                predictions = tf.reshape(decoder_ids, (-1,))
-                predictions = tf.gather(predictions, nonzero_indices)
-                predictions = tf.reshape(predictions, (-1,))
-                self.__create_accuracy_metric__(1, labels, predictions)
+                labels_flat = tf.reshape(y, (-1,))
+                labels_flat = tf.gather(labels_flat, nonzero_indices)
+                labels_flat = tf.reshape(labels_flat, (-1,))
+                predictions_flat = tf.reshape(decoder_ids, (-1,))
+                predictions_flat = tf.gather(predictions_flat, nonzero_indices)
+                predictions_flat = tf.reshape(predictions_flat, (-1,))
+
+                # remove -1 items where no sampling took place
+                sample_indexes = tf.where(tf.not_equal(predictions_flat, -1))
+                labels_flat = tf.gather(labels_flat, sample_indexes)
+                predictions_flat = tf.gather(predictions_flat, sample_indexes)
+
+                self.__create_accuracy_metric__(1, labels_flat, predictions_flat)
 
                 # seq accuracy
                 labels = y * seq_mask_int
-                #self.prints.append(labels)
                 predictions = decoder_ids * seq_mask_int
-                #self.prints.append(predictions)
+                labels_flat = tf.reshape(labels, (-1,))
+                predictions_flat = tf.reshape(predictions, (-1,))
+                sample_zeros = tf.cast(tf.not_equal(predictions_flat, -1), tf.int32)
+                predictions = predictions_flat * sample_zeros
+                labels = labels_flat * sample_zeros
+                predictions = tf.reshape(predictions, (batch_size, max_len))
+                labels = tf.reshape(labels, (batch_size, max_len))
+                self.prints.append(labels)
+                self.prints.append(predictions)
+
                 delta = labels - predictions
-                #self.prints.append(delta)
+                self.prints.append(delta)
                 labels = tf.reduce_sum(delta * delta, 1)
-                #self.prints.append(labels)
+                self.prints.append(labels)
                 predictions = tf.zeros(batch_size)
                 self.__create_accuracy_metric__(2, labels, predictions)
 
@@ -215,12 +237,24 @@ class Lemm(GraphPartBase):
             self.cls.append(cls)
             self.results.append(decoder_ids)
 
+    def __before_finish__(self):
+        self.decay_step += 1
+        if self.decay_step == 3:
+            return True
+        else:
+            tqdm.write("Sampling probobality dacayed")
+            self.sampling_probability_value = self.sampling_probability_value * 0.75
+            self.__init_learn_params__()
+            return False
+
+
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         feed_dict[self.cls[dev_num]] = batch['x_cls']
         feed_dict[self.ys[dev_num]] = batch['y']
         feed_dict[self.y_seq_lens[dev_num]] = batch['y_seq_len']
         feed_dict[self.keep_drops[dev_num]] = self.settings['keep_drop']
         feed_dict[self.decoder_keep_drops[dev_num]] = self.settings['decoder']['keep_drop']
+        feed_dict[self.sampling_probability] = self.sampling_probability_value
 
     def __load_dataset__(self, operation_name):
         return list(

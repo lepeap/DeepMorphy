@@ -18,6 +18,7 @@ def rnn_top(scope_name,
 
 
 def rnn_cell_unit(settings, for_usage, keep_drop=None):
+
     cell = tf.contrib.rnn.GRUCell(
         num_units=settings['rnn_state_size']
     )
@@ -26,6 +27,9 @@ def rnn_cell_unit(settings, for_usage, keep_drop=None):
             cell,
             input_keep_prob = keep_drop
         )
+    if 'use_residual' in settings and settings['use_residual']:
+        cell = tf.nn.rnn_cell.ResidualWrapper(cell)
+
     return cell
 
 

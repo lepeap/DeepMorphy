@@ -5,7 +5,16 @@ import tensorflow as tf
 sess = tf.InteractiveSession()
 conf = config()
 
-length = tf.constant([4,5,6])
+batch = tf.constant(
+    [
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
+    ])
+rez = tf.contrib.seq2seq.tile_batch(batch, multiplier=3)
+
+tiled =rez.eval()
+
 mask = tf.sequence_mask([4,5,6]).eval()
 
 #rez = tf.range(length).eval()

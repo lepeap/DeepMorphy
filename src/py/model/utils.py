@@ -71,7 +71,11 @@ def decode_word(vect_mas):
 
     word = []
     for ci in vect_mas:
-        char = conf['chars'][ci] if ci < len((conf['chars'])) else "0"
-        word.append(char)
+        if ci == conf['end_token']:
+            word.append('\n')
+        elif ci < len((conf['chars'])):
+            word.append(conf['chars'][ci])
+        else:
+            word.append("0")
 
     return "".join(word)

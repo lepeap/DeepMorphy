@@ -18,6 +18,7 @@ i = 0
 def parse_dic_words(itr):
     global i
 
+    cur_sent = None
     cur_word = None
     cur_item = None
     event, element = next(itr)
@@ -57,6 +58,14 @@ def parse_dic_words(itr):
             #    break
 
         event, element = next(itr)
+
+def parse_sentences(itr):
+    while not (event == 'end' and element.tag == 'paragraphs'):
+        if event == 'start' and element.tag == 'lemma':
+            cur_word = {
+                'lemma': None,
+                'forms': []
+            }
 
 
 doc = etree.iterparse(DIC_PATH, events=('start', 'end'))

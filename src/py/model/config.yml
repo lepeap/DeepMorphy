@@ -36,10 +36,10 @@ graph_part_configs:
     char_vector_size: 32
     rnn_state_size: 32
     test_batch_size:  2048
-    train_batch_size: 1
+    train_batch_size: 4096
     rnn_layers_count: 2
     rnn_bidirectional: True
-    stop_training_acc_delta: 0.00001
+    stop_training_acc_delta: 0.00005
     learn_rate: 0.01
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
@@ -47,30 +47,36 @@ graph_part_configs:
     keep_drop: 1
     use_weights: true
     clip_grads: true
+    main_metric_type: Accuracy
+    use_residual: false
+
   main:
     char_vector_size: 64
     rnn_state_size: 64
-    test_batch_size: 2048
-    train_batch_size: 2048
+    test_batch_size: 4096
+    train_batch_size: 4096
 
   lemm:
     with_beam: false
     beam_width: 8
     char_vector_size: 64
-    batch_size: 4096
     max_length: 33
-    stop_training_acc_delta: 0.00001 # 0.00001
+    batch_size: 4096
+    stop_training_acc_delta: 0.00005 # 0.00001
     return_step: 10
     learn_rate: 0.001
+    main_metric_type: Accuracy
     encoder:
       char_vector_size: 64
       rnn_state_size: 64
       rnn_layers_count: 2
       rnn_bidirectional: true
+      use_residual: true
     decoder:
       rnn_state_size: 128
       rnn_layers_count: 1
       keep_drop: 1
+      use_residual: false
 
 chars:
   - UNDEFINED # неизвестный символ

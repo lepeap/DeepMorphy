@@ -145,16 +145,15 @@ class RNN:
                                                                seq_len,
                                                                self.batch_size
                                                                    )
-            if not self._for_usage:
-                for gram in self._gram_keys:
-                    self.gram_graph_parts[gram].build_graph_end()
-                self.main_graph_part.build_graph_end()
-                self.lem_graph_part.build_graph_end()
+
+            for gram in self._gram_keys:
+                self.gram_graph_parts[gram].build_graph_end()
+            self.main_graph_part.build_graph_end()
+            self.lem_graph_part.build_graph_end()
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=self._checkpoints_keep)
 
     def train(self, with_restore=True):
         config = tf.ConfigProto(allow_soft_placement=True)
-        #shutil.rmtree(self._save_path)
         if not os.path.isdir(self._save_path):
             os.mkdir(self._save_path)
 
@@ -191,6 +190,30 @@ class RNN:
             self.lem_graph_part.test(tc)
 
             print()
+    def test(self):
+        config = tf.ConfigProto(allow_soft_placement=True)
+
+        with tf.Session(config = config, graph=self.graph) as sess:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+
+            latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
+            if latest_checkpiont:
+                self.saver.restore(sess, latest_checkpiont)
+
+            tc = TrainContext(sess, self.saver, self.learn_rate)
+            tqdm.write(self._filler)
+            tqdm.write(self._filler)
+            tqdm.write(self._filler)
+            tqdm.write(self._filler)
+            tqdm.write("Testing")
+
+            #for gram in self._gram_keys:
+            #    self.gram_graph_parts[gram].test(tc)
+#
+            #self.main_graph_part.test(tc)
+            self.lem_graph_part.test(tc)
+
 
     def infer(self):
         with tf.Session(graph=self.graph) as sess:
@@ -204,48 +227,49 @@ class RNN:
                 self.saver.restore(sess, latest_checkpiont)
                 #self.saver.restore(sess, latest_checkpiont)
 
-
-            bs = 128
-            item = next(tfu.load_lemma_dataset(
-                "dataset",
-                1,
-                "train",
-                bs
-            ))
-
-            launch = [self.lem_graph_part.results[0]]
-            launch.extend(self.prints)
-
-            res = sess.run(
-                launch,
-                {
-                    self.xs[0]: item[0]['x'],
-                    self.seq_lens[0]: item[0]['x_seq_len'],
-                    self.lem_graph_part.cls[0]: item[0]['x_cls'],
-                    #self.lem_graph_part.y_seq_lens[0]: item[0]['y_seq_len'],
-                    #self.lem_graph_part.ys[0]: item[0]['y'],
-                    self.batch_size: bs
-                }
-            )
+            sess.run(self.lem_graph_part.metrics_reset)
+            bs = 1024
             words = []
-            if self._config['graph_part_configs']['lemm']['with_beam']:
-                for mas in res[0]:
-                    var = []
-                    for vars in mas:
-                        word = []
-                        for ci in vars:
-                            char = self._config['chars'][ci] if ci < len((self._config['chars'])) else "0"
-                            word.append(char)
+            items = list(tfu.load_lemma_dataset("dataset", 1, "test", bs))
+            for item in tqdm(items, desc='Parsing dataset'):
+                launch = [self.lem_graph_part.results[0]]
+                launch.extend(self.lem_graph_part.prints)
+                launch.extend(self.lem_graph_part.metrics_update)
 
-                        var.append("".join(word))
-                    words.append(var)
-            else:
-                words = [decode_word(word) for word in res[0]]
+                res = sess.run(
+                    launch,
+                    {
+                        self.xs[0]: item[0]['x'],
+                        self.seq_lens[0]: item[0]['x_seq_len'],
+                        self.lem_graph_part.cls[0]: item[0]['x_cls'],
+                        self.lem_graph_part.y_seq_lens[0]: item[0]['y_seq_len'],
+                        self.lem_graph_part.ys[0]: item[0]['y'],
+                        self.batch_size: bs
+                    }
+                )
+                p_words = []
+                if self._config['graph_part_configs']['lemm']['with_beam']:
+                    for mas in res[0]:
+                        var = []
+                        for vars in mas:
+                            word = []
+                            for ci in vars:
+                                char = self._config['chars'][ci] if ci < len((self._config['chars'])) else "0"
+                                word.append(char)
 
-            words = [
-                (item[0]['x_src'][index], item[0]['y_src'][index], word)
-                for index, word in enumerate(words)
-            ]
+                            var.append("".join(word))
+                        p_words.append(var)
+                else:
+                    p_words = [decode_word(word) for word in res[0]]
+
+                for index, word in enumerate(p_words):
+                    tpl = (item[0]['x_src'][index], item[0]['y_src'][index], word)
+                    words.append(tpl)
+
+            metr_res = sess.run(self.lem_graph_part.metrics)
+
+            correct = [tpl for tpl in words if tpl[2].startswith(tpl[1])]
+            not_correct = [tpl for tpl in words if not tpl[2].startswith(tpl[1])]
             print()
 
 

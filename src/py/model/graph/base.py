@@ -29,6 +29,7 @@ class GraphPartBase(ABC):
         self.key = key
         self.global_settings = global_settings
         self.filler = global_settings['filler']
+        self.main_metric_name = current_settings['main_metric_type']
         self.settings = current_settings
         self.for_usage = for_usage
         self.optimiser = optimiser
@@ -55,14 +56,11 @@ class GraphPartBase(ABC):
         self.prints = []
 
     def train(self, tc):
-        best_model_acc = -1
-        best_epoch = -1
-        learn_rate_val = self.settings['learn_rate']
-        acc_delta = 100
+        self.__init_learn_params__()
         return_step = 0
         trains = self.__load_dataset__('train')
         valids = self.__load_dataset__('valid')
-        while self.settings['stop_training_acc_delta'] < acc_delta:
+        while True:
             tqdm.write(self.filler)
             tqdm.write(self.filler)
             tqdm.write(self.main_scope_name)
@@ -77,7 +75,7 @@ class GraphPartBase(ABC):
                     launch.extend(self.prints)
 
                 feed_dic = self.__create_feed_dict__('train', item)
-                feed_dic[tc.learn_rate_op] = learn_rate_val
+                feed_dic[tc.learn_rate_op] = self.learn_rate_val
                 rez = tc.sess.run(launch, feed_dic)
                 #for ttt in rez[-3:]:
                 #    ttt =[decode_word(word) for word in ttt]
@@ -97,61 +95,78 @@ class GraphPartBase(ABC):
             valid_acc = self.__write_metrics_report__(tc.sess, "Valid")
             tc.sess.run(self.metrics_reset)
 
-            tqdm.write(f"Epoch {tc.epoch} Train accuracy: {train_acc} Validation accuracy: {valid_acc}")
+            tqdm.write(f"Epoch {tc.epoch} Train {self.main_metric_name}: {train_acc} Validation {self.main_metric_name}: {valid_acc}")
             need_decay = False
-            if valid_acc > best_model_acc:
-                if (valid_acc - best_model_acc) < self.settings['stop_training_acc_delta']:
+            if valid_acc > self.best_model_val:
+                if (valid_acc - self.best_model_val) < self.settings['stop_training_acc_delta']:
                     tqdm.write(f"Acc delta is less then min value")
                     need_decay = True
                 else:
                     return_step = 0
 
-                best_model_acc = valid_acc
-                best_epoch = tc.epoch
+                self.best_model_val = valid_acc
+                self.best_epoch = tc.epoch
                 tc.saver.save(tc.sess, self.save_path, tc.epoch)
                 tc.epoch += 1
             else:
                 tqdm.write("Best epoch is better then current")
-                tqdm.write(f"Restoring best epoch {best_epoch}")
-                tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{best_epoch}"))
+                tqdm.write(f"Restoring best epoch {self.best_epoch}")
+                tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
                 need_decay = True
 
             if need_decay:
                 if return_step == self.settings['return_step']:
-                    learn_rate_val = learn_rate_val * self.settings['learn_rate_decay_step']
-                    if learn_rate_val < self.settings['min_learn_rate']:
-                        tqdm.write(f"Learning rate {learn_rate_val} is less then min learning rate")
-                        break
-                    tqdm.write(f"Learning rate decayed. New value: {learn_rate_val}")
+                    self.__decay_params__()
+                    if self.learn_rate_val < self.settings['min_learn_rate']:
+                        tqdm.write(f"Learning rate {self.learn_rate_val} is less then min learning rate")
+                        finish = self.__before_finish__()
+                        if finish:
+                            break
+
                     return_step = 0
                 else:
                     tqdm.write(f"Return step increased")
                     return_step += 1
 
-        return best_epoch, best_model_acc
+        return self.best_epoch, self.best_model_val
+
+    def __before_finish__(self):
+        return True
+
+    def __init_learn_params__(self):
+        self.best_model_val = -1
+        self.best_epoch = -1
+        self.learn_rate_val = self.settings['learn_rate']
+
+    def __decay_params__(self):
+        self.learn_rate_val = self.learn_rate_val * self.settings['learn_rate_decay_step']
+        tqdm.write(f"Learning rate decayed. New value: {self.learn_rate_val}")
 
     def test(self, tc):
         tests = self.__load_dataset__('test')
         tc.sess.run(self.metrics_reset)
         for item in tqdm(tests, desc=f"Validation, epoch {tc.epoch}"):
             launch = []
+            launch.extend(self.prints)
             launch.extend(self.metrics_update)
             feed_dic = self.__create_feed_dict__('test', item)
-            tc.sess.run(launch, feed_dic)
+            rez = tc.sess.run(launch, feed_dic)
+            rez = []
 
         self.__write_metrics_report__(tc.sess, f"Test {self.main_scope_name}")
 
     def build_graph_end(self):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
-            self.grads = tfu.average_gradients(self.dev_grads)
-            if self.settings['clip_grads']:
-                self.grads = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in self.grads]
-            self.optimize = self.optimiser.apply_gradients(self.grads, name='Optimize')
-            self.loss = tf.reduce_sum(self.losses, name='GlobalLoss')
             self.metrics = {
                 metr: tf.reduce_mean(self.devices_metrics[metr], name=metr)
                 for metr in self.devices_metrics
             }
+            if not self.for_usage:
+                self.grads = tfu.average_gradients(self.dev_grads)
+                if self.settings['clip_grads']:
+                    self.grads = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in self.grads]
+                self.optimize = self.optimiser.apply_gradients(self.grads, name='Optimize')
+                self.loss = tf.reduce_sum(self.losses, name='GlobalLoss')
 
     def build_graph_for_device(self, *args):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
@@ -170,7 +185,7 @@ class GraphPartBase(ABC):
 
         result = "".join(result)
         tqdm.write(result)
-        return launch_results["Accuracy"]
+        return launch_results[self.main_metric_name]
 
     def __create_mean_metric__(self, metric_index, values):
         metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
