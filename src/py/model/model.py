@@ -85,29 +85,25 @@ class RNN:
 
             for device_index, device_name in enumerate(self._devices):
                 with tf.device(device_name):
-                    #if self._for_usage:
-                    #    x_ind_pl = tf.placeholder(dtype=tf.int32, shape=(None, None), name='XIndexes')
-                    #    x_val_pl = tf.placeholder(dtype=tf.int32, shape=(None,), name='XValues')
-                    #    x_shape_pl = tf.placeholder(dtype=tf.int32, shape=(2,), name='XShape')
-                    #    x_ind =   tf.dtypes.cast(x_ind_pl, dtype=tf.int64)
-                    #    x_val =   tf.dtypes.cast(x_val_pl, dtype=tf.int64)
-                    #    x_shape = tf.dtypes.cast(x_shape_pl, dtype=tf.int64)
+                    if self._for_usage:
+                        x_ind_pl = tf.placeholder(dtype=tf.int32, shape=(None, None), name='XIndexes')
+                        x_val_pl = tf.placeholder(dtype=tf.int32, shape=(None,), name='XValues')
+                        x_shape_pl = tf.placeholder(dtype=tf.int32, shape=(2,), name='XShape')
+                        x_ind =   tf.dtypes.cast(x_ind_pl, dtype=tf.int64)
+                        x_val =   tf.dtypes.cast(x_val_pl, dtype=tf.int64)
+                        x_shape = tf.dtypes.cast(x_shape_pl, dtype=tf.int64)
 #
-                    #    x_sparse = tf.sparse.SparseTensor(x_ind, x_val, x_shape)
-                    #    x = tf.sparse.to_dense(x_sparse, default_value=self._end_char)
-                    #    self.x_inds.append(x_ind_pl)
-                    #    self.x_vals.append(x_val_pl)
-                    #    self.x_shape.append(x_shape_pl)
-                    #else:
-                    #    x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
-                    #    self.xs.append(x)
-
-                    x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
-                    self.xs.append(x)
+                        x_sparse = tf.sparse.SparseTensor(x_ind, x_val, x_shape)
+                        x = tf.sparse.to_dense(x_sparse, default_value=self._end_char)
+                        self.x_inds.append(x_ind_pl)
+                        self.x_vals.append(x_val_pl)
+                        self.x_shape.append(x_shape_pl)
+                    else:
+                        x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
+                        self.xs.append(x)
 
                     seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='SeqLen')
                     self.seq_lens.append(seq_len)
-
 
                     for gram in self._gram_keys:
                         self.gram_graph_parts[gram].build_graph_for_device(x, seq_len)
@@ -115,36 +111,23 @@ class RNN:
                     gram_probs = [self.gram_graph_parts[gram].probs[-1] for gram in self._gram_keys]
                     gram_keep_drops = [self.gram_graph_parts[gram].keep_drops[-1] for gram in self._gram_keys]
                     self.main_graph_part.build_graph_for_device(x, seq_len, gram_probs, gram_keep_drops)
-                    #self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
-                    #if self._for_usage:
-                    #    #self.prints.append(tf.print("xs", x))
-                    #    #self.prints.append(tf.print("seq_len", seq_len))
-                    #    lem_results = []
-                    #    lem_results_lengths = []
-                    #    flat_cls_indexes = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
-                    #    seq_len = seq_len
-                    #    self.main_pl_classes = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
-                    #    #self.prints.append(tf.print("seq_len", seq_len))
-                    #    for i in range(self._main_class_k):
-                    #        indexes = tf.range(i, self.batch_size * self._main_class_k, self._main_class_k)
-                    #        #self.prints.append(tf.print("indexes", indexes))
-                    #        classes = tf.gather(flat_cls_indexes, indexes)
-                    #        #self.prints.append(tf.print("classes", classes))
-                    #        lem_part = Lemm(self._for_usage, self._config, self._key_configs["lemm"], self.optimiser)
-                    #        lem_part.build_graph_for_device(x, seq_len, self.batch_size, self.main_pl_classes)
-#
-                    #        lem_results.append(lem_part.results[0])
-                    #        #lem_results_lengths.append(lem_part.results_lengths[0])
-                    #        #self.prints.extend(lem_part.prints)
-#
-                    #    self.lem_result = tf.stack(lem_results)
-                    #    self.lem_result_length = tf.stack(lem_results_lengths)
-#
-                    #else:
-                    self.lem_graph_part.build_graph_for_device(x,
-                                                               seq_len,
-                                                               self.batch_size
-                                                                   )
+                    self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
+                    if self._for_usage:
+                        x = tf.contrib.seq2seq.tile_batch(x, multiplier=self._main_class_k)
+                        seq_len = tf.contrib.seq2seq.tile_batch(seq_len, multiplier=self._main_class_k)
+                        cls = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
+                        batch_size = self.batch_size * self._main_class_k
+                        self.lem_graph_part.build_graph_for_device(x,
+                                                                   seq_len,
+                                                                   batch_size,
+                                                                   cls)
+                        self.lem_result = tf.reshape(self.lem_graph_part.results[0],
+                                                     (self.batch_size, self._main_class_k, -1))
+
+                    else:
+                        self.lem_graph_part.build_graph_for_device(x,
+                                                                   seq_len,
+                                                                   self.batch_size)
 
             for gram in self._gram_keys:
                 self.gram_graph_parts[gram].build_graph_end()
@@ -189,7 +172,6 @@ class RNN:
             self.main_graph_part.test(tc)
             self.lem_graph_part.test(tc)
 
-            print()
     def test(self):
         config = tf.ConfigProto(allow_soft_placement=True)
 
@@ -208,69 +190,11 @@ class RNN:
             tqdm.write(self._filler)
             tqdm.write("Testing")
 
-            #for gram in self._gram_keys:
-            #    self.gram_graph_parts[gram].test(tc)
-#
-            #self.main_graph_part.test(tc)
+            for gram in self._gram_keys:
+                self.gram_graph_parts[gram].test(tc)
+
+            self.main_graph_part.test(tc)
             self.lem_graph_part.test(tc)
-
-
-    def infer(self):
-        with tf.Session(graph=self.graph) as sess:
-            sess.run(tf.global_variables_initializer())
-            sess.run(tf.local_variables_initializer())
-
-
-            # Loading checkpoint
-            latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
-            if latest_checkpiont:
-                self.saver.restore(sess, latest_checkpiont)
-                #self.saver.restore(sess, latest_checkpiont)
-
-            sess.run(self.lem_graph_part.metrics_reset)
-            bs = 1024
-            words = []
-            items = list(tfu.load_lemma_dataset("dataset", 1, "test", bs))
-            for item in tqdm(items, desc='Parsing dataset'):
-                launch = [self.lem_graph_part.results[0]]
-                launch.extend(self.lem_graph_part.prints)
-                launch.extend(self.lem_graph_part.metrics_update)
-
-                res = sess.run(
-                    launch,
-                    {
-                        self.xs[0]: item[0]['x'],
-                        self.seq_lens[0]: item[0]['x_seq_len'],
-                        self.lem_graph_part.cls[0]: item[0]['x_cls'],
-                        self.lem_graph_part.y_seq_lens[0]: item[0]['y_seq_len'],
-                        self.lem_graph_part.ys[0]: item[0]['y'],
-                        self.batch_size: bs
-                    }
-                )
-                p_words = []
-                if self._config['graph_part_configs']['lemm']['with_beam']:
-                    for mas in res[0]:
-                        var = []
-                        for vars in mas:
-                            word = []
-                            for ci in vars:
-                                char = self._config['chars'][ci] if ci < len((self._config['chars'])) else "0"
-                                word.append(char)
-
-                            var.append("".join(word))
-                        p_words.append(var)
-                else:
-                    p_words = [decode_word(word) for word in res[0]]
-
-                for index, word in enumerate(p_words):
-                    tpl = (item[0]['x_src'][index], item[0]['y_src'][index], word)
-                    words.append(tpl)
-
-            metr_res = sess.run(self.lem_graph_part.metrics)
-
-            correct = [tpl for tpl in words if tpl[2].startswith(tpl[1])]
-            not_correct = [tpl for tpl in words if not tpl[2].startswith(tpl[1])]
-            print()
 
 
     def release(self):
@@ -279,10 +203,10 @@ class RNN:
             sess.run(tf.local_variables_initializer())
 
             # Loading checkpoint
-            latest_checkpiont = tf.train.latest_checkpoint(self._save_path)
-            if latest_checkpiont:
-                tfu.optimistic_restore(sess, latest_checkpiont)
-                #self.saver.restore(sess, latest_checkpiont)
+            latest_checkpoint = tf.train.latest_checkpoint(self._save_path)
+            if latest_checkpoint:
+                #tfu.optimistic_restore(sess, latest_checkpiont)
+                self.saver.restore(sess, latest_checkpoint)
 
             if os.path.isdir(self._export_path):
                 shutil.rmtree(self._export_path)
@@ -325,7 +249,7 @@ class RNN:
             freeze_graph.freeze_graph(input_graph,
                                       "",
                                       False,
-                                      latest_checkpiont,
+                                      latest_checkpoint,
                                       output_ops,
                                       "",
                                       "",

@@ -7,10 +7,11 @@ conf = config()
 
 batch = tf.constant(
     [
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9],
+        [0, 1, 0],
+        [0, 0, 0],
+        [1, 1, 1],
     ])
+rez = tf.reduce_max(tf.reduce_sum(batch, 1)).eval()
 rez = tf.contrib.seq2seq.tile_batch(batch, multiplier=3)
 
 tiled =rez.eval()

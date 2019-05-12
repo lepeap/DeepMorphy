@@ -13,9 +13,6 @@ CHARS = CONFIG['chars']
 GRAM_TYPES = CONFIG['grammemes_types']
 
 rnn = RNN(True)
-
-rnn.infer()
-
 pd_publish_path = os.path.join(RELEASE_PATH, f"frozen_model_{MODEL_KEY}.pb")
 pd_release_path, classes_dic, gram_ops, out_ops = rnn.release()
 copyfile(pd_release_path, pd_publish_path)

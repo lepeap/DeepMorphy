@@ -1,7 +1,6 @@
 import os
 import tensorflow as tf
 import tf_utils as tfu
-from utils import decode_word
 from tqdm import tqdm
 from abc import ABC, abstractmethod
 
@@ -76,10 +75,8 @@ class GraphPartBase(ABC):
 
                 feed_dic = self.__create_feed_dict__('train', item)
                 feed_dic[tc.learn_rate_op] = self.learn_rate_val
-                rez = tc.sess.run(launch, feed_dic)
-                #for ttt in rez[-3:]:
-                #    ttt =[decode_word(word) for word in ttt]
-                #    print()
+                tc.sess.run(launch, feed_dic)
+
 
             train_acc = self.__write_metrics_report__(tc.sess, "Train")
             tc.sess.run(self.metrics_reset)
@@ -150,8 +147,7 @@ class GraphPartBase(ABC):
             launch.extend(self.prints)
             launch.extend(self.metrics_update)
             feed_dic = self.__create_feed_dict__('test', item)
-            rez = tc.sess.run(launch, feed_dic)
-            rez = []
+            tc.sess.run(launch, feed_dic)
 
         self.__write_metrics_report__(tc.sess, f"Test {self.main_scope_name}")
 

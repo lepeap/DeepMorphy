@@ -90,9 +90,6 @@ class MainCls(GraphPartBase):
         predictions = tf.math.argmax(probs, axis=1)
         self.__create_accuracy_metric__(1, labels, predictions)
 
-
-
-
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         for gram_drop in self.drops[dev_num]:
             feed_dict[gram_drop] = 1

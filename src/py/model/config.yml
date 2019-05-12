@@ -18,7 +18,7 @@ train_devices:
 filler: "############################################################################"
 start_token: 36
 end_token: 35
-main_class_k: 1
+main_class_k: 4
 
 train_steps:
   #- post
@@ -50,6 +50,10 @@ graph_part_configs:
     main_metric_type: Accuracy
     use_residual: false
 
+  pers:
+    test_batch_size:  256
+    train_batch_size: 1024
+
   main:
     char_vector_size: 64
     rnn_state_size: 64
@@ -57,8 +61,6 @@ graph_part_configs:
     train_batch_size: 4096
 
   lemm:
-    with_beam: false
-    beam_width: 8
     char_vector_size: 64
     max_length: 33
     batch_size: 4096
