@@ -100,7 +100,7 @@ namespace DeepMorphy.NeuralNet
                 yield return new Token(
                     srcMas[i],
                     Enumerable.Range(0, K)
-                        .Select(j => new TagsCombination(
+                        .Select(j => new Tag(
                                 _config.ClsDic[result.ResultIndexes[i, j]],
                                 result.ResultProbs[i, j],
                                 lemma: _parseLemma(result.Lemmas, i,j),
@@ -110,9 +110,9 @@ namespace DeepMorphy.NeuralNet
                         .ToArray(),
                     result.GramProbs.ToDictionary(
                         kp => kp.Key,
-                        kp => new TagCollection(
+                        kp => new GramCategory(
                             Enumerable.Range(0, _config[kp.Key].NnClassesCount)
-                                .Select(j => new Tag(
+                                .Select(j => new Gram(
                                     _config[kp.Key, j],
                                     result.GramProbs[kp.Key][i, j++]
                                 ))

@@ -43,13 +43,13 @@ namespace DeepMorphy.WordDict
                 if (_token == null)
                 {
                     var combs = _results.Select(x => 
-                            new TagsCombination(x.Tags.Where(y => y != null).ToArray(), 
+                            new Tag(x.Tags.Where(y => y != null).ToArray(), 
                                                 (float)1.0 / _results.Count,
                                                 x.Lemma)
                     ).ToArray();
 
-                    var gDic = new Dictionary<string, TagCollection>();
-                    foreach (var gram in Gram.Grams)
+                    var gDic = new Dictionary<string, GramCategory>();
+                    foreach (var gram in GramInfo.GramsInfo)
                     {
                         var gramName = _useEnTags ? gram.KeyEn : gram.KeyRu;
                         var tags = _results.Select(x => x.Tags[gram.Index])
@@ -61,7 +61,7 @@ namespace DeepMorphy.WordDict
                             continue;
                         
                         var power = (float)1.0 / tags.Length;
-                        gDic[gramName] = new TagCollection(tags.Select(x => new Tag(x, power)).ToArray());
+                        gDic[gramName] = new GramCategory(tags.Select(x => new Gram(x, power)).ToArray());
                     }
                     _token = new Token(Text, combs, gDic);
                 }

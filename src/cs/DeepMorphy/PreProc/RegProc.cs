@@ -75,18 +75,18 @@ namespace DeepMorphy.PreProc
                 var tagKey = tag;
                 if (!_useEnTags)
                 {
-                    tag = Gram.EnRuDic[tag];
-                    gram = Gram.EnRuDic[gram];
+                    tag = GramInfo.EnRuDic[tag];
+                    gram = GramInfo.EnRuDic[gram];
                 }
 
                 var lemma = _withLemmatization ? text : null;
                 
                 var token = new Token(
                     text,
-                    new []{new TagsCombination(new[]{tag}, (float)1.0, lemma)},
-                    new Dictionary<string, TagCollection>()
+                    new []{new Tag(new[]{tag}, (float)1.0, lemma)},
+                    new Dictionary<string, GramCategory>()
                     {
-                        {gram, new TagCollection(new[]{new Tag(tag, (float)1.0)})}
+                        {gram, new GramCategory(new[]{new Gram(tag, (float)1.0)})}
                     }
                 );
 

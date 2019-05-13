@@ -56,7 +56,7 @@ namespace DeepMorphy.NeuralNet
                     {
                         var key = rdr.GetAttribute("key");
                         if (!UseEnTags)
-                            key = Gram.EnRuDic[key];
+                            key = GramInfo.EnRuDic[key];
 
                         GramOpDic[key] = rdr.GetAttribute("op");
                     }
@@ -67,7 +67,7 @@ namespace DeepMorphy.NeuralNet
                         var keys = keysStr.Split(_commmaSplitDict, StringSplitOptions.RemoveEmptyEntries);
 
                         if (!UseEnTags)
-                            keys = keys.Select(x => Gram.EnRuDic[x]).ToArray();
+                            keys = keys.Select(x => GramInfo.EnRuDic[x]).ToArray();
                         
                         ClsDic[index] = keys;
                     }
@@ -98,13 +98,13 @@ namespace DeepMorphy.NeuralNet
         }
 
 
-        public Gram this[string gramKey] => Gram.GramsDic[gramKey];
+        public GramInfo this[string gramKey] => GramInfo.GramsDic[gramKey];
 
         public string this[string gramKey, long i]
         {
             get
             {
-                var cls = Gram.GramsDic[gramKey][i];
+                var cls = GramInfo.GramsDic[gramKey][i];
                 return UseEnTags ? cls.KeyEn : cls.KeyRu;
             }
         }

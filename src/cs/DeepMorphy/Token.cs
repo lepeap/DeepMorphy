@@ -7,41 +7,41 @@ namespace DeepMorphy
 {
     public sealed class Token
     {
-        private Dictionary<string, TagCollection> _grams;
+        private Dictionary<string, GramCategory> _grams;
         
         
         internal Token(
             string text,
-            TagsCombination[] tagsCombination,
-            Dictionary<string, TagCollection> grams,
+            Tag[] tag,
+            Dictionary<string, GramCategory> grams,
             string lemma=null
         )
         {
             Text = text;
             Lemma = lemma;
-            TagsCombination = tagsCombination;
+            Tag = tag;
             _grams = grams;
         }
         public string Text { get; }
         public string Lemma { get; }
-        public TagsCombination[] TagsCombination { get; }       
-        public TagsCombination BestTagsCombination => TagsCombination?.First();
-        public Tag this[string gramKey, string tag]
+        public Tag[] Tag { get; }       
+        public Tag BestTag => Tag?.First();
+        public Gram this[string gramKey, string tag]
         {
             get
             {
                 if (!_grams.ContainsKey(gramKey))
-                    return new Tag(tag, 0);
+                    return new Gram(tag, 0);
 
-                var tagVal = _grams[gramKey].Tags
+                var tagVal = _grams[gramKey].Grams
                                             .FirstOrDefault(x=>x.Key==tag);
                 if (tagVal==null)
-                    return new Tag(tag, 0);
+                    return new Gram(tag, 0);
                 
                 return tagVal;
             }
         }       
-        public TagCollection this[string gramKey]
+        public GramCategory this[string gramKey]
         {
             get
             {
@@ -53,13 +53,13 @@ namespace DeepMorphy
         }
         public override string ToString()
         {
-            return $"{Text} : {BestTagsCombination}";
+            return $"{Text} : {BestTag}";
         }
 
         internal Token MakeCopy(string text, Func<string, string> lemmaGen)
         {
-            var tagCombs = TagsCombination.Select(t => 
-                                               new TagsCombination(t.Tags, 
+            var tagCombs = Tag.Select(t => 
+                                               new Tag(t.Tags, 
                                                                    t.Power, 
                                                                    lemmaGen?.Invoke(t.Lemma), 
                                                                    t.ClassIndex)
