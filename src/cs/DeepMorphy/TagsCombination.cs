@@ -31,5 +31,6 @@ namespace DeepMorphy
             else
                 return $"Lemma: {Lemma} Tags: {tags}";
         }
+
     }
 }

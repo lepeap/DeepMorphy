@@ -108,7 +108,7 @@ class GraphPartBase(ABC):
             else:
                 tqdm.write("Best epoch is better then current")
                 tqdm.write(f"Restoring best epoch {self.best_epoch}")
-                tc.saver.__restore__(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
+                tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
                 need_decay = True
 
             if need_decay:

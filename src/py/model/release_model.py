@@ -6,6 +6,7 @@ from utils import config
 from lxml import etree
 from xml.etree.ElementTree import ElementTree
 
+
 CONFIG = config()
 MODEL_KEY = CONFIG['model_key']
 RELEASE_PATH = CONFIG['publish_net_path']

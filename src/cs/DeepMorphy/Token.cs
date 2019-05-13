@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace DeepMorphy
 {
@@ -55,9 +56,15 @@ namespace DeepMorphy
             return $"{Text} : {BestTagsCombination}";
         }
 
-        internal Token MakeCopy(string text)
+        internal Token MakeCopy(string text, Func<string, string> lemmaGen)
         {
-            return new Token(text, TagsCombination, _grams);
+            var tagCombs = TagsCombination.Select(t => 
+                                               new TagsCombination(t.Tags, 
+                                                                   t.Power, 
+                                                                   lemmaGen?.Invoke(t.Lemma), 
+                                                                   t.ClassIndex)
+                ).ToArray();
+            return new Token(text, tagCombs, _grams);
         }
     }
 }

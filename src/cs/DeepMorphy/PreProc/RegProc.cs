@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -28,12 +29,14 @@ namespace DeepMorphy.PreProc
         private readonly char[] _availableChars;
         private int _minAvailablePersent;
         private bool _useEnTags;
+        private bool _withLemmatization;
         private Dictionary<string, Token> _tokensCache { get; set; } = new Dictionary<string, Token>();
-        public RegProc(char[] availableChars, bool useEnTags, int minAvailablePersent)
+        public RegProc(char[] availableChars, bool useEnTags, int minAvailablePersent, bool withLemmatization)
         {
             _availableChars = availableChars;
             _minAvailablePersent = minAvailablePersent;
             _useEnTags = useEnTags;
+            _withLemmatization = withLemmatization;
         }
         
         public Token Parse(string word)
@@ -63,7 +66,8 @@ namespace DeepMorphy.PreProc
             if (_tokensCache.ContainsKey(tag))
             {
                 var token = _tokensCache[tag];
-                return token.MakeCopy(text);
+                return token.MakeCopy(text,
+                                      _withLemmatization ? x => text : (Func<string, string>)null);
             }
             else
             {
@@ -75,9 +79,11 @@ namespace DeepMorphy.PreProc
                     gram = Gram.EnRuDic[gram];
                 }
 
+                var lemma = _withLemmatization ? text : null;
+                
                 var token = new Token(
                     text,
-                    new []{new TagsCombination(new[]{tag}, (float)1.0)},
+                    new []{new TagsCombination(new[]{tag}, (float)1.0, lemma)},
                     new Dictionary<string, TagCollection>()
                     {
                         {gram, new TagCollection(new[]{new Tag(tag, (float)1.0)})}

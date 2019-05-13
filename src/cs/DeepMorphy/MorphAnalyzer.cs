@@ -17,9 +17,9 @@ namespace DeepMorphy
             _withTrimAndLower = withTrimAndLower;
             _preProcessors = new IPreProcessor[]
             {
-                new NarNumbProc(dict), 
+                new NarNumbProc(dict, withLemmatization), 
                 new DictProc(dict), 
-                new RegProc(_net.AvailableChars, useEnTags, 50)
+                new RegProc(_net.AvailableChars, useEnTags, 50, withLemmatization)
             };
         }
 

@@ -31,6 +31,8 @@ train_steps:
   - lemm
 
 
+ignore_restore: []
+
 graph_part_configs:
   default:
     char_vector_size: 32
@@ -61,22 +63,22 @@ graph_part_configs:
     train_batch_size: 4096
 
   lemm:
-    char_vector_size: 128
+    char_vector_size: 64
     max_length: 33
     batch_size: 4096
-    stop_training_acc_delta: 0.00001
+    stop_training_acc_delta: 0.000001
     return_step: 2
-    learn_rate: 0.01
+    learn_rate: 0.0001
     main_metric_type: Accuracy
-    sampling_probability: 0.5
+    sampling_probability: 1.0
     encoder:
-      char_vector_size: 128
-      rnn_state_size: 128
+      char_vector_size: 64
+      rnn_state_size: 64
       rnn_layers_count: 2
       rnn_bidirectional: true
       use_residual: false
     decoder:
-      rnn_state_size: 256
+      rnn_state_size: 128
       rnn_layers_count: 1
       keep_drop: 1
       use_residual: false

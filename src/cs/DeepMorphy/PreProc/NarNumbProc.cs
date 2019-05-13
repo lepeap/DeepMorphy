@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,12 @@ namespace DeepMorphy.PreProc
 {
     class NarNumbProc : IPreProcessor
     {
+        private readonly bool _withLemmatization; 
         private readonly Dict _dict;
-        public NarNumbProc(Dict dict)
+        public NarNumbProc(Dict dict, bool withLemmatization)
         {
             _dict = dict;
+            _withLemmatization = withLemmatization;
         }
         public Token Parse(string word)
         {
@@ -28,7 +31,11 @@ namespace DeepMorphy.PreProc
 
             var token = _dict.Parse(dicKey);
 
-            return token?.MakeCopy(word);
+            if (token == null) 
+                return null;
+            
+            return token?.MakeCopy(word, 
+                                  _withLemmatization ? x => $"{numbr}-{x}" : (Func<string, string>)null);
         }
         private static string _correctEnd(string val)
         {
@@ -42,7 +49,7 @@ namespace DeepMorphy.PreProc
 
         }
 
-        private static readonly Regex Reg = new Regex(@"(\d)+-([а-я]+)", RegexOptions.Compiled);
+        private static readonly Regex Reg = new Regex(@"(\d+)-([а-я]+)", RegexOptions.Compiled);
 
 
         private static readonly char[] GlasnChars = {'а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я'};

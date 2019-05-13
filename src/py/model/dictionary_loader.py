@@ -15,10 +15,9 @@ DICT_POST_TYPES = CONFIG['dict_post_types']
 SRC_CONVERT, _ = get_grams_info(CONFIG)
 i = 0
 
-def parse_dic_words(itr):
+def parse_words_xml(itr):
     global i
 
-    cur_sent = None
     cur_word = None
     cur_item = None
     event, element = next(itr)
@@ -59,25 +58,15 @@ def parse_dic_words(itr):
 
         event, element = next(itr)
 
-def parse_sentences(itr):
-    while not (event == 'end' and element.tag == 'paragraphs'):
-        if event == 'start' and element.tag == 'lemma':
-            cur_word = {
-                'lemma': None,
-                'forms': []
-            }
-
 
 doc = etree.iterparse(DIC_PATH, events=('start', 'end'))
 itr = iter(doc)
 event, element = next(itr)
-
-
-logging.info("Parsing xml")
+logging.info("Parsing dictionary xml")
 while not (event == 'start' and element.tag == 'lemmata'):
     event, element = next(itr)
 
-words = list(parse_dic_words(itr))
+words = list(parse_words_xml(itr))
 words = list(get_flat_words(words))
 words = [dict(t) for t in {tuple(sorted(d.items())) for d in words}]
 dict_words = [word for word in words if word['post'] in DICT_POST_TYPES]

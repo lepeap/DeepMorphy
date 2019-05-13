@@ -1,3 +1,4 @@
+import re
 import yaml
 import tqdm
 import pickle
@@ -7,10 +8,12 @@ from xml.etree.ElementTree import ElementTree
 from utils import get_flat_words, config
 
 CONFIG = config()
+NAR_REG = re.compile("\d+-.*")
 RANDOM_SEED = 1917
 DATASET_PATH = CONFIG['dataset_path']
 REZ_PATH = CONFIG['publish_dictionary_path']
-WORDS_PATH = CONFIG['words_path']
+DICT_WORDS_PATH = CONFIG['dict_words_path']
+NOT_DICT_WORDS_PATH = CONFIG['dataset_words_path']
 MAX_WORD_SIZE = CONFIG['max_word_size']
 DICT_POST_TYPES = CONFIG['dict_post_types']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
@@ -55,8 +58,6 @@ for key in p_dic:
     POST_POWER_DICT[key] = p_dic[key]['power'] if 'power' in p_dic[key] else 1
 
 
-with open(WORDS_PATH, 'rb') as f:
-    words = pickle.load(f)
 
 class Word:
     def __init__(self, word):
@@ -100,23 +101,34 @@ def get_numbers():
     with open('numb.yml') as f:
         numbr_dic = yaml.load(f)
 
+    def get_nar_end(text):
+        end = text[-1]
+        if text[-2] in SOGL_CHARS and text[-1] in GLASN_CHARS:
+            end = text[-2:]
+
+        return end
+
     numbers = []
     nar_dict = {}
     for n_key in numbr_dic:
         for t in numbr_dic[n_key]:
-            for item in numbr_dic[n_key][t]:
+            lemma_text = None
+            lemma_number_text = None
+            for index, item in enumerate(numbr_dic[n_key][t]):
+                if index == 0:
+                    lemma_text = item['text']
+
                 item['post'] = 'numb'
+                item['lemma'] = lemma_text
                 numbers.append(Word(item))
 
                 if t == 'p':
-
-                    end = item['text'][-1]
-                    if item['text'][-2] in SOGL_CHARS and item['text'][-1] in GLASN_CHARS:
-                        end = item['text'][-2:]
+                    end = get_nar_end(item['text'])
+                    if index == 0:
+                        lemma_number_text = end
 
                     text = f"{n_key}-{end}"
-                    if 'lemma' in item:
-                        del item['lemma']
+                    item['lemma'] = lemma_number_text
                     item['text'] = text
                     if text in nar_dict:
                         nar_dict[text].add_gram(item)
@@ -128,30 +140,23 @@ def get_numbers():
     return numbers
 
 
+with open(DICT_WORDS_PATH, 'rb') as f:
+    words = [Word(s_word) for s_word in pickle.load(f)]
 
-dict_words = [
-    word for word in words
-    if word['lemma']['post'] in DICT_POST_TYPES
-       and word['lemma']['post']!='numb'
-]
-dict_words = [Word(word) for word in get_flat_words(dict_words)]
+with open(NOT_DICT_WORDS_PATH, 'rb') as f:
+    not_dict_words = pickle.load(f)
+
 for numb in get_numbers():
-    dict_words.append(numb)
+    words.append(numb)
 
-
-not_dict_words = [word for word in words if word['lemma']['post'] not in DICT_POST_TYPES]
-not_dict_words = [word for word in get_flat_words(not_dict_words)]
-
-dwords_dic = {word.text: word for word in dict_words}
-
+dwords_dic = {word.text: word for word in words}
 for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):
-    if nd_word['text'] in dwords_dic:
-        dwords_dic[nd_word['text']].add_gram(nd_word)
-
-
+    if nd_word in dwords_dic and not NAR_REG.match(nd_word):
+        for gram in not_dict_words[nd_word]:
+            dwords_dic[nd_word].add_gram(gram)
 
 root = etree.Element('Tree')
-cur_items = [(root, dict_words)]
+cur_items = [(root, words)]
 
 while len(cur_items) != 0:
     new_cur_items = []
@@ -169,7 +174,6 @@ while len(cur_items) != 0:
             leaf.set('c', c)
             not_fin_words = []
             for word in words:
-
                 word.next()
                 if word.is_finished():
                     leaf.set('t', word.text)
@@ -192,4 +196,4 @@ tree = ElementTree(root)
 tree.write(open(REZ_PATH, 'wb+'), xml_declaration=True, encoding='utf-8')
 
 logging.info("Tree dictionary released")
-logging.info(f"Words count {len(dict_words)}")
+logging.info(f"Words count {len(dwords_dic)}")
