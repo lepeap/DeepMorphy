@@ -9,7 +9,7 @@ model_key: small #big
 export_path: export
 save_path: checkpoints/
 publish_net_path: ../../cs/DeepMorphy/NeuralNet/
-publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml
+publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml.gz
 publish_gramms_path: ../../cs/DeepMorphy/grams.xml
 train_devices:
   - /gpu:0
@@ -70,7 +70,8 @@ graph_part_configs:
     return_step: 2
     learn_rate: 0.0001
     main_metric_type: Accuracy
-    sampling_probability: 1.0
+    sampling_probability: 1
+    use_cls_placeholder: false
     encoder:
       char_vector_size: 64
       rnn_state_size: 64
@@ -80,7 +81,7 @@ graph_part_configs:
     decoder:
       rnn_state_size: 128
       rnn_layers_count: 1
-      keep_drop: 1
+      keep_drop: 0.9
       use_residual: false
 
 chars:

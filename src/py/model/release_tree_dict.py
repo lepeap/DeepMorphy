@@ -1,4 +1,5 @@
 import re
+import gzip
 import yaml
 import tqdm
 import pickle
@@ -145,15 +146,42 @@ with open(DICT_WORDS_PATH, 'rb') as f:
 
 with open(NOT_DICT_WORDS_PATH, 'rb') as f:
     not_dict_words = pickle.load(f)
+    io_words = [io for io in not_dict_words if 'ё' in io]
+    for io_word in io_words:
+        io_items = not_dict_words[io_word]
+        not_io_word = io_word.replace('ё', 'е')
+        not_io_items = []
+        for item in io_items:
+            not_io_item = dict(item)
+            not_io_item['lemma'] = not_io_item['lemma'].replace('ё', 'е')
+            not_io_item['text'] = not_io_item['text'].replace('ё', 'е')
+            not_io_items.append(not_io_item)
+
+        not_dict_words[not_io_word] = not_io_items
+
 
 for numb in get_numbers():
     words.append(numb)
+
+
+
 
 dwords_dic = {word.text: word for word in words}
 for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):
     if nd_word in dwords_dic and not NAR_REG.match(nd_word):
         for gram in not_dict_words[nd_word]:
             dwords_dic[nd_word].add_gram(gram)
+
+with open("wrong_words.pkl", 'rb') as f:
+    wrongs = pickle.load(f)
+
+for w_word in tqdm.tqdm(wrongs, desc='Processing wrongs'):
+    if not NAR_REG.match(w_word) and w_word in not_dict_words:
+        for gram in not_dict_words[w_word]:
+            if w_word in dwords_dic:
+                dwords_dic[w_word].add_gram(gram)
+            else:
+                dwords_dic[w_word] = Word(gram)
 
 root = etree.Element('Tree')
 cur_items = [(root, words)]
@@ -193,7 +221,9 @@ while len(cur_items) != 0:
     cur_items = new_cur_items
 
 tree = ElementTree(root)
-tree.write(open(REZ_PATH, 'wb+'), xml_declaration=True, encoding='utf-8')
+with gzip.open(REZ_PATH, 'wb+') as f:
+#with open(REZ_PATH, 'wb+') as f:
+    tree.write(f, xml_declaration=True, encoding='utf-8')
 
 logging.info("Tree dictionary released")
 logging.info(f"Words count {len(dwords_dic)}")

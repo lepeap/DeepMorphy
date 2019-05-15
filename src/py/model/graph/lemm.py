@@ -20,12 +20,13 @@ class Lemm(GraphPartBase):
         self.decoder_keep_drops = []
         self.sampling_probability = None
         self.sampling_probability_value = current_settings['sampling_probability']
+        self.use_cls_placeholder = self.settings['use_cls_placeholder']
 
     def __build_graph_for_device__(self, x, seq_len, batch_size, cls=None):
         self.xs.append(x)
         self.seq_lens.append(seq_len)
 
-        if cls is None:
+        if cls is None or self.use_cls_placeholder:
             cls = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
 
         if batch_size is None:
@@ -99,10 +100,11 @@ class Lemm(GraphPartBase):
                 end_tokens = tf.reshape(end_tokens, (batch_size, 1))
                 y = tf.concat([y, end_tokens], axis=1)
 
-            attention_mechanism = tf.contrib.seq2seq.LuongAttention(
+            attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
                 num_units=self.settings['decoder']['rnn_state_size'],
                 memory=encoder_output,
-                memory_sequence_length=seq_len
+                memory_sequence_length=seq_len,
+                normalize=True
             )
 
             cell = tfu.rnn_cell(self.settings['decoder'],

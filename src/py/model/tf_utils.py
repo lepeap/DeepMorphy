@@ -34,7 +34,7 @@ def rnn_cell_unit(settings, for_usage, keep_drop=None):
 
 
 def rnn_cell(settings, for_usage, keep_drop=None):
-    if settings['rnn_layers_count' ] >1:
+    if settings['rnn_layers_count'] > 1:
         cells = []
         for i in range(settings['rnn_layers_count']):
             with tf.variable_scope('RnnUnit_%s' % i, reuse=tf.AUTO_REUSE) as scope:

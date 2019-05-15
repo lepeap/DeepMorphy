@@ -1,2 +1,3 @@
-model_checkpoint_path: "-2"
-all_model_checkpoint_paths: "-2"
+model_checkpoint_path: "-12"
+all_model_checkpoint_paths: "-12"
+best_checkpoint

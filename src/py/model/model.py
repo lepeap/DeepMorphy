@@ -1,23 +1,20 @@
 import os
-import numpy as np
-import yaml
 import pickle
 import shutil
+import numpy as np
 import tensorflow as tf
-import tf_utils as tfu
 from tqdm import tqdm
 from graph.gram_cls import GramCls
 from graph.main_cls import MainCls
 from graph.lemm import Lemm
 from graph.base import TfContext
-from utils import MyDefaultDict, decode_word
+from utils import MyDefaultDict, config, decode_word
 from tensorflow.python.tools import freeze_graph
 
 
 class RNN:
     def __init__(self, for_usage):
-        with open('config.yml', 'r') as f:
-            self._config = yaml.load(f)
+        self._config = config()
         self._filler = self._config['filler']
         self._checkpoints_keep = 200000
         self._for_usage = for_usage
@@ -92,7 +89,7 @@ class RNN:
                         x_ind =   tf.dtypes.cast(x_ind_pl, dtype=tf.int64)
                         x_val =   tf.dtypes.cast(x_val_pl, dtype=tf.int64)
                         x_shape = tf.dtypes.cast(x_shape_pl, dtype=tf.int64)
-#
+
                         x_sparse = tf.sparse.SparseTensor(x_ind, x_val, x_shape)
                         x = tf.sparse.to_dense(x_sparse, default_value=self._end_char)
                         self.x_inds.append(x_ind_pl)
@@ -112,7 +109,7 @@ class RNN:
                     gram_keep_drops = [self.gram_graph_parts[gram].keep_drops[-1] for gram in self._gram_keys]
                     self.main_graph_part.build_graph_for_device(x, seq_len, gram_probs, gram_keep_drops)
                     self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
-                    if self._for_usage:
+                    if self._for_usage and not self.lem_graph_part.use_cls_placeholder:
                         x = tf.contrib.seq2seq.tile_batch(x, multiplier=self._main_class_k)
                         seq_len = tf.contrib.seq2seq.tile_batch(seq_len, multiplier=self._main_class_k)
                         cls = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
@@ -202,6 +199,74 @@ class RNN:
             self.main_graph_part.test(tc)
             self.lem_graph_part.test(tc)
 
+    def infer_lemmas(self, words):
+        batch_size = 4096
+        with tf.Session(graph=self.graph) as sess:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+            latest_checkpoint = tf.train.latest_checkpoint(self._save_path)
+            self.saver.restore(sess, latest_checkpoint)
+
+            chars = {c: index for index, c in enumerate(self._config['chars'])}
+            wi = 0
+            pbar = tqdm(total=len(words))
+            while wi < len(words):
+                bi = 0
+                xs = []
+                clss = []
+                indexes = []
+                seq_lens = []
+                ys = []
+                y_len = []
+                max_len = 0
+
+                while bi < batch_size and wi < len(words):
+                    word = words[wi][0]
+                    cls = words[wi][1]
+                    for c_index, char in enumerate(word):
+                        xs.append(chars[char])
+                        indexes.append([bi, c_index])
+
+                    #xs.append(word)
+                    cur_len = len(word)
+                    #cur_len = words[wi][2]
+                    #ys.append(words[wi][3])
+                    #y_len.append(words[wi][4])
+
+                    clss.append(cls)
+                    if cur_len>max_len:
+                        max_len = cur_len
+                    seq_lens.append(cur_len)
+                    bi += 1
+                    wi += 1
+                    pbar.update(1)
+
+                lnch = [self.lem_graph_part.results[0]]
+                #lnch.extend(self.lem_graph_part.metrics_update)
+                results = sess.run(
+                    lnch,
+                    {
+                        self.batch_size: bi,
+                        #self.xs[0]: np.asarray(xs),
+                        self.seq_lens[0]: np.asarray(seq_lens),
+                        #self.lem_graph_part.ys[0]: np.asarray(ys),
+                        #self.lem_graph_part.y_seq_lens[0]: np.asarray([self.lem_graph_part.max_word_size for i in range(bi)]),
+                        self.x_vals[0]: np.asarray(xs),
+                        self.x_inds[0]: np.asarray(indexes),
+                        self.lem_graph_part.cls[0]: np.asarray(clss),
+                        #self.lem_graph_part.sampling_probability: 0
+                        self.x_shape[0]: np.asarray([bi, max_len])
+                    }
+                )
+                for word_src in results[0]:
+                    yield decode_word(word_src)
+
+            val = sess.run(self.lem_graph_part.metrics)
+            print()
+
+
+
+
 
     def release(self):
         with tf.Session(graph=self.graph) as sess:
@@ -211,7 +276,6 @@ class RNN:
             # Loading checkpoint
             latest_checkpoint = tf.train.latest_checkpoint(self._save_path)
             if latest_checkpoint:
-                #tfu.optimistic_restore(sess, latest_checkpiont)
                 self.saver.restore(sess, latest_checkpoint)
 
             if os.path.isdir(self._export_path):
