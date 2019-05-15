@@ -51,8 +51,8 @@ namespace DeepMorphy.WordDict
         }
         private Stream _getXmlStream()
         {
-            var resourceName = $"DeepMorphy.WordDict.tree_dict.xml";
-            return Utils.GetResourceStream(resourceName);
+            var resourceName = $"DeepMorphy.WordDict.tree_dict.xml.gz";
+            return Utils.GetCompressedResourceStream(resourceName);
         }
         
         public Token Parse(string word)
