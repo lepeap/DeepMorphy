@@ -97,8 +97,6 @@ class GramCls(GraphPartBase):
         predictions = tf.math.argmax(probs, axis=1)
         self.__create_accuracy_metric__(1, labels, predictions)
 
-
-
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         feed_dict[self.keep_drops[dev_num]] = 1 if op_name == 'test' else self.settings['keep_drop']
         feed_dict[self.ys[dev_num]] = batch['y']

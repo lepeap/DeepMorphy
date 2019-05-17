@@ -141,11 +141,8 @@ class Lemm(GraphPartBase):
             decoder_ids = outputs[0].sample_id
 
             if not self.for_usage:
-                decoder_ids = outputs[0].sample_id
-                self.prints.append(decoder_ids)
-                decoder_logits = outputs[0].rnn_output
-                self.prints.append(decoder_logits)
 
+                decoder_logits = outputs[0].rnn_output
                 masks = tf.sequence_mask(
                     lengths=y_seq_len,
                     dtype=tf.float32,
@@ -203,17 +200,6 @@ class Lemm(GraphPartBase):
             self.cls.append(cls)
             self.results.append(decoder_ids)
 
-    #def __before_finish__(self):
-    #    self.decay_step += 1
-    #    if self.decay_step == 3:
-    #        return True
-    #    else:
-    #        tqdm.write("Sampling probobality dacayed")
-    #        self.sampling_probability_value = self.sampling_probability_value * 2
-    #        self.__init_learn_params__()
-    #        return False
-
-
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         feed_dict[self.cls[dev_num]] = batch['x_cls']
         feed_dict[self.ys[dev_num]] = batch['y']
@@ -231,5 +217,6 @@ class Lemm(GraphPartBase):
                 self.settings['batch_size']
             )
         )
+
 
 
