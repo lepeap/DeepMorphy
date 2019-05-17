@@ -8,9 +8,22 @@ max_word_size: 32
 model_key: small #big
 export_path: export
 save_path: checkpoints/
-publish_net_path: ../../cs/DeepMorphy/NeuralNet/
-publish_dictionary_path: ../../cs/DeepMorphy/WordDict/tree_dict.xml.gz
-publish_gramms_path: ../../cs/DeepMorphy/grams.xml
+
+test_results_paths:
+  - latest_release
+
+publish_net_paths:
+  - ../../cs/DeepMorphy/NeuralNet/
+  - latest_release
+
+publish_gramms_path:
+  - ../../cs/DeepMorphy/
+  - latest_release
+
+publish_dictionary_paths:
+  - ../../cs/DeepMorphy/WordDict
+  - latest_release
+
 train_devices:
   - /gpu:0
   - /gpu:1

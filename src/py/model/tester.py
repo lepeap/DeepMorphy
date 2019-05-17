@@ -16,7 +16,7 @@ class Tester:
 
     def test(self):
         config = tf.ConfigProto(allow_soft_placement=True)
-
+        results = []
         with tf.Session(config = config, graph=self.rnn.graph) as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
@@ -25,12 +25,20 @@ class Tester:
 
             for gram in self.rnn.gram_keys:
                 full_cls_acc, part_cls_acc = self.__test_classification__(sess, gram, self.rnn.gram_graph_parts[gram])
-                tqdm.write(f"{gram}. Full cls acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}")
+                result = f"{gram}. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
+                results.append(result)
+                tqdm.write(result)
 
             full_cls_acc, part_cls_acc = self.__test_classification__(sess, 'main', self.rnn.main_graph_part)
-            tqdm.write(f"main. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}")
+            result = f"main. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
+            results.append(result)
+            tqdm.write(result)
             lemm_acc = self.__test_lemmas__(sess)
-            tqdm.write(f"Lemma acc: {lemm_acc}")
+            result = f"lemma_acc: {lemm_acc}"
+            results.append(result)
+            tqdm.write(result)
+
+        return "\n".join(results)
 
     def __test_classification__(self, sess, key, graph_part):
         path = os.path.join(self.rnn.config['dataset_path'], f"{key}_test_dataset.pkl")

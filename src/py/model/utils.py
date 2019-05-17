@@ -1,4 +1,6 @@
+import os
 import yaml
+import pickle
 import logging
 from collections import defaultdict
 
@@ -24,6 +26,12 @@ def config():
     if __config__ is None:
         with open('config.yml', 'r') as f:
             __config__ = yaml.load(f)
+
+        classes_path = os.path.join(__config__['dataset_path'], f"classification_classes.pkl")
+        if os.path.exists(classes_path):
+            with open(classes_path, 'rb') as f:
+                __config__['main_classes'] = pickle.load(f)
+                __config__['main_classes_count'] = len(__config__['main_classes'])
 
     return __config__
 

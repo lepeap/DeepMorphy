@@ -1,4 +1,5 @@
 import re
+import os
 import gzip
 import yaml
 import tqdm
@@ -12,7 +13,7 @@ CONFIG = config()
 NAR_REG = re.compile("\d+-.*")
 RANDOM_SEED = 1917
 DATASET_PATH = CONFIG['dataset_path']
-REZ_PATH = CONFIG['publish_dictionary_path']
+REZ_PATHS = CONFIG['publish_dictionary_paths']
 DICT_WORDS_PATH = CONFIG['dict_words_path']
 NOT_DICT_WORDS_PATH = CONFIG['dataset_words_path']
 MAX_WORD_SIZE = CONFIG['max_word_size']
@@ -84,7 +85,7 @@ class Word:
         self.index += 1
 
     def is_finished(self):
-        return word.index == word.length
+        return self.index == self.length
 
     def current(self):
         return self.text[self.index]
@@ -140,90 +141,92 @@ def get_numbers():
 
     return numbers
 
+def release_tree_dict():
 
-with open(DICT_WORDS_PATH, 'rb') as f:
-    words = [Word(s_word) for s_word in pickle.load(f)]
+    with open(DICT_WORDS_PATH, 'rb') as f:
+        words = [Word(s_word) for s_word in pickle.load(f)]
 
-with open(NOT_DICT_WORDS_PATH, 'rb') as f:
-    not_dict_words = pickle.load(f)
-    io_words = [io for io in not_dict_words if 'ё' in io]
-    for io_word in io_words:
-        io_items = not_dict_words[io_word]
-        not_io_word = io_word.replace('ё', 'е')
-        not_io_items = []
-        for item in io_items:
-            not_io_item = dict(item)
-            not_io_item['lemma'] = not_io_item['lemma'].replace('ё', 'е')
-            not_io_item['text'] = not_io_item['text'].replace('ё', 'е')
-            not_io_items.append(not_io_item)
+    with open(NOT_DICT_WORDS_PATH, 'rb') as f:
+        not_dict_words = pickle.load(f)
+        io_words = [io for io in not_dict_words if 'ё' in io]
+        for io_word in io_words:
+            io_items = not_dict_words[io_word]
+            not_io_word = io_word.replace('ё', 'е')
+            not_io_items = []
+            for item in io_items:
+                not_io_item = dict(item)
+                not_io_item['lemma'] = not_io_item['lemma'].replace('ё', 'е')
+                not_io_item['text'] = not_io_item['text'].replace('ё', 'е')
+                not_io_items.append(not_io_item)
 
-        not_dict_words[not_io_word] = not_io_items
-
-
-for numb in get_numbers():
-    words.append(numb)
+            not_dict_words[not_io_word] = not_io_items
 
 
+    for numb in get_numbers():
+        words.append(numb)
 
 
-dwords_dic = {word.text: word for word in words}
-for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):
-    if nd_word in dwords_dic and not NAR_REG.match(nd_word):
-        for gram in not_dict_words[nd_word]:
-            dwords_dic[nd_word].add_gram(gram)
 
-with open("wrong_words.pkl", 'rb') as f:
-    wrongs = pickle.load(f)
 
-for w_word in tqdm.tqdm(wrongs, desc='Processing wrongs'):
-    if not NAR_REG.match(w_word) and w_word in not_dict_words:
-        for gram in not_dict_words[w_word]:
-            if w_word in dwords_dic:
-                dwords_dic[w_word].add_gram(gram)
-            else:
-                dwords_dic[w_word] = Word(gram)
+    dwords_dic = {word.text: word for word in words}
+    for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):
+        if nd_word in dwords_dic and not NAR_REG.match(nd_word):
+            for gram in not_dict_words[nd_word]:
+                dwords_dic[nd_word].add_gram(gram)
 
-root = etree.Element('Tree')
-cur_items = [(root, words)]
+    with open("wrong_words.pkl", 'rb') as f:
+        wrongs = pickle.load(f)
 
-while len(cur_items) != 0:
-    new_cur_items = []
-    for par_el, par_words in cur_items:
-
-        c_dic = {}
-        for w in par_words:
-            if w.current() not in c_dic:
-                c_dic[w.current()] = []
-            c_dic[w.current()].append(w)
-
-        for c in c_dic:
-            words = c_dic[c]
-            leaf = etree.Element('L')
-            leaf.set('c', c)
-            not_fin_words = []
-            for word in words:
-                word.next()
-                if word.is_finished():
-                    leaf.set('t', word.text)
-                    for gram in word.get_grams():
-                        gram_el = etree.Element('G')
-                        gram_el.set('v', gram['gram'])
-                        if gram['lemma']:
-                            gram_el.set('l', gram['lemma'])
-                        leaf.append(gram_el)
+    for w_word in tqdm.tqdm(wrongs, desc='Processing wrongs'):
+        if not NAR_REG.match(w_word) and w_word in not_dict_words:
+            for gram in not_dict_words[w_word]:
+                if w_word in dwords_dic:
+                    dwords_dic[w_word].add_gram(gram)
                 else:
-                    not_fin_words.append(word)
+                    dwords_dic[w_word] = Word(gram)
 
-            par_el.append(leaf)
-            if len(not_fin_words)>0:
-                new_cur_items.append((leaf, not_fin_words))
+    root = etree.Element('Tree')
+    cur_items = [(root, words)]
 
-    cur_items = new_cur_items
+    while len(cur_items) != 0:
+        new_cur_items = []
+        for par_el, par_words in cur_items:
 
-tree = ElementTree(root)
-with gzip.open(REZ_PATH, 'wb+') as f:
-#with open(REZ_PATH, 'wb+') as f:
-    tree.write(f, xml_declaration=True, encoding='utf-8')
+            c_dic = {}
+            for w in par_words:
+                if w.current() not in c_dic:
+                    c_dic[w.current()] = []
+                c_dic[w.current()].append(w)
 
-logging.info("Tree dictionary released")
-logging.info(f"Words count {len(dwords_dic)}")
+            for c in c_dic:
+                words = c_dic[c]
+                leaf = etree.Element('L')
+                leaf.set('c', c)
+                not_fin_words = []
+                for word in words:
+                    word.next()
+                    if word.is_finished():
+                        leaf.set('t', word.text)
+                        for gram in word.get_grams():
+                            gram_el = etree.Element('G')
+                            gram_el.set('v', gram['gram'])
+                            if gram['lemma']:
+                                gram_el.set('l', gram['lemma'])
+                            leaf.append(gram_el)
+                    else:
+                        not_fin_words.append(word)
+
+                par_el.append(leaf)
+                if len(not_fin_words)>0:
+                    new_cur_items.append((leaf, not_fin_words))
+
+        cur_items = new_cur_items
+
+    tree = ElementTree(root)
+    for path in REZ_PATHS:
+        path = os.path.join(path, "tree_dict.xml.gz")
+        with gzip.open(path, 'wb+') as f:
+            tree.write(f, xml_declaration=True, encoding='utf-8')
+
+    logging.info("Tree dictionary released")
+    logging.info(f"Words count {len(dwords_dic)}")

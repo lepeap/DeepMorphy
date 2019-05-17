@@ -1,5 +1,4 @@
 import os
-import pickle
 import shutil
 import tensorflow as tf
 from graph.gram_cls import GramCls
@@ -27,7 +26,6 @@ class RNN:
         )
         self.export_path = self.config['export_path']
         self.save_path = self.config['save_path']
-        self.publish_path = self.config['publish_net_path']
         self.model_key = self.config['model_key']
         self.miss_steps = self.config['miss_steps'] if 'miss_steps' in self.config else []
         self.start_char = self.config['start_token']
@@ -38,10 +36,6 @@ class RNN:
         ]
         self.main_class_k = self.config['main_class_k']
         self.train_steps = self.config['train_steps']
-
-        with open(os.path.join(self.config['dataset_path'], f"classification_classes.pkl"), 'rb') as f:
-            self.config['main_classes'] = pickle.load(f)
-            self.config['main_classes_count'] = len(self.config['main_classes'])
 
         if for_usage:
             self.devices = ['/cpu:0']
@@ -241,7 +235,6 @@ class RNN:
             op_dic['batch_size'] = self.batch_size.op.name
 
             return frozen_path, \
-                   self.config['main_classes'], \
                    gram_op_dic , \
                    op_dic
 
