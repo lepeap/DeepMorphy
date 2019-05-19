@@ -12,6 +12,8 @@ namespace DeepMorphy
             _grams = grams;
         }
 
+        public Gram BestGram => _grams[0];
+
         public IEnumerable<Gram> Grams => _grams;
 
         public Gram this[string key]

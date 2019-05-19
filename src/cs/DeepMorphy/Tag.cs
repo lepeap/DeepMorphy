@@ -4,14 +4,14 @@ namespace DeepMorphy
 {
     public sealed class Tag
     {
-        internal Tag(string[] tags, float power, string lemma=null, int? classIndex = null)
+        internal Tag(string[] grams, float power, string lemma=null, int? classIndex = null)
         {
-            Tags = tags;
+            Grams = grams;
             Power = power;
             ClassIndex = classIndex;
             Lemma = lemma;
         }
-        public string[] Tags { get; }
+        public string[] Grams { get; }
         public float Power { get; }
         
         public string Lemma { get; }
@@ -20,12 +20,12 @@ namespace DeepMorphy
 
         public bool Has(string tag)
         {
-            return Tags.Contains(tag);
+            return Grams.Contains(tag);
         }
 
         public override string ToString()
         {
-            var tags = string.Join(",", Tags);
+            var tags = string.Join(",", Grams);
             if (Lemma == null)
                 return tags;
             else

@@ -12,20 +12,22 @@ namespace DeepMorphy
         
         internal Token(
             string text,
-            Tag[] tag,
-            Dictionary<string, GramCategory> grams,
-            string lemma=null
+            Tag[] tags,
+            Dictionary<string, GramCategory> grams
         )
         {
             Text = text;
-            Lemma = lemma;
-            Tag = tag;
+            Tags = tags;
             _grams = grams;
         }
         public string Text { get; }
-        public string Lemma { get; }
-        public Tag[] Tag { get; }       
-        public Tag BestTag => Tag?.First();
+        public Tag[] Tags { get; }       
+        public Tag BestTag => Tags?.First();
+
+        public bool HasLemma(string lemma)
+        {
+            return Tags.Any(x => x.Lemma == lemma);
+        }
         public Gram this[string gramKey, string tag]
         {
             get
@@ -58,8 +60,8 @@ namespace DeepMorphy
 
         internal Token MakeCopy(string text, Func<string, string> lemmaGen)
         {
-            var tagCombs = Tag.Select(t => 
-                                               new Tag(t.Tags, 
+            var tagCombs = Tags.Select(t => 
+                                               new Tag(t.Grams, 
                                                                    t.Power, 
                                                                    lemmaGen?.Invoke(t.Lemma), 
                                                                    t.ClassIndex)

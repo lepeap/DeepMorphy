@@ -8,12 +8,16 @@ namespace DeepMorphy.NeuralNet
 {
     class Processor
     {
+        private bool _withLemmatization;
         private readonly TfNeuralNet _net;
         private readonly Config _config;
+        private readonly int _maxBatchSize;
         private const int K = 4;
 
-        public Processor(bool withLemmatization = false, bool useEnTags = false, bool bigModel = false)
+        public Processor(int maxBatchSize, bool withLemmatization = false, bool useEnTags = false, bool bigModel = false)
         {
+            _maxBatchSize = maxBatchSize;
+            _withLemmatization = withLemmatization;
             _config = new Config(useEnTags, bigModel);
             _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, bigModel, withLemmatization);
         }
@@ -77,51 +81,57 @@ namespace DeepMorphy.NeuralNet
         
         public IEnumerable<Token> Parse(IEnumerable<string> words, bool lemmatize=true)
         {
-            var srcMas = words.ToArray();
-            
-            _vectorize(srcMas, 
-                       out int maxLength, 
-                       out List<int[]> indexes,
-                       out List<int> values,
-                       out int[] seqLens
-                       );
-            
-            
-            var clsResult = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, K);
-            var result = _processTokenResult(srcMas, clsResult);
-            return result;
-        }
+            foreach (var batch in _batchify(words, _maxBatchSize)){
+                var srcMas = batch.ToArray();
 
+                _vectorize(srcMas,
+                    out int maxLength,
+                    out List<int[]> indexes,
+                    out List<int> values,
+                    out int[] seqLens
+                );
 
-        private IEnumerable<Token> _processTokenResult(string[] srcMas, TfNeuralNet.Result result)
-        {
-            for (int i = 0; i < srcMas.Length; i++)
-            {
-                yield return new Token(
-                    srcMas[i],
-                    Enumerable.Range(0, K)
-                        .Select(j => new Tag(
-                                _config.ClsDic[result.ResultIndexes[i, j]],
-                                result.ResultProbs[i, j],
-                                lemma: _parseLemma(result.Lemmas, i,j),
-                                classIndex: result.ResultIndexes[i, j]
+                var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, K);
+                for (int i = 0; i < srcMas.Length; i++)
+                {
+                    yield return new Token(
+                        srcMas[i],
+                        Enumerable.Range(0, K)
+                            .Select(j => new Tag(
+                                    _config.ClsDic[result.ResultIndexes[i, j]],
+                                    result.ResultProbs[i, j],
+                                    lemma: _withLemmatization ? _parseLemma(result.Lemmas, i,j) : null,
+                                    classIndex: result.ResultIndexes[i, j]
+                                )
+                            )
+                            .ToArray(),
+                        result.GramProbs.ToDictionary(
+                            kp => kp.Key,
+                            kp => new GramCategory(
+                                Enumerable.Range(0, _config[kp.Key].NnClassesCount)
+                                    .Select(j => new Gram(
+                                        _config[kp.Key, j],
+                                        result.GramProbs[kp.Key][i, j++]
+                                    ))
+                                    .OrderByDescending(x => x.Power)
+                                    .ToArray()
                             )
                         )
-                        .ToArray(),
-                    result.GramProbs.ToDictionary(
-                        kp => kp.Key,
-                        kp => new GramCategory(
-                            Enumerable.Range(0, _config[kp.Key].NnClassesCount)
-                                .Select(j => new Gram(
-                                    _config[kp.Key, j],
-                                    result.GramProbs[kp.Key][i, j++]
-                                ))
-                                .OrderByDescending(x => x.Power)
-                                .ToArray()
-                        )
-                    )
-                );
+                    );
+                }      
             }
         }
+
+        private IEnumerable<IEnumerable<string>> _batchify(IEnumerable<string> words, int batchSize)
+        {
+            IEnumerable<string> items = words.ToArray();
+            while (items.Any())
+            {
+                yield return items.Take(batchSize);
+                items = items.Skip(batchSize);    
+            }
+            
+        }
+
     }
 }
