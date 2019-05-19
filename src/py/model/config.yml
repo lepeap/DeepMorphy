@@ -16,13 +16,19 @@ publish_net_paths:
   - ../../cs/DeepMorphy/NeuralNet/
   - latest_release
 
-publish_gramms_path:
+publish_gramm_paths:
   - ../../cs/DeepMorphy/
   - latest_release
 
 publish_dictionary_paths:
   - ../../cs/DeepMorphy/WordDict
   - latest_release
+
+publish_dataset_info_paths:
+  - latest_release
+
+publish_test_paths:
+  - ../../cs/MetricsCalc/
 
 train_devices:
   - /gpu:0

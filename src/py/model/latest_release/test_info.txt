@@ -1,0 +1,8 @@
+post. full_cls_acc: 0.9863104963436494; part_cls_acc: 0.9864515218516253
+gndr. full_cls_acc: 0.9798780487804878; part_cls_acc: 0.9833809960610802
+nmbr. full_cls_acc: 0.9912327666978985; part_cls_acc: 0.9917664435435719
+case. full_cls_acc: 0.9787316240011387; part_cls_acc: 0.9865139174342189
+pers. full_cls_acc: 1.0; part_cls_acc: 1.0
+tens. full_cls_acc: 0.9991444725487278; part_cls_acc: 0.9991490621184653
+main. full_cls_acc: 0.9655620945099221; part_cls_acc: 0.9704809896412647
+lemma_acc: 0.8716285684087132

@@ -1,0 +1,3 @@
+dictionary
+version=0.92
+revision=406585
