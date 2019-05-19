@@ -12,14 +12,14 @@ namespace DeepMorphy.NeuralNet
     {
         private readonly char[] _commmaSplitDict = {','};
 
-        public Config(bool useEnTags, bool bigModel)
+        public Config(bool useEnGrams, bool bigModel)
         {
-            UseEnTags = useEnTags;
+            UseEnGrams = useEnGrams;
             BigModel = bigModel;
             _loadReleaseInfo();
         }
         
-        public bool UseEnTags { get; private set; }
+        public bool UseEnGrams { get; private set; }
         public bool BigModel { get; private set; }
         public int UndefinedCharId { get; private set; }
         public int StartCharIndex { get; private set; }
@@ -55,7 +55,7 @@ namespace DeepMorphy.NeuralNet
                     else if (rdr.Name.Equals("G") && rdr.NodeType == XmlNodeType.Element)
                     {
                         var key = rdr.GetAttribute("key");
-                        if (!UseEnTags)
+                        if (!UseEnGrams)
                             key = GramInfo.EnRuDic[key];
 
                         GramOpDic[key] = rdr.GetAttribute("op");
@@ -66,7 +66,7 @@ namespace DeepMorphy.NeuralNet
                         var keysStr = rdr.GetAttribute("v");
                         var keys = keysStr.Split(_commmaSplitDict, StringSplitOptions.RemoveEmptyEntries);
 
-                        if (!UseEnTags)
+                        if (!UseEnGrams)
                             keys = keys.Select(x => GramInfo.EnRuDic[x]).ToArray();
                         
                         ClsDic[index] = keys;
@@ -105,7 +105,7 @@ namespace DeepMorphy.NeuralNet
             get
             {
                 var cls = GramInfo.GramsDic[gramKey][i];
-                return UseEnTags ? cls.KeyEn : cls.KeyRu;
+                return UseEnGrams ? cls.KeyEn : cls.KeyRu;
             }
         }
     }

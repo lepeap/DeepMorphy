@@ -6,13 +6,26 @@ using DeepMorphy.WordDict;
 
 namespace DeepMorphy
 {
+    /// <summary>
+    /// Main class of morphology analyzer
+    /// </summary>
     public sealed class MorphAnalyzer
     {
         private readonly bool _withTrimAndLower;
-        private IPreProcessor[] _preProcessors;
-        private NeuralNet.Processor _net;
+        private readonly IPreProcessor[] _preProcessors;
+        private readonly NeuralNet.Processor _net;
+        
+        /// <summary>
+        /// Initializes morphology analyzer
+        /// </summary>
+        /// <param name="withLemmatization">Perform lemmatization for each tag</param>
+        /// <param name="useEnGrams">if true returns english gramme names otherwise russian</param>
+        /// <param name="withTrimAndLower">if true analyzer trims and makes words lowercase before processing</param>
+        /// <param name="withPreprocessors">use additional preprocessors before nn</param>
+        /// <param name="maxBatchSize">max batch size for neural network</param>
+        /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
         public MorphAnalyzer(bool withLemmatization = false, 
-                             bool useEnTags=false, 
+                             bool useEnGrams=false, 
                              bool withTrimAndLower=true,
                              bool withPreprocessors=true,
                              int maxBatchSize=4096)
@@ -21,20 +34,25 @@ namespace DeepMorphy
             {
                 throw new ArgumentException("Batch size must be greater than 0.");
             }
-            var dict = new Dict(useEnTags);
-            _net = new NeuralNet.Processor(maxBatchSize, withLemmatization, useEnTags, false);
+            var dict = new Dict(useEnGrams);
+            _net = new NeuralNet.Processor(maxBatchSize, withLemmatization, useEnGrams, false);
             _withTrimAndLower = withTrimAndLower;
             if (withPreprocessors)
                 _preProcessors = new IPreProcessor[]
                 {
                     new NarNumbProc(dict, withLemmatization),
                     new DictProc(dict),
-                    new RegProc(_net.AvailableChars, useEnTags, 50, withLemmatization)
+                    new RegProc(_net.AvailableChars, useEnGrams, 50, withLemmatization)
                 };
             else
                 _preProcessors = new IPreProcessor[0];
         }
-
+        
+        /// <summary>
+        /// Calculates morphology information words
+        /// </summary>
+        /// <param name="words">Words to process</param>
+        /// <returns>Morphology information for each word</returns>
         public IEnumerable<Token> Parse(IEnumerable<string> words)
         {
             if (_withTrimAndLower)

@@ -28,7 +28,7 @@ namespace MetricsCalc
         private static void TestLemmatization()
         {
             Console.WriteLine("Calculating lemmatization");
-            var morph = new MorphAnalyzer(useEnTags: true, withPreprocessors: false, withLemmatization: true);
+            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: false, withLemmatization: true);
             var tests = LoadTests("lem").ToArray();
             var results = morph.Parse(tests.Select(x => x.X)).ToArray();
             float totalCount = tests.Length;
@@ -61,7 +61,7 @@ namespace MetricsCalc
             foreach (var gram in grams)
             {
                 Console.WriteLine($"Calculating {gram} classification");
-                var morph = new MorphAnalyzer(useEnTags: true, withPreprocessors: false);
+                var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: false);
                 var tests = LoadTests(gram).ToArray();
                 var results = morph.Parse(tests.Select(x => x.X)).ToArray();
                 float testsCount = tests.Length;
@@ -105,7 +105,7 @@ namespace MetricsCalc
         private static void TestMainClassification()
         {
             Console.WriteLine("Calculating main classification");
-            var morph = new MorphAnalyzer(useEnTags: true, withPreprocessors: false);
+            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: false);
             var tests = LoadTests("main").ToArray();
             var results = morph.Parse(tests.Select(x => x.X)).ToArray();
             float testsCount = tests.Length;

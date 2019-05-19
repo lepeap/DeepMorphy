@@ -27,15 +27,15 @@ namespace DeepMorphy.PreProc
         }
 
         private readonly char[] _availableChars;
-        private int _minAvailablePersent;
-        private bool _useEnTags;
-        private bool _withLemmatization;
-        private Dictionary<string, Token> _tokensCache { get; set; } = new Dictionary<string, Token>();
-        public RegProc(char[] availableChars, bool useEnTags, int minAvailablePersent, bool withLemmatization)
+        private readonly int _minAvailablePersent;
+        private readonly bool _useEnGrams;
+        private readonly bool _withLemmatization;
+        private Dictionary<string, Token> TokensCache { get; set; } = new Dictionary<string, Token>();
+        public RegProc(char[] availableChars, bool useEnGrams, int minAvailablePersent, bool withLemmatization)
         {
             _availableChars = availableChars;
             _minAvailablePersent = minAvailablePersent;
-            _useEnTags = useEnTags;
+            _useEnGrams = useEnGrams;
             _withLemmatization = withLemmatization;
         }
         
@@ -63,9 +63,9 @@ namespace DeepMorphy.PreProc
         
         private Token GetPostToken(string text, string tag)
         {
-            if (_tokensCache.ContainsKey(tag))
+            if (TokensCache.ContainsKey(tag))
             {
-                var token = _tokensCache[tag];
+                var token = TokensCache[tag];
                 return token.MakeCopy(text,
                                       _withLemmatization ? x => text : (Func<string, string>)null);
             }
@@ -73,7 +73,7 @@ namespace DeepMorphy.PreProc
             {
                 var gram = "post";
                 var tagKey = tag;
-                if (!_useEnTags)
+                if (!_useEnGrams)
                 {
                     tag = GramInfo.EnRuDic[tag];
                     gram = GramInfo.EnRuDic[gram];
@@ -90,7 +90,7 @@ namespace DeepMorphy.PreProc
                     }
                 );
 
-                _tokensCache[tagKey] = token;
+                TokensCache[tagKey] = token;
                 return token;
             }
             

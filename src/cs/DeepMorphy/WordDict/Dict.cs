@@ -10,7 +10,7 @@ namespace DeepMorphy.WordDict
     {
         private static readonly char[] CommmaSplitDict = new[] {','};
         private readonly Leaf _root;
-        public Dict(bool useEnTags)
+        public Dict(bool useEnGrams)
         {
             using (Stream stream = _getXmlStream())
             {
@@ -21,7 +21,7 @@ namespace DeepMorphy.WordDict
                 {
                     if (rdr.IsStartElement("L") )
                     {
-                        var leaf = new Leaf(rdr.GetAttribute("t"), useEnTags);
+                        var leaf = new Leaf(rdr.GetAttribute("t"), useEnGrams);
                         leaf.Char = rdr.GetAttribute("c")[0];
                         if (leafStack.Count==0)
                             _root.AddLeaf(leaf);
@@ -36,7 +36,7 @@ namespace DeepMorphy.WordDict
                         var lemma = rdr.GetAttribute("l");
                         var keys = rdr.GetAttribute("v").Split(CommmaSplitDict);
                         
-                        if (!useEnTags)
+                        if (!useEnGrams)
                             keys = keys.Select(x => string.IsNullOrEmpty(x) ? null : GramInfo.EnRuDic[x])
                                 .ToArray();
                         

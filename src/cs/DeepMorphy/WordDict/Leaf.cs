@@ -19,12 +19,12 @@ namespace DeepMorphy.WordDict
             public string[] Tags { get; }
         }
         
-        private readonly bool _useEnTags;
+        private readonly bool _useEnGrams;
         public Leaf(){}
-        public Leaf(string text, bool useEnTags)
+        public Leaf(string text, bool useEnGrams)
         {
             Text = text;
-            _useEnTags = useEnTags;
+            _useEnGrams = useEnGrams;
         }
         
         private Dictionary<char, Leaf> _leaves = new Dictionary<char, Leaf>();
@@ -51,7 +51,7 @@ namespace DeepMorphy.WordDict
                     var gDic = new Dictionary<string, GramCategory>();
                     foreach (var gram in GramInfo.GramsInfo)
                     {
-                        var gramName = _useEnTags ? gram.KeyEn : gram.KeyRu;
+                        var gramName = _useEnGrams ? gram.KeyEn : gram.KeyRu;
                         var tags = _results.Select(x => x.Tags[gram.Index])
                                            .Where(x => x != null)
                                            .ToArray();

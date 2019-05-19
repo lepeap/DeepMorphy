@@ -14,11 +14,11 @@ namespace DeepMorphy.NeuralNet
         private readonly int _maxBatchSize;
         private const int K = 4;
 
-        public Processor(int maxBatchSize, bool withLemmatization = false, bool useEnTags = false, bool bigModel = false)
+        public Processor(int maxBatchSize, bool withLemmatization = false, bool useEnGrams = false, bool bigModel = false)
         {
             _maxBatchSize = maxBatchSize;
             _withLemmatization = withLemmatization;
-            _config = new Config(useEnTags, bigModel);
+            _config = new Config(useEnGrams, bigModel);
             _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, bigModel, withLemmatization);
         }
 
