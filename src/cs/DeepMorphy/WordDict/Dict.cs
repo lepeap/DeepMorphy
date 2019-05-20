@@ -10,7 +10,7 @@ namespace DeepMorphy.WordDict
     {
         private static readonly char[] CommmaSplitDict = new[] {','};
         private readonly Leaf _root;
-        public Dict(bool useEnGrams)
+        public Dict(bool useEnGrams, bool withLemmatization)
         {
             using (Stream stream = _getXmlStream())
             {
@@ -33,7 +33,7 @@ namespace DeepMorphy.WordDict
                     else if (rdr.IsStartElement("G") )
                     {
                         var leaf = leafStack.Peek();
-                        var lemma = rdr.GetAttribute("l");
+                        var lemma = withLemmatization ? rdr.GetAttribute("l") : null;
                         var keys = rdr.GetAttribute("v").Split(CommmaSplitDict);
                         
                         if (!useEnGrams)
