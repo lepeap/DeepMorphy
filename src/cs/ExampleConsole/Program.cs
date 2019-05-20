@@ -30,7 +30,6 @@ namespace ExampleConsole
                 "дотошный",
                 "красотка",
                 "центральные"
-                
             }).ToArray();
 
             foreach (var token in results)

@@ -4,8 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepMorphy", "DeepMorphy\De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleConsole", "ExampleConsole\ExampleConsole.csproj", "{B9C8D746-D563-4400-AD2E-E951771EA221}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{A44572AD-F52F-4A87-9577-9E1301E469E8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricsCalc", "MetricsCalc\MetricsCalc.csproj", "{CE36972E-45A8-447A-92CD-57C937912758}"
 EndProject
 Global
@@ -22,10 +20,6 @@ Global
 		{B9C8D746-D563-4400-AD2E-E951771EA221}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9C8D746-D563-4400-AD2E-E951771EA221}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9C8D746-D563-4400-AD2E-E951771EA221}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A44572AD-F52F-4A87-9577-9E1301E469E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A44572AD-F52F-4A87-9577-9E1301E469E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A44572AD-F52F-4A87-9577-9E1301E469E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A44572AD-F52F-4A87-9577-9E1301E469E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CE36972E-45A8-447A-92CD-57C937912758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CE36972E-45A8-447A-92CD-57C937912758}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE36972E-45A8-447A-92CD-57C937912758}.Release|Any CPU.ActiveCfg = Release|Any CPU
