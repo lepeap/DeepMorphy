@@ -79,7 +79,7 @@ namespace DeepMorphy.NeuralNet
             return sb.ToString();
         }
         
-        public IEnumerable<Token> Parse(IEnumerable<string> words, bool lemmatize=true)
+        public IEnumerable<MorphInfo> Parse(IEnumerable<string> words, bool lemmatize=true)
         {
             foreach (var batch in _batchify(words, _maxBatchSize)){
                 var srcMas = batch.ToArray();
@@ -94,7 +94,7 @@ namespace DeepMorphy.NeuralNet
                 var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, K);
                 for (int i = 0; i < srcMas.Length; i++)
                 {
-                    yield return new Token(
+                    yield return new MorphInfo(
                         srcMas[i],
                         Enumerable.Range(0, K)
                             .Select(j => new Tag(

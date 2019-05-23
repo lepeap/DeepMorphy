@@ -8,11 +8,11 @@ namespace DeepMorphy
     /// <summary>
     /// Result of morphology analysis for word
     /// </summary>
-    public sealed class Token
+    public sealed class MorphInfo
     {
         private Dictionary<string, GramCategory> _grams;
         
-        internal Token(
+        internal MorphInfo(
             string text,
             Tag[] tags,
             Dictionary<string, GramCategory> grams
@@ -23,7 +23,7 @@ namespace DeepMorphy
             _grams = grams;
         }
         
-        internal Token MakeCopy(string text, Func<string, string> lemmaGen)
+        internal MorphInfo MakeCopy(string text, Func<string, string> lemmaGen)
         {
             var tagCombs = Tags.Select(t => 
                 new Tag(t.Grams, 
@@ -31,7 +31,7 @@ namespace DeepMorphy
                     lemmaGen?.Invoke(t.Lemma), 
                     t.ClassIndex)
             ).ToArray();
-            return new Token(text, tagCombs, _grams);
+            return new MorphInfo(text, tagCombs, _grams);
         }
         
         /// <summary>

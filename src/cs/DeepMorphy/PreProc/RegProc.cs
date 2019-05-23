@@ -30,7 +30,7 @@ namespace DeepMorphy.PreProc
         private readonly int _minAvailablePersent;
         private readonly bool _useEnGrams;
         private readonly bool _withLemmatization;
-        private Dictionary<string, Token> TokensCache { get; set; } = new Dictionary<string, Token>();
+        private Dictionary<string, MorphInfo> TokensCache { get; set; } = new Dictionary<string, MorphInfo>();
         public RegProc(char[] availableChars, bool useEnGrams, int minAvailablePersent, bool withLemmatization)
         {
             _availableChars = availableChars;
@@ -39,7 +39,7 @@ namespace DeepMorphy.PreProc
             _withLemmatization = withLemmatization;
         }
         
-        public Token Parse(string word)
+        public MorphInfo Parse(string word)
         {
             var match = Reg.Match(word);
             if (!match.Success)
@@ -61,7 +61,7 @@ namespace DeepMorphy.PreProc
             return null;
         }
         
-        private Token GetPostToken(string text, string tag)
+        private MorphInfo GetPostToken(string text, string tag)
         {
             if (TokensCache.ContainsKey(tag))
             {
@@ -81,7 +81,7 @@ namespace DeepMorphy.PreProc
 
                 var lemma = _withLemmatization ? text : null;
                 
-                var token = new Token(
+                var token = new MorphInfo(
                     text,
                     new []{new Tag(new[]{tag}, (float)1.0, lemma)},
                     new Dictionary<string, GramCategory>()

@@ -35,12 +35,12 @@ namespace DeepMorphy.WordDict
         public bool HasResults => _results.Count > 0;
 
 
-        private Token _token;
-        public Token Token
+        private MorphInfo _morphInfo;
+        public MorphInfo MorphInfo
         {
             get
             {
-                if (_token == null)
+                if (_morphInfo == null)
                 {
                     var combs = _results.Select(x => 
                             new Tag(x.Tags.Where(y => y != null).ToArray(), 
@@ -63,9 +63,9 @@ namespace DeepMorphy.WordDict
                         var power = (float)1.0 / tags.Length;
                         gDic[gramName] = new GramCategory(tags.Select(x => new Gram(x, power)).ToArray());
                     }
-                    _token = new Token(Text, combs, gDic);
+                    _morphInfo = new MorphInfo(Text, combs, gDic);
                 }
-                return _token;
+                return _morphInfo;
             }
         }
 

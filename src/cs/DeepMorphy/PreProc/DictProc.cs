@@ -10,7 +10,7 @@ namespace DeepMorphy.PreProc
             _dict = dict;
         }
 
-        public Token Parse(string word)
+        public MorphInfo Parse(string word)
         {
             return _dict.Parse(word);
         }

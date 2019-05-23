@@ -55,15 +55,15 @@ namespace DeepMorphy.WordDict
             return Utils.GetCompressedResourceStream(resourceName);
         }
         
-        public Token Parse(string word)
+        public MorphInfo Parse(string word)
         {
             return _parse(0, word, _root);
         }
         
-        private Token _parse(int i, string word, Leaf leaf)
+        private MorphInfo _parse(int i, string word, Leaf leaf)
         {
             if (i == word.Length && leaf.HasResults)
-                return leaf.Token;
+                return leaf.MorphInfo;
 
             if (i == word.Length)
                 return null;

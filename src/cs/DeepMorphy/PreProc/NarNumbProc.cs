@@ -16,7 +16,7 @@ namespace DeepMorphy.PreProc
             _dict = dict;
             _withLemmatization = withLemmatization;
         }
-        public Token Parse(string word)
+        public MorphInfo Parse(string word)
         {
             var match = Reg.Match(word);
             if (!match.Success)

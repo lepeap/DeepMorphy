@@ -53,7 +53,7 @@ namespace DeepMorphy
         /// </summary>
         /// <param name="words">Words to process</param>
         /// <returns>Morphology information for each word</returns>
-        public IEnumerable<Token> Parse(IEnumerable<string> words)
+        public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
         {
             if (_withTrimAndLower)
                 words = words.Select(x => x.Trim().ToLower());
