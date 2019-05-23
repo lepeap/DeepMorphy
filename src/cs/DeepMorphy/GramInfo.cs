@@ -64,6 +64,7 @@ namespace DeepMorphy
             GramsInfo = gList.ToArray();
             EnRuDic = new ReadOnlyDictionary<string, string>(enRuDic);
             GramsDic = new ReadOnlyDictionary<string, GramInfo>(gramsDic);
+            GramCatIndexDic = new ReadOnlyDictionary<int, GramInfo>(gList.ToDictionary(x => x.Index, x => x));
         }
 
 
@@ -109,9 +110,11 @@ namespace DeepMorphy
         }
         
 
-        public static GramInfo[] GramsInfo { get; private set; }
-        public static ReadOnlyDictionary<string, string> EnRuDic { get; private set; }
-        public static ReadOnlyDictionary<string, GramInfo> GramsDic { get; private set; }
+        public static GramInfo[] GramsInfo { get; }
+        public static ReadOnlyDictionary<string, string> EnRuDic { get; }
+        public static ReadOnlyDictionary<string, GramInfo> GramsDic { get;  }
+        
+        public static ReadOnlyDictionary<int, GramInfo> GramCatIndexDic { get; }
 
     }
 }

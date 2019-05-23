@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,21 @@ namespace DeepMorphy.WordDict
                             keys = keys.Select(x => string.IsNullOrEmpty(x) ? null : GramInfo.EnRuDic[x])
                                 .ToArray();
                         
-                        leaf.AddResult(new Leaf.LeafResult(keys, lemma));
+                        var gramDic = keys.Select((val, i) => (gram: val, index: i))
+                            .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
+                            .ToDictionary(
+                                x => useEnGrams 
+                                    ? GramInfo.GramCatIndexDic[x.index].KeyEn 
+                                    : GramInfo.GramCatIndexDic[x.index].KeyRu,
+                                x => x.gram
+                            );   
+                        
+                        leaf.AddResult(
+                            new Leaf.LeafResult(
+                                new ReadOnlyDictionary<string, string>(gramDic), 
+                                lemma
+                            )
+                        );
                     }
                     else if (rdr.Name == "L")
                     {

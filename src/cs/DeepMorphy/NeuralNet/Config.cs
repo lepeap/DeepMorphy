@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +11,7 @@ namespace DeepMorphy.NeuralNet
 {
     class Config
     {
-        private readonly char[] _commmaSplitDict = {','};
+        private readonly char[] _commmaSplitter = {','};
 
         public Config(bool useEnGrams, bool bigModel)
         {
@@ -26,7 +27,7 @@ namespace DeepMorphy.NeuralNet
         public int EndCharIndex { get; private set; }
         
         public int MainClassK { get; private set; }
-        public Dictionary<int, string[]> ClsDic { get; private set; } = new Dictionary<int, string[]>();
+        public Dictionary<int, ReadOnlyDictionary<string, string>> ClsDic  { get; } = new Dictionary<int, ReadOnlyDictionary<string, string>>();
         public Dictionary<char, int> CharToId { get; private set; } = new Dictionary<char, int>();
         
         public Dictionary<int, char> IdToChar { get; private set; } = new Dictionary<int, char>();
@@ -64,12 +65,23 @@ namespace DeepMorphy.NeuralNet
                     {
                         var index = int.Parse(rdr.GetAttribute("i"));
                         var keysStr = rdr.GetAttribute("v");
-                        var keys = keysStr.Split(_commmaSplitDict, StringSplitOptions.RemoveEmptyEntries);
-
-                        if (!UseEnGrams)
-                            keys = keys.Select(x => GramInfo.EnRuDic[x]).ToArray();
+                        var keys = keysStr.Split(_commmaSplitter);
                         
-                        ClsDic[index] = keys;
+                        if (!UseEnGrams)
+                            keys = keys.Select(
+                                x => string.IsNullOrWhiteSpace(x) ? x : GramInfo.EnRuDic[x]
+                            ).ToArray();
+
+                        var gramDic = keys.Select((val, i) => (gram: val, index: i))
+                            .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
+                            .ToDictionary(
+                                x => UseEnGrams 
+                                    ? GramInfo.GramCatIndexDic[x.index].KeyEn 
+                                    : GramInfo.GramCatIndexDic[x.index].KeyRu,
+                                x => x.gram
+                            );   
+                        
+                        ClsDic[index] = new ReadOnlyDictionary<string, string>(gramDic);
                     }
                     else if (rdr.Name.Equals("Chars") && rdr.NodeType == XmlNodeType.Element)
                     {

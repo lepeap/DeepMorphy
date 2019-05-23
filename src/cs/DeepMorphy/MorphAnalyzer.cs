@@ -49,7 +49,7 @@ namespace DeepMorphy
         }
         
         /// <summary>
-        /// Calculates morphology information words
+        /// Calculates morphology information for words
         /// </summary>
         /// <param name="words">Words to process</param>
         /// <returns>Morphology information for each word</returns>

@@ -10,28 +10,28 @@ namespace DeepMorphy
     /// </summary>
     public sealed class MorphInfo
     {
-        private Dictionary<string, GramCategory> _grams;
+        private Dictionary<string, GramCategory> _gramCats;
         
         internal MorphInfo(
             string text,
             Tag[] tags,
-            Dictionary<string, GramCategory> grams
+            Dictionary<string, GramCategory> gramCats
         )
         {
             Text = text;
             Tags = tags;
-            _grams = grams;
+            _gramCats = gramCats;
         }
         
         internal MorphInfo MakeCopy(string text, Func<string, string> lemmaGen)
         {
             var tagCombs = Tags.Select(t => 
-                new Tag(t.Grams, 
+                new Tag(t.GramsDic, 
                     t.Power, 
                     lemmaGen?.Invoke(t.Lemma), 
                     t.ClassIndex)
             ).ToArray();
-            return new MorphInfo(text, tagCombs, _grams);
+            return new MorphInfo(text, tagCombs, _gramCats);
         }
         
         /// <summary>
@@ -62,36 +62,36 @@ namespace DeepMorphy
         /// <summary>
         /// Returns probability distribution for grammemes in selected grammatical category
         /// </summary>
-        /// <param name="gramKey">Grammatical category key</param>
-        public GramCategory this[string gramKey]
+        /// <param name="gramCatKey">Grammatical category key</param>
+        public GramCategory this[string gramCatKey]
         {
             get
             {
-                if (!_grams.ContainsKey(gramKey))
+                if (!_gramCats.ContainsKey(gramCatKey))
                     return null;
                 
-                return _grams[gramKey];
+                return _gramCats[gramCatKey];
             }
         }
         
         /// <summary>
         /// Returns probability of grammeme in grammatical category
         /// </summary>
-        /// <param name="gramKey">Grammatical category key</param>
-        /// <param name="tag">Grammeme key</param>
-        public Gram this[string gramKey, string tag]
+        /// <param name="gramCatKey">Grammatical category key</param>
+        /// <param name="gramKey">Grammeme key</param>
+        public Gram this[string gramCatKey, string gramKey]
         {
             get
             {
-                if (!_grams.ContainsKey(gramKey))
-                    return new Gram(tag, 0);
+                if (!_gramCats.ContainsKey(gramCatKey))
+                    return new Gram(gramKey, 0);
 
-                var tagVal = _grams[gramKey].Grams
-                                            .FirstOrDefault(x=>x.Key==tag);
-                if (tagVal==null)
-                    return new Gram(tag, 0);
+                var gramVal = _gramCats[gramCatKey].Grams
+                                            .FirstOrDefault(x=>x.Key==gramKey);
+                if (gramVal==null)
+                    return new Gram(gramKey, 0);
                 
-                return tagVal;
+                return gramVal;
             }
         }       
 

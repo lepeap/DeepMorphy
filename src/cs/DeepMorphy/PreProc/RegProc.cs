@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -80,10 +81,18 @@ namespace DeepMorphy.PreProc
                 }
 
                 var lemma = _withLemmatization ? text : null;
-                
+
+
+                var gramDic = new Dictionary<string, string>() {{gram, tag}};
                 var token = new MorphInfo(
                     text,
-                    new []{new Tag(new[]{tag}, (float)1.0, lemma)},
+                    new []
+                    {
+                        new Tag(
+                            new ReadOnlyDictionary<string, string>(gramDic), 
+                            (float)1.0, lemma
+                        )
+                    },
                     new Dictionary<string, GramCategory>()
                     {
                         {gram, new GramCategory(new[]{new Gram(tag, (float)1.0)})}

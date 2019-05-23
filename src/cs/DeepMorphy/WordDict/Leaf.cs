@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace DeepMorphy.WordDict
@@ -10,13 +12,24 @@ namespace DeepMorphy.WordDict
     {
         internal struct LeafResult
         {
-            public LeafResult(string[] tags, string lemma=null)
+            public LeafResult(ReadOnlyDictionary<string, string> tags, string lemma=null)
             {
                 Lemma = lemma;
                 Tags = tags;
             }
             public string Lemma { get; }
-            public string[] Tags { get; }
+            public ReadOnlyDictionary<string, string> Tags { get; }
+            
+            public string this[string gramCatKey]
+            {
+                get
+                {
+                    if (Tags.ContainsKey(gramCatKey))
+                        return Tags[gramCatKey];
+                
+                    return null;
+                }
+            }
         }
         
         private readonly bool _useEnGrams;
@@ -43,20 +56,17 @@ namespace DeepMorphy.WordDict
                 if (_morphInfo == null)
                 {
                     var combs = _results.Select(x => 
-                            new Tag(x.Tags.Where(y => y != null).ToArray(), 
-                                                (float)1.0 / _results.Count,
-                                                x.Lemma)
+                            new Tag(x.Tags, (float)1.0 / _results.Count, x.Lemma)
                     ).ToArray();
 
                     var gDic = new Dictionary<string, GramCategory>();
                     foreach (var gram in GramInfo.GramsInfo)
                     {
                         var gramName = _useEnGrams ? gram.KeyEn : gram.KeyRu;
-                        var tags = _results.Select(x => x.Tags[gram.Index])
+                        var tags = _results.Select(x => x[gramName])
                                            .Where(x => x != null)
                                            .ToArray();
-                        var lemmas = _results.Select(x => x.Lemma);
-                                             
+                        
                         if (tags.Length==0)
                             continue;
                         

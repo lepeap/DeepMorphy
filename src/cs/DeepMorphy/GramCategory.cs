@@ -21,6 +21,11 @@ namespace DeepMorphy
         public Gram BestGram => _grams[0];
         
         /// <summary>
+        /// Best grammeme key in category for current word
+        /// </summary>
+        public string BestGramKey => _grams[0].Key;
+        
+        /// <summary>
         /// All grammemes with probabilities for current word
         /// </summary>
         public IEnumerable<Gram> Grams => _grams;
