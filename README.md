@@ -1,10 +1,10 @@
 # DeepMorphy #
 [![Nuget](https://img.shields.io/nuget/v/DeepMorphy.svg?style=popout)](https://www.nuget.org/packages/DeepMorphy/)
 
-DeepMorphy is a neural network based morphological analyzer for Russian language for .Net
+DeepMorphy is a neural network based morphological analyzer for Russian language.
 ___
 DeepMorphy - морфологический анализатор для русского языка. Доступен как .Net Standart 2.0 библиотека.
-Умеет проводить морфологический разбор слова (часть речи, пол, число, падеж, время, лицо) 
+Умеет проводить морфологический разбор слова (определяет часть речи, пол, число, падеж, время, лицо) 
 и приводить слова к нормальной форме. 
 
 * [терминология](#терминология)
@@ -61,7 +61,7 @@ DeepMorphy - морфологический анализатор для русс
 
 ### Нейронная сеть
 
-Сеть построена и обучена через фреймворк [tensorflow](https://www.tensorflow.org/). 
+Сеть построена и обучена на фреймворке [tensorflow](https://www.tensorflow.org/). 
 В качестве датасета выступает словарь [Opencorpora](http://opencorpora.org/). В .Net интегрирована через 
 [TensorFlowSharp](https://github.com/migueldeicaza/TensorFlowSharp).
 
@@ -79,7 +79,7 @@ DeepMorphy - морфологический анализатор для русс
 
 
 Обучение сетей производится последовательно, сначала обучаются сети по категориям 
-(порядок неважен). Далее обучается главная классификация по тегам и затем лемматизация. 
+(порядок не имеет значения). Далее обучается главная классификация по тегам и затем лемматизация. 
 Обучение проводилось на 3-ех GPU Titan X. Метрики работы сети на тестовой датасете для последнего релиза можно посмотреть 
 [тут](https://github.com/lepeap/DeepMorphy/blob/master/src/py/model/latest_release/test_info.txt).
 
@@ -88,7 +88,7 @@ DeepMorphy - морфологический анализатор для русс
 
 ## Руководство пользователя
 
-DeepMorphy для .NET представляет собой библиотеку .Net Standart 2.0. В зависимостях только библиотека [TensorflowSharp](https://github.com/migueldeicaza/TensorFlowSharp) (Через нее запускается нейронная сеть).
+DeepMorphy для .NET представляет собой библиотеку .Net Standart 2.0. В зависимостях только библиотека [TensorflowSharp](https://github.com/migueldeicaza/TensorFlowSharp) (через нее запускается нейронная сеть).
 
 ### Установка
 
