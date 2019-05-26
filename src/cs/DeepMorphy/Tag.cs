@@ -36,13 +36,13 @@ namespace DeepMorphy
         public string Lemma { get; }
         
         /// <summary>
-        /// Checks for grammeme in current tag
+        /// Checks for grammemes in current tag
         /// </summary>
-        /// <param name="gram">Grammeme</param>
-        /// <returns>true if current tag contains this grammeme else false</returns>
-        public bool Has(string gram)
+        /// <param name="grams">Grammemes to check</param>
+        /// <returns>true if current tag contains all this grammemes else false</returns>
+        public bool Has(params string[] grams)
         {
-            return Grams.Contains(gram);
+            return grams.All(gram => Grams.Contains(gram));
         }
         
         /// <summary>

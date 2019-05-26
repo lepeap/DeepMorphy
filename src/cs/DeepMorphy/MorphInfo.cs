@@ -50,7 +50,18 @@ namespace DeepMorphy
         public Tag BestTag => Tags?.First();
         
         /// <summary>
-        /// Checks if any of grammemes combinations has lemma
+        /// Checks if any of tags has grammeme combination
+        /// </summary>
+        /// <param name="grams">grammemes</param>
+        /// <returns>True if has</returns>
+        public bool HasCombination(params string[] grams)
+        {
+            return Tags.Any(x => x.Has(grams));
+        }
+        
+        
+        /// <summary>
+        /// Checks if any of tags has lemma
         /// </summary>
         /// <param name="lemma">Lemma value to check</param>
         /// <returns>True if has</returns>
