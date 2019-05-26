@@ -51,10 +51,12 @@ class Releaser:
         for path in self.pd_publish_paths:
             copyfile(pd_release_path, path)
 
+        self.__release_gramm_docs__()
+        self.__release_grams_xml__()
+
         self.__release_test_files__()
         self.__release_dataset_info__()
         self.__release_model_xml__(out_ops, gram_ops)
-        self.__release_grams_xml__()
         tester = Tester()
         self.__release_test_results__(tester)
         self.__build_bad_words__(tester)
@@ -240,6 +242,32 @@ class Releaser:
             tree = ElementTree(root)
             with open(rez_path, 'wb+') as f:
                 tree.write(f, xml_declaration=True, encoding='utf-8')
+
+    def __release_gramm_docs__(self):
+        mds = [
+            "# Поддерживамые грамматические категории и граммемы",
+            "В DeepMorphy используется слегка измененное подмножество граммем и грамматичеких категорий из словарей [OpenCorpora](http://opencorpora.org/dict.php?act=gram)."
+        ]
+
+        for gram_cat_key in self.gram_types:
+            gram_cat = self.gram_types[gram_cat_key]
+            mds.append(f"- **{gram_cat['name'].capitalize()}** (ru='{gram_cat['key_ru']}', en='{gram_cat_key}') :")
+
+            classes = dict(gram_cat['classes'])
+            if gram_cat_key=='post':
+                classes.update(self.config['dict_post_types'])
+                classes.update(self.config['other_post_types'])
+
+            for gram in classes:
+                gram_obj = classes[gram]
+                mds.append(f"    - {gram_obj['name_ru']} (ru='{gram_obj['key_ru']}',en='{gram}')")
+
+        mds = "\n".join(mds)
+        with open(self.config['publish_gram_doc_path'], 'w+') as f:
+            f.write(mds)
+
+
+
 
 
 

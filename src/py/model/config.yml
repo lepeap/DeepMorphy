@@ -30,6 +30,8 @@ publish_dataset_info_paths:
 publish_test_paths:
   - ../../cs/MetricsCalc/
 
+publish_gram_doc_path: ../../../gram.md
+
 train_devices:
   - /gpu:0
   - /gpu:1
@@ -336,8 +338,8 @@ grammemes_types:
 
   nmbr:
     index: 2
-    key_ru: чл
-    name: чл
+    key_ru: число
+    name: число
     classes:
       sing:
         index: 0
@@ -357,7 +359,7 @@ grammemes_types:
 
   case:
    index: 3
-   key_ru: пд
+   key_ru: падеж
    name: падеж
    classes:
      nomn:
@@ -458,13 +460,13 @@ grammemes_types:
 
   pers:
     index: 4
-    key_ru: лц
+    key_ru: лицо
     name: лицо
     classes:
       1per:
         index: 0
         key_ru: 1л
-        name_ru: 1
+        name_ru: 1 лицо
         desc_ru: 1 лицо
         keys:
           - 1per
@@ -472,7 +474,7 @@ grammemes_types:
       2per:
         index: 1
         key_ru: 2л
-        name_ru: 2
+        name_ru: 2 лицо
         desc_ru: 2 лицо
         keys:
           - 2per
@@ -480,14 +482,14 @@ grammemes_types:
       3per:
         index: 2
         key_ru: 3л
-        name_ru: 3
+        name_ru: 3 лицо
         desc_ru: 3 лицо
         keys:
           - 3per
 
   tens:
     index: 5
-    key_ru: вр
+    key_ru: время
     name: время
     classes:
       pres:
