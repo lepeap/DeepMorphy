@@ -81,7 +81,7 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Все топ теги, всех прилагательные единственного числа");
+            Console.WriteLine("Теги с прилагательным и единственным числом");
             foreach (var morphInfo in results)
             {
                 foreach (var tag in morphInfo.Tags)
@@ -94,7 +94,7 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Все только часть речи и число");
+            Console.WriteLine("Вывод только части речи и числа");
             foreach (var morphInfo in results)
             {
                 Console.WriteLine($"{morphInfo.Text}:");
@@ -107,7 +107,7 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Все топ слова, которые вероятно являются глаголами прошедшего времени");
+            Console.WriteLine("Слова, которые вероятно являются глаголами прошедшего времени");
             foreach (var morphInfo in results)
             {
                 if (morphInfo.HasCombination("гл", "прош"))
@@ -129,7 +129,7 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            WriteHeader("Только лучшую часть речи с ее вероятностью");
+            WriteHeader("Только лучшая часть речи с ее вероятностью");
             foreach (var morphInfo in results)
             {
                 var bestGram = morphInfo["чр"].BestGram;
