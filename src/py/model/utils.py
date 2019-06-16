@@ -40,6 +40,7 @@ def get_flat_words(words):
     for item in words:
         lemma = item['lemma']
         lemma['lemma'] = lemma['text']
+        lemma['id'] = item['id']
         for form in item['forms']:
             word = dict(lemma)
             for key in form:

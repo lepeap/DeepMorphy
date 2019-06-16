@@ -13,6 +13,7 @@ class Tester:
         self.rnn = RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
         self.batch_size = 4096
+        self.show_bad_items = False
 
     def test(self):
         config = tf.ConfigProto(allow_soft_placement=True)

@@ -59,6 +59,7 @@ def vectorize_words(words_dic):
 
     return vect_dic
 
+
 def save_dataset(items, file_prefix):
     RANDOM.shuffle(items)
     test_size = int(CONFIG['test_persent'] * len(items) / 100)
@@ -78,6 +79,7 @@ def save_dataset(items, file_prefix):
     logging.info(f"Saving '{file_prefix}' test dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_test_dataset.pkl"), 'wb+') as f:
         pickle.dump(test_items, f)
+
 
 def generate_classification_dataset(vec_words, cls_type, cls_dic):
     ordered_keys = [cls for cls in sorted(cls_dic, key=lambda cls: cls_dic[cls])]
@@ -153,9 +155,9 @@ def create_datasets(words):
     os.mkdir(DATASET_PATH)
     vec_words = vectorize_words(words)
 
-    #for cls_type in CLASSES_INDEXES:
-    #    cls_dic = CLASSES_INDEXES[cls_type]
-    #    generate_classification_dataset(vec_words, cls_type, cls_dic)
+    for cls_type in CLASSES_INDEXES:
+        cls_dic = CLASSES_INDEXES[cls_type]
+        generate_classification_dataset(vec_words, cls_type, cls_dic)
 
     un_classes = []
     for word in tqdm(vec_words, desc="Setting main class"):
@@ -172,7 +174,7 @@ def create_datasets(words):
         tpl: index
         for index, tpl in enumerate(un_classes)
     }
-    #generate_classification_dataset(vec_words, 'main', cls_dic)
+    generate_classification_dataset(vec_words, 'main', cls_dic)
     logging.info(f"Main classes count: {len(cls_dic)}")
     with open(os.path.join(DATASET_PATH, f"classification_classes.pkl"), 'wb+') as f:
         pickle.dump(cls_dic, f)
