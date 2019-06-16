@@ -6,7 +6,8 @@ import logging
 import numpy as np
 from tqdm import tqdm
 from sklearn.preprocessing import normalize
-from utils import get_flat_words, get_grams_info, config
+from collections import defaultdict
+from utils import get_grams_info, config
 
 CONFIG = config()
 RANDOM_SEED = 1917
@@ -60,13 +61,38 @@ def vectorize_words(words_dic):
     return vect_dic
 
 
-def save_dataset(items, file_prefix):
+def select_uniform_items(items_dict, count, ds_info):
+    cls_count = len(items_dict)
+    per_group_count = int(count / cls_count)
+    if per_group_count == 0:
+        per_group_count = 1
+
+    for cls in tqdm(items_dict, desc=f"Selecting {ds_info} dataset"):
+        i = 0
+        items = items_dict[cls]
+        while i <= per_group_count and len(items) > 0:
+            item = items[0]
+            items.remove(item)
+            yield item
+            i += 1
+
+
+
+def save_dataset(items_dict, file_prefix):
+    total_count = sum([len(items_dict[key]) for key in items_dict])
+    logging.info(f"Class '{file_prefix}': {total_count}")
+    for key in tqdm(items_dict, desc=f"Shuffling {file_prefix} items"):
+        RANDOM.shuffle(items_dict[key])
+
+    test_size = int(CONFIG['test_persent'] * total_count / 100)
+    valid_size = int(CONFIG['validation_persent'] * total_count / 100)
+    test_items = list(select_uniform_items(items_dict, test_size, f"test {file_prefix}"))
+    valid_items = list(select_uniform_items(items_dict, valid_size, f"valid {file_prefix}"))
+    items = []
+    for key in items_dict:
+        items.extend(items_dict[key])
     RANDOM.shuffle(items)
-    test_size = int(CONFIG['test_persent'] * len(items) / 100)
-    valid_size = int(CONFIG['validation_persent'] * len(items) / 100)
-    test_items = items[:test_size]
-    valid_items = items[-valid_size:]
-    items = items[test_size:len(items) - valid_size]
+
 
     logging.info(f"Saving '{file_prefix}' train dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_train_dataset.pkl"), 'wb+') as f:
@@ -94,31 +120,34 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
     weights = normalize(np.asarray(weights).reshape(1, -1))
     weights = np.ones((len(ordered_keys),)) - weights
 
-    rez_items = []
+    rez_items = defaultdict(list)
+    cur_cls = None
     for word in tqdm(vec_words, desc=f"Generating classification {cls_type} dataset"):
         y = np.zeros((len(ordered_keys),), dtype=np.int)
         has_classes = False
         for form in vec_words[word]['forms']:
             if cls_type in form:
-                index = cls_dic[form[cls_type]]
+                cur_cls = form[cls_type]
+                index = cls_dic[cur_cls]
                 y[index] = 1
                 has_classes = True
 
         if has_classes:
-            rez_items.append({
+            items = rez_items[cur_cls]
+            items.append({
                 'src': word,
                 'x': vec_words[word]['vect'],
                 'y': y,
                 'weight': weights.reshape(-1, 1)[y == 1].max()
             })
+            rez_items[cur_cls] = items
 
-    logging.info(f"Class '{cls_type}': {len(rez_items)}")
+
     save_dataset(rez_items, cls_type)
 
 
 def create_lemma_dataset(vec_words, main_cls_dic):
-
-    rez_items = []
+    rez_dict = defaultdict(list)
     for word in tqdm(vec_words, desc="Generating lemma dataset"):
         dic = vec_words[word]
         x_vec = dic['vect']
@@ -129,11 +158,12 @@ def create_lemma_dataset(vec_words, main_cls_dic):
             if 'lemma' in form:
                 word_y = form['lemma']
             else:
-                word_y = word
+                continue
 
             y_vec = vec_words[word_y]['vect']
 
-            rez_items.append({
+            items = rez_dict[main_cls]
+            items.append({
                 'x_src': word,
                 'x': x_vec[0],
                 'x_len': x_vec[1],
@@ -142,9 +172,9 @@ def create_lemma_dataset(vec_words, main_cls_dic):
                 'y_len': y_vec[1],
                 'main_cls': main_cls
             })
+            rez_dict[main_cls] = items
 
-    save_dataset(rez_items, 'lemma')
-    logging.info(f"Lemmatizer: {len(rez_items)}")
+    save_dataset(rez_dict, 'lemma')
 
 
 
@@ -153,6 +183,7 @@ def create_datasets(words):
         shutil.rmtree(DATASET_PATH)
 
     os.mkdir(DATASET_PATH)
+
     vec_words = vectorize_words(words)
 
     for cls_type in CLASSES_INDEXES:
@@ -186,6 +217,15 @@ def create_datasets(words):
 
 with open(WORDS_PATH, 'rb') as f:
     words_dic = pickle.load(f)
+
+#rez_dict = {}
+#i = 0
+#for key in words_dic:
+#    rez_dict[key] = words_dic[key]
+#    i += 1
+#    if i > 100000:
+#        break
+#words_dic = rez_dict
 
 create_datasets(words_dic)
 logging.info("Dataset generated")
