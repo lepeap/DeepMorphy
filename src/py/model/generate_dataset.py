@@ -61,15 +61,12 @@ def vectorize_words(words_dic):
     return vect_dic
 
 
-def select_uniform_items(items_dict, count, ds_info):
-    cls_count = len(items_dict)
-    per_group_count = int(count / cls_count)
-    if per_group_count == 0:
-        per_group_count = 1
-
+def select_uniform_items(items_dict, persent, ds_info):
     for cls in tqdm(items_dict, desc=f"Selecting {ds_info} dataset"):
         i = 0
         items = items_dict[cls]
+
+        per_group_count = persent * len(items) / 100
         while i <= per_group_count and len(items) > 0:
             item = items[0]
             items.remove(item)
@@ -84,10 +81,8 @@ def save_dataset(items_dict, file_prefix):
     for key in tqdm(items_dict, desc=f"Shuffling {file_prefix} items"):
         RANDOM.shuffle(items_dict[key])
 
-    test_size = int(CONFIG['test_persent'] * total_count / 100)
-    valid_size = int(CONFIG['validation_persent'] * total_count / 100)
-    test_items = list(select_uniform_items(items_dict, test_size, f"test {file_prefix}"))
-    valid_items = list(select_uniform_items(items_dict, valid_size, f"valid {file_prefix}"))
+    test_items = list(select_uniform_items(items_dict, CONFIG['test_persent'], f"test {file_prefix}"))
+    valid_items = list(select_uniform_items(items_dict, CONFIG['validation_persent'], f"valid {file_prefix}"))
     items = []
     for key in items_dict:
         items.extend(items_dict[key])
