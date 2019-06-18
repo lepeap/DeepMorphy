@@ -12,6 +12,7 @@ MAX_WORD_SIZE = CONFIG['max_word_size']
 DATASET_WORDS_PATH = CONFIG['dataset_words_path']
 DICTS_WORDS_PATH = CONFIG['dict_words_path']
 DICT_POST_TYPES = CONFIG['dict_post_types']
+LEMMAS_PROPS = CONFIG['lemma_same_word']
 SRC_CONVERT, _ = get_grams_info(CONFIG)
 i = 0
 
@@ -86,25 +87,62 @@ def parse_links(itr):
             }
         event, element = next(itr)
 
-def post_process_words(words, link_types, links):
-    inf_id = link_types['INFN-VERB']
-    links = {
-        link['to']: link['from']
-        for link in links
-        if link['type'] == inf_id
+
+def set_lemmas(words, link_types, links):
+
+    lemmas_dict = {}
+    for word in words:
+        for norm_f in LEMMAS_PROPS:
+            is_lemma = True
+            for key in norm_f:
+                if word[key] != norm_f[key]:
+                    is_lemma = False
+                    break
+
+            if is_lemma:
+                lemmas_dict[word['id']] = word['text']
+                del word['lemma']
+                break
+
+    inv_link_type_dict = {
+        link_types[key]: key
+        for key in link_types
     }
 
-    infs_dic = {}
-    for word in words:
-        if word['post'] == 'infn':
-            if word['text'] == word['lemma']:
-                infs_dic[word['id']] = word['lemma']
+    links = {
+        (link['to'], inv_link_type_dict[link['type']]) : link['from']
+        for link in links
+    }
 
     for word in words:
+        link_type = None
         if word['post'] == 'verb':
-            if word['id'] in links:
-                lemma = infs_dic[links[word['id']]]
+            link_type = 'INFN-VERB'
+        elif word['post'] == 'prtf':
+            link_type = 'INFN-PRTF'
+        elif word['post'] == 'grnd':
+            link_type = 'INFN-GRND'
+        elif word['post'] == 'adjs':
+            link_type = 'ADJF-ADJS'
+        elif word['post'] == 'comp':
+            link_type = 'ADJF-COMP'
+
+        if link_type:
+            key = (word['id'], link_type)
+            if key in links and links[key] in lemmas_dict:
+                lemma = lemmas_dict[links[key]]
                 word['lemma'] = lemma
+                lemmas_dict[word['id']] = lemma
+            else:
+                del word['lemma']
+
+    for word in words:
+        if word['post'] == 'prts':
+            key = (word['id'], 'PRTF-PRTS')
+            if key in links:
+                lemma = lemmas_dict[links[key]]
+                word['lemma'] = lemma
+                lemmas_dict[word['id']] = lemma
             else:
                 del word['lemma']
 
@@ -123,7 +161,7 @@ link_types = parse_link_types(itr)
 links = list(parse_links(itr))
 words = list(get_flat_words(words))
 
-post_process_words(words, link_types, links)
+set_lemmas(words, link_types, links)
 
 words = [dict(t) for t in {tuple(sorted(d.items())) for d in words}]
 dict_words = [word for word in words if word['post'] in DICT_POST_TYPES]
