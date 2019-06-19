@@ -174,13 +174,11 @@ def create_lemma_dataset(vec_words, main_cls_dic):
 
 
 def create_datasets(words):
-    if os.path.isdir(DATASET_PATH):
-        shutil.rmtree(DATASET_PATH)
+    #if os.path.isdir(DATASET_PATH):
+    #    shutil.rmtree(DATASET_PATH)
 
-    os.mkdir(DATASET_PATH)
-
+    #os.mkdir(DATASET_PATH)
     vec_words = vectorize_words(words)
-
     for cls_type in CLASSES_INDEXES:
         cls_dic = CLASSES_INDEXES[cls_type]
         generate_classification_dataset(vec_words, cls_type, cls_dic)

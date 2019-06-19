@@ -170,7 +170,11 @@ class GraphPartBase(ABC):
 
     def restore(self, tc, check_point):
         try:
-            vars = tf.global_variables(self.main_scope_name)
+            vars = [
+                var
+                for var in tf.global_variables(self.main_scope_name)
+                #if "Adam" not in var.name
+            ]
             saver = tf.train.Saver(var_list=vars)
             saver.restore(tc.sess, check_point)
             tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} success")

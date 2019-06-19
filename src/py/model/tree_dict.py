@@ -141,10 +141,12 @@ def get_numbers():
 
     return numbers
 
+
 def release_tree_dict():
 
     with open(DICT_WORDS_PATH, 'rb') as f:
-        words = [Word(s_word) for s_word in pickle.load(f)]
+        words = pickle.load(f)
+        words = [Word(s_word) for s_word in words]
 
     with open(NOT_DICT_WORDS_PATH, 'rb') as f:
         not_dict_words = pickle.load(f)
@@ -155,35 +157,33 @@ def release_tree_dict():
             not_io_items = []
             for item in io_items:
                 not_io_item = dict(item)
-                not_io_item['lemma'] = not_io_item['lemma'].replace('ё', 'е')
+                if 'lemma' in not_io_item:
+                    not_io_item['lemma'] = not_io_item['lemma'].replace('ё', 'е')
                 not_io_item['text'] = not_io_item['text'].replace('ё', 'е')
                 not_io_items.append(not_io_item)
 
             not_dict_words[not_io_word] = not_io_items
 
-
     for numb in get_numbers():
         words.append(numb)
 
-
-
+    with open("wrong_words.pkl", 'rb') as f:
+        wrongs = set(pickle.load(f))
 
     dwords_dic = {word.text: word for word in words}
     for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):
         if nd_word in dwords_dic and not NAR_REG.match(nd_word):
             for gram in not_dict_words[nd_word]:
                 dwords_dic[nd_word].add_gram(gram)
+        elif nd_word in wrongs:
+            items = not_dict_words[nd_word]
+            word = Word(items[0])
+            del items[0]
+            for item in items:
+                word.add_gram(item)
 
-    with open("wrong_words.pkl", 'rb') as f:
-        wrongs = pickle.load(f)
+            words.append(word)
 
-    for w_word in tqdm.tqdm(wrongs, desc='Processing wrongs'):
-        if not NAR_REG.match(w_word) and w_word in not_dict_words:
-            for gram in not_dict_words[w_word]:
-                if w_word in dwords_dic:
-                    dwords_dic[w_word].add_gram(gram)
-                else:
-                    dwords_dic[w_word] = Word(gram)
 
     root = etree.Element('Tree')
     cur_items = [(root, words)]
@@ -229,4 +229,7 @@ def release_tree_dict():
             tree.write(f, xml_declaration=True, encoding='utf-8')
 
     logging.info("Tree dictionary released")
-    logging.info(f"Words count {len(dwords_dic)}")
+    logging.info(f"Words count {len(words)}")
+
+if __name__ == "__main__":
+    release_tree_dict()

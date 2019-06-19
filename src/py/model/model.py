@@ -65,6 +65,7 @@ class RNN:
             self.learn_rate = tf.placeholder(tf.float32, name="LearningRate")
             self.batch_size = tf.placeholder(tf.int32, [], name="BatchSize") if self.for_usage else None
             self.optimiser = tf.train.AdamOptimizer(self.learn_rate)
+            self.reset_optimizer = tf.variables_initializer(self.optimiser.variables())
             self.gram_graph_parts = {
                 gram: GramCls(gram, self.for_usage, self.config, self.key_configs[gram], self.optimiser)
                 for gram in self.gram_keys
@@ -135,6 +136,7 @@ class RNN:
 
             tc = TfContext(sess, self.saver, self.learn_rate)
             self.__restore__(tc)
+            sess.run(self.reset_optimizer)
 
             for gram in self.gram_keys:
                 if gram in self.train_steps:

@@ -18,10 +18,11 @@ class Tester:
     def test(self):
         config = tf.ConfigProto(allow_soft_placement=True)
         results = []
-        with tf.Session(config = config, graph=self.rnn.graph) as sess:
+        with tf.Session(config=config, graph=self.rnn.graph) as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
             latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
+            # latest_checkpoint = 'checkpoints/-313'
             self.rnn.saver.restore(sess, latest_checkpoint)
 
             for gram in self.rnn.gram_keys:
@@ -29,7 +30,7 @@ class Tester:
                 result = f"{gram}. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
                 results.append(result)
                 tqdm.write(result)
-
+            #
             full_cls_acc, part_cls_acc = self.__test_classification__(sess, 'main', self.rnn.main_graph_part)
             result = f"main. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
             results.append(result)
@@ -41,26 +42,23 @@ class Tester:
 
         return "\n".join(results)
 
-    def __test_classification__(self, sess, key, graph_part):
-        path = os.path.join(self.rnn.config['dataset_path'], f"{key}_test_dataset.pkl")
-        with open(path, 'rb') as f:
-            et_items = pickle.load(f)
+    def __get_classification_info__(self, sess, items, graph_part):
 
         wi = 0
-        pbar = tqdm(total=len(et_items))
-
-        etalon = []
+        pbar = tqdm(total=len(items), desc='Getting classification info')
         results = []
-        while wi < len(et_items):
+        etalon = []
+
+        while wi < len(items):
             bi = 0
             xs = []
             indexes = []
             seq_lens = []
             max_len = 0
 
-            while bi < self.batch_size and wi < len(et_items):
-                word = et_items[wi]['src']
-                etalon.append(et_items[wi]['y'])
+            while bi < self.batch_size and wi < len(items):
+                word = items[wi]['src']
+                etalon.append(items[wi]['y'])
                 for c_index, char in enumerate(word):
                     xs.append(self.chars[char] if char in self.chars else self.chars['UNDEFINED'])
                     indexes.append([bi, c_index])
@@ -85,6 +83,14 @@ class Tester:
             )
             results.extend(nn_results[0])
 
+        return results, etalon
+
+    def __test_classification__(self, sess, key, graph_part):
+        path = os.path.join(self.rnn.config['dataset_path'], f"{key}_test_dataset.pkl")
+        with open(path, 'rb') as f:
+            et_items = pickle.load(f)
+
+        results, etalon = self.__get_classification_info__(sess, et_items, graph_part)
         total = len(etalon)
         total_classes = 0
         full_correct = 0
@@ -116,19 +122,8 @@ class Tester:
         with open(path, 'rb') as f:
             words = pickle.load(f)
 
-        words = [
-            word
-            for word in words
-            if all([c in self.config['chars'] for c in word['x_src']])
-        ]
-
-        words_to_parse = [
-            (word['x_src'], word['main_cls'])
-            for word in words
-        ]
-
-        rez_words = list(self.__infer_lemmas__(sess, words_to_parse))
-        total = len(words_to_parse)
+        rez_words = list(self.__infer_lemmas__(sess, words))
+        total = len(words)
         wrong = 0
         for index, lem in enumerate(rez_words):
             et_word = words[index]
@@ -139,8 +134,19 @@ class Tester:
         acc = correct / total
         return acc
 
-
     def __infer_lemmas__(self, sess, words):
+        words = [
+            word
+            for word in words
+            if all([c in self.config['chars'] for c in word['x_src']])
+        ]
+
+        words = [
+            (word['x_src'], word['main_cls'])
+            for word in words
+        ]
+
+
         wi = 0
         pbar = tqdm(total=len(words))
         while wi < len(words):
@@ -159,7 +165,7 @@ class Tester:
                     indexes.append([bi, c_index])
                 cur_len = len(word)
                 clss.append(cls)
-                if cur_len>max_len:
+                if cur_len > max_len:
                     max_len = cur_len
                 seq_lens.append(cur_len)
                 bi += 1
@@ -180,6 +186,56 @@ class Tester:
             )
             for word_src in results[0]:
                 yield decode_word(word_src)
+
+    def __load_all_datasets(self, tp):
+        words = []
+
+        def load_words(type):
+            path = os.path.join(self.config['dataset_path'], f"{tp}_{type}_dataset.pkl")
+            with open(path, 'rb') as f:
+                words.extend(pickle.load(f))
+
+        load_words("test")
+        load_words("valid")
+        load_words("train")
+        return words
+
+    def get_bad_words(self):
+        with tf.Session(graph=self.rnn.graph) as sess:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+            latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
+            self.rnn.saver.restore(sess, latest_checkpoint)
+            error_words = []
+
+            #main_cls_items = self.__load_all_datasets('main')
+            #results, etalon = self.__get_classification_info__(sess, main_cls_items, self.rnn.main_graph_part)
+            #for index, et in tqdm(enumerate(etalon), "Selecting main cls bad words"):
+            #    classes_count = et.sum()
+            #    good_classes = np.argwhere(et == 1).ravel()
+            #    rez_classes = np.argsort(results[index])[-classes_count:]
+            #    bad = False
+            #    for cur_cls_ind, cls in enumerate(rez_classes):
+            #        if not cls in good_classes and cur_cls_ind < classes_count:
+            #            bad = True
+            #            break
+#
+            #    if bad:
+            #        error_words.append(main_cls_items[index]['src'])
+
+            print(f'Main cls error: {len(error_words)}')
+            lemma_src = self.__load_all_datasets('lemma')
+            lemma_results = self.__infer_lemmas__(sess, lemma_src)
+            for index, lem in tqdm(enumerate(lemma_results), desc="Selecting lemma bad words"):
+                et_word = lemma_src[index]
+                if lem != et_word['y_src']:
+                    error_words.append(et_word['x_src'])
+
+            print(f'Total error: {len(error_words)}')
+            error_words = list(set(error_words))
+            print(f'Total unique error: {len(error_words)}')
+            return error_words
+
 
 
     def get_test_lemmas(self, words):

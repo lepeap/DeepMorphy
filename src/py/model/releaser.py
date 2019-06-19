@@ -45,7 +45,6 @@ class Releaser:
             for key in self.classes_dic
         }
 
-
     def release_model(self):
         pd_release_path, gram_ops, out_ops = self.rnn.release()
         for path in self.pd_publish_paths:
@@ -53,14 +52,13 @@ class Releaser:
 
         self.__release_gramm_docs__()
         self.__release_grams_xml__()
-
         self.__release_test_files__()
         self.__release_dataset_info__()
         self.__release_model_xml__(out_ops, gram_ops)
-        tester = Tester()
-        self.__release_test_results__(tester)
-        self.__build_bad_words__(tester)
 
+        testr = Tester()
+        self.__release_test_results__(testr)
+        #self.__build_bad_words__(testr)
 
     def __release_model_xml__(self, out_ops, gram_ops):
         root = etree.Element('Root')
@@ -70,27 +68,36 @@ class Releaser:
         chars_el = etree.Element('Chars')
         chars_el.set("start_char", str(self.config['start_token']))
         chars_el.set("end_char", str(self.config['end_token']))
-
         for index, value in enumerate(self.chars):
             char_el = etree.Element("Char")
             char_el.set('index', str(index))
             char_el.set('value', value)
             chars_el.append(char_el)
-
         root.append(chars_el)
+
         grams_el = etree.Element('Grams')
         for gram in self.gram_types:
             gram_el = etree.Element("G")
             gram_el.set('key', gram)
             gram_el.set('op', gram_ops[gram]['prob'])
             grams_el.append(gram_el)
-
         root.append(grams_el)
+
+        lemma_same_words = []
+        for cls in self.config['lemma_same_word']:
+            key = tuple(
+                cls[key] if key in cls else None
+                for key in self.config['grammemes_types']
+            )
+            lemma_same_words.append(key)
+
         classes_el = etree.Element('Classes')
         for cls in self.classes_dic:
             cls_el = etree.Element("C")
             cls_el.set('i', str(self.classes_dic[cls]))
             cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
+            if cls in lemma_same_words:
+                cls_el.set('lsw', '1')
 
             classes_el.append(cls_el)
 
@@ -160,41 +167,6 @@ class Releaser:
         for path in self.test_result_paths:
             with open(path, 'w+') as f:
                 f.write(results)
-
-    def __build_bad_words__(self, tester):
-        words = []
-
-        def load_words(type):
-            path = os.path.join(tester.config['dataset_path'], f"lemma_{type}_dataset.pkl")
-            with open(path, 'rb') as f:
-                words.extend(pickle.load(f))
-
-        load_words("test")
-        load_words("valid")
-        load_words("train")
-
-        words = [
-            word
-            for word in words
-            if all([c in tester.config['chars'] for c in word['x_src']])
-        ]
-
-        words_to_parse = [
-            (word['x_src'], word['main_cls'])
-            for word in words
-        ]
-
-        lemmas = tester.get_test_lemmas(words_to_parse)
-
-        wrong_words = []
-        for index, lem in enumerate(lemmas):
-            et_word = words[index]
-            if lem != et_word['y_src']:
-                wrong_words.append(et_word['x_src'])
-
-        print(f"Wrong lemmas count: {len(wrong_words)}")
-        with open(os.path.join("wrong_words.pkl"), 'wb+') as f:
-            pickle.dump(wrong_words, f)
 
     def __release_test_files__(self):
         for gram in self.gram_types:
@@ -266,10 +238,12 @@ class Releaser:
         with open(self.config['publish_gram_doc_path'], 'w+') as f:
             f.write(mds)
 
-
-
-
-
+    @staticmethod
+    def __build_bad_words__(tester):
+        words = tester.get_bad_words()
+        logging.info(f"Wrong words count {len(words)}")
+        with open(os.path.join("wrong_words.pkl"), 'wb+') as f:
+            pickle.dump(words, f)
 
 
 if __name__ == "__main__":

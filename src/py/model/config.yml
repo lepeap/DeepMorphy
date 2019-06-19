@@ -1,5 +1,5 @@
-validation_persent: 4
-test_persent: 2
+validation_persent: 2
+test_persent: 1
 dict_path: /home/alex/Downloads/dict.opcorpora.xml
 dataset_words_path: dataset_words.pkl
 dict_words_path: dict_words.pkl
@@ -62,8 +62,8 @@ graph_part_configs:
     train_batch_size: 4096
     rnn_layers_count: 2
     rnn_bidirectional: True
-    stop_training_acc_delta: 0.00005
-    learn_rate: 0.01
+    stop_training_acc_delta: 0.00001
+    learn_rate: 0.0001
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
     return_step: 2
@@ -76,6 +76,8 @@ graph_part_configs:
   pers:
     test_batch_size:  256
     train_batch_size: 1024
+    char_vector_size: 8
+    rnn_state_size: 8
 
   main:
     char_vector_size: 64
@@ -86,12 +88,13 @@ graph_part_configs:
   lemm:
     char_vector_size: 64
     max_length: 33
-    batch_size: 4096
+    batch_size: 8192
     stop_training_acc_delta: 0.00001
     return_step: 2
-    learn_rate: 0.0001
+    learn_rate: 0.001
+    use_sampling: false
     main_metric_type: Accuracy
-    sampling_probability: 1
+    sampling_probability: 0.25
     use_cls_placeholder: false
     encoder:
       char_vector_size: 64
@@ -102,7 +105,7 @@ graph_part_configs:
     decoder:
       rnn_state_size: 128
       rnn_layers_count: 1
-      keep_drop: 0.9
+      keep_drop: 1
       use_residual: false
 
 chars:
@@ -141,6 +144,32 @@ chars:
   - ю
   - я
   - "-"
+
+lemma_same_word:
+  - post: noun
+    nmbr: sing
+    case: nomn
+    gndr: masc
+
+  - post: noun
+    nmbr: sing
+    case: nomn
+    gndr: neut
+
+  - post: noun
+    nmbr: sing
+    case: nomn
+    gndr: femn
+
+  - post: adjf
+    nmbr: sing
+    gndr: masc
+    case: nomn
+
+  - post: infn
+
+  - post: advb
+
 
 other_post_types:
   punct:
@@ -212,6 +241,14 @@ dict_post_types:
     desc_ru: числительное
     keys:
       - NUMR
+
+  pred:
+    key_ru: предик
+    power: 0
+    name_ru: предикатив
+    desc_ru: предикатив
+    keys:
+      - PRED
 
 grammemes_types:
   post:
@@ -299,13 +336,7 @@ grammemes_types:
         keys:
           - ADVB
 
-      pred:
-        index: 10
-        key_ru: предик
-        name_ru: предикатив
-        desc_ru: предикатив
-        keys:
-          - PRED
+
 
   gndr:
     index: 1
