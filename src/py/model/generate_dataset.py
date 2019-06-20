@@ -65,8 +65,8 @@ def select_uniform_items(items_dict, persent, ds_info):
     for cls in tqdm(items_dict, desc=f"Selecting {ds_info} dataset"):
         i = 0
         items = items_dict[cls]
-
         per_group_count = persent * len(items) / 100
+
         while i <= per_group_count and len(items) > 0:
             item = items[0]
             items.remove(item)

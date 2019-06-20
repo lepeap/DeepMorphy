@@ -150,14 +150,14 @@ class RNN:
 
 
     def __restore__(self, tc):
-        latest_checkpiont = tf.train.latest_checkpoint(self.save_path)
+        latest_checkpoint = tf.train.latest_checkpoint(self.save_path)
         for gram in self.gram_keys:
             if gram not in self.config['ignore_restore']:
-                self.gram_graph_parts[gram].restore(tc, latest_checkpiont)
+                self.gram_graph_parts[gram].restore(tc, latest_checkpoint)
         if self.main_graph_part.key not in self.config['ignore_restore']:
-            self.main_graph_part.restore(tc, latest_checkpiont)
+            self.main_graph_part.restore(tc, latest_checkpoint)
         if self.lem_graph_part.key not in self.config['ignore_restore']:
-            self.lem_graph_part.restore(tc, latest_checkpiont)
+            self.lem_graph_part.restore(tc, latest_checkpoint)
 
 
 

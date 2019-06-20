@@ -58,14 +58,17 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        private string _parseLemma(int[,,] src, int wordIndex, int kIndex)
+        private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, int mainCls)
         {
+            if (_config.LemmaSameWordClasses.Contains(mainCls))
+                return sourceWord;
+                
             int cIndex = 0;
-            var maxLength = src.GetLength(2);
+            var maxLength = nnRes.GetLength(2);
             var sb = new StringBuilder();
             while (cIndex < maxLength)
             {
-                var cVal = src[wordIndex, kIndex, cIndex];
+                var cVal = nnRes[wordIndex, kIndex, cIndex];
 
                 if (cVal == _config.EndCharIndex)
                     break;
@@ -100,7 +103,9 @@ namespace DeepMorphy.NeuralNet
                             .Select(j => new Tag(
                                     _config.ClsDic[result.ResultIndexes[i, j]],
                                     result.ResultProbs[i, j],
-                                    lemma: _withLemmatization ? _parseLemma(result.Lemmas, i,j) : null,
+                                    lemma: _withLemmatization 
+                                        ? _getLemma(srcMas[i], result.Lemmas, i,j, result.ResultIndexes[i, j]) 
+                                        : null,
                                     classIndex: result.ResultIndexes[i, j]
                                 )
                             )

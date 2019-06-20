@@ -122,7 +122,18 @@ class Tester:
         with open(path, 'rb') as f:
             words = pickle.load(f)
 
-        rez_words = list(self.__infer_lemmas__(sess, words))
+        words = [
+            word
+            for word in words
+            if all([c in self.config['chars'] for c in word['x_src']])
+        ]
+
+        words_to_proc = [
+            (word['x_src'], word['main_cls'])
+            for word in words
+        ]
+
+        rez_words = list(self.__infer_lemmas__(sess, words_to_proc))
         total = len(words)
         wrong = 0
         for index, lem in enumerate(rez_words):
@@ -135,18 +146,6 @@ class Tester:
         return acc
 
     def __infer_lemmas__(self, sess, words):
-        words = [
-            word
-            for word in words
-            if all([c in self.config['chars'] for c in word['x_src']])
-        ]
-
-        words = [
-            (word['x_src'], word['main_cls'])
-            for word in words
-        ]
-
-
         wi = 0
         pbar = tqdm(total=len(words))
         while wi < len(words):
@@ -214,18 +213,25 @@ class Tester:
             #    classes_count = et.sum()
             #    good_classes = np.argwhere(et == 1).ravel()
             #    rez_classes = np.argsort(results[index])[-classes_count:]
-            #    bad = False
-            #    for cur_cls_ind, cls in enumerate(rez_classes):
-            #        if not cls in good_classes and cur_cls_ind < classes_count:
-            #            bad = True
-            #            break
 #
-            #    if bad:
+            #    if rez_classes[0] not in good_classes:
             #        error_words.append(main_cls_items[index]['src'])
-
-            print(f'Main cls error: {len(error_words)}')
+#
+            #print(f'Main cls error: {len(error_words)}')
             lemma_src = self.__load_all_datasets('lemma')
-            lemma_results = self.__infer_lemmas__(sess, lemma_src)
+
+            lemma_src = [
+                word
+                for word in lemma_src
+                if all([c in self.config['chars'] for c in word['x_src']])
+            ]
+
+            words_to_proc = [
+                (word['x_src'], word['main_cls'])
+                for word in lemma_src
+            ]
+
+            lemma_results = list(self.__infer_lemmas__(sess, words_to_proc))
             for index, lem in tqdm(enumerate(lemma_results), desc="Selecting lemma bad words"):
                 et_word = lemma_src[index]
                 if lem != et_word['y_src']:

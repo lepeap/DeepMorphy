@@ -26,7 +26,7 @@ namespace DeepMorphy.NeuralNet
         public int StartCharIndex { get; private set; }
         public int EndCharIndex { get; private set; }
         
-        public int MainClassK { get; private set; }
+        public List<int> LemmaSameWordClasses { get; private set; } = new List<int>();
         public Dictionary<int, ReadOnlyDictionary<string, string>> ClsDic  { get; } = new Dictionary<int, ReadOnlyDictionary<string, string>>();
         public Dictionary<char, int> CharToId { get; private set; } = new Dictionary<char, int>();
         
@@ -79,7 +79,10 @@ namespace DeepMorphy.NeuralNet
                                     ? GramInfo.GramCatIndexDic[x.index].KeyEn 
                                     : GramInfo.GramCatIndexDic[x.index].KeyRu,
                                 x => x.gram
-                            );   
+                            );
+                        
+                        if (rdr.GetAttribute("lsw") != null)
+                            LemmaSameWordClasses.Add(index);
                         
                         ClsDic[index] = new ReadOnlyDictionary<string, string>(gramDic);
                     }

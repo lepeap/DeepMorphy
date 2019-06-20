@@ -139,18 +139,6 @@ class GraphPartBase(ABC):
         self.learn_rate_val = self.learn_rate_val * self.settings['learn_rate_decay_step']
         tqdm.write(f"Learning rate decayed. New value: {self.learn_rate_val}")
 
-    #def test(self, tc):
-    #    tests = self.__load_dataset__('test')
-    #    tc.sess.run(self.metrics_reset)
-    #    for item in tqdm(tests, desc=f"Validation, epoch {tc.epoch}"):
-    #        launch = []
-    #        launch.extend(self.prints)
-    #        launch.extend(self.metrics_update)
-    #        feed_dic = self.__create_feed_dict__('test', item)
-    #        tc.sess.run(launch, feed_dic)
-#
-    #    self.__write_metrics_report__(tc.sess, f"Test {self.main_scope_name}")
-
     def build_graph_end(self):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
             self.metrics = {

@@ -58,7 +58,7 @@ class Releaser:
 
         testr = Tester()
         self.__release_test_results__(testr)
-        #self.__build_bad_words__(testr)
+        self.__build_bad_words__(testr)
 
     def __release_model_xml__(self, out_ops, gram_ops):
         root = etree.Element('Root')
