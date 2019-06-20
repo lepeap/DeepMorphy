@@ -36,7 +36,7 @@ namespace MetricsCalc
         {
             Console.WriteLine("Memory consumption info");            
             Console.WriteLine($"Before all: {GetMemory()}");
-            var morph = new MorphAnalyzer(withPreprocessors: true, withLemmatization: true);
+            var morph = new MorphAnalyzer(withPreprocessors: false, withLemmatization: true);
             Console.WriteLine($"After init: {GetMemory()}");
             int j = 0;
             while (j < 100)
@@ -72,7 +72,6 @@ namespace MetricsCalc
                     "раскладывала", 
                     "обучает",
                     "юбка",
-                    "шоссе",
                     "пересказывают"
                 }).ToArray();
                 j++;

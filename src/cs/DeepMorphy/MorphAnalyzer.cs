@@ -34,16 +34,18 @@ namespace DeepMorphy
             {
                 throw new ArgumentException("Batch size must be greater than 0.");
             }
-            var dict = new Dict(useEnGrams, withLemmatization);
             _net = new NeuralNet.Processor(maxBatchSize, withLemmatization, useEnGrams, false);
             _withTrimAndLower = withTrimAndLower;
             if (withPreprocessors)
+            {
+                var dict = new Dict(useEnGrams, withLemmatization);
                 _preProcessors = new IPreProcessor[]
                 {
                     new NarNumbProc(dict, withLemmatization),
                     new DictProc(dict),
                     new RegProc(_net.AvailableChars, useEnGrams, 50, withLemmatization)
                 };
+            }
             else
                 _preProcessors = new IPreProcessor[0];
         }

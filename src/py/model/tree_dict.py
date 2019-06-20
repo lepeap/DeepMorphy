@@ -142,7 +142,7 @@ def get_numbers():
     return numbers
 
 
-def release_tree_dict():
+def release_tree_dict(with_wrongs=False):
 
     with open(DICT_WORDS_PATH, 'rb') as f:
         words = pickle.load(f)
@@ -167,8 +167,11 @@ def release_tree_dict():
     for numb in get_numbers():
         words.append(numb)
 
-    with open("wrong_words.pkl", 'rb') as f:
-        wrongs = set(pickle.load(f))
+    if with_wrongs:
+        with open("wrong_words.pkl", 'rb') as f:
+            wrongs = set(pickle.load(f))
+    else:
+        wrongs = set()
 
     dwords_dic = {word.text: word for word in words}
     for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):

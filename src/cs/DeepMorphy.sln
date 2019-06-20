@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleConsole", "ExampleCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricsCalc", "MetricsCalc\MetricsCalc.csproj", "{CE36972E-45A8-447A-92CD-57C937912758}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark", "Benchmark\Benchmark.csproj", "{1ABB6028-F52C-4C9B-B0F3-9E08DE0CD231}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{CE36972E-45A8-447A-92CD-57C937912758}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE36972E-45A8-447A-92CD-57C937912758}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE36972E-45A8-447A-92CD-57C937912758}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABB6028-F52C-4C9B-B0F3-9E08DE0CD231}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABB6028-F52C-4C9B-B0F3-9E08DE0CD231}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABB6028-F52C-4C9B-B0F3-9E08DE0CD231}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABB6028-F52C-4C9B-B0F3-9E08DE0CD231}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
