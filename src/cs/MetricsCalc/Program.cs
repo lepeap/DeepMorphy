@@ -22,9 +22,10 @@ namespace MetricsCalc
         static void Main(string[] args)
         {
             ShowMemoryInfo();
-            TestGramClassification();
             TestMainClassification();
             TestLemmatization();
+            TestGramClassification();
+
         }
 
         private static long GetMemory()
@@ -36,7 +37,7 @@ namespace MetricsCalc
         {
             Console.WriteLine("Memory consumption info");            
             Console.WriteLine($"Before all: {GetMemory()}");
-            var morph = new MorphAnalyzer(withPreprocessors: false, withLemmatization: true);
+            var morph = new MorphAnalyzer(withPreprocessors: true, withLemmatization: true);
             Console.WriteLine($"After init: {GetMemory()}");
             int j = 0;
             while (j < 100)
@@ -84,24 +85,18 @@ namespace MetricsCalc
         private static void TestLemmatization()
         {
             Console.WriteLine("Calculating lemmatization");
-            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: false, withLemmatization: true);
+            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: true, withLemmatization: true);
             var tests = LoadTests("lem").ToArray();
-            var results = morph.Parse(tests.Select(x => x.X)).ToArray();
             float totalCount = tests.Length;
             float correctCount = 0;
-            for (int i = 0; i < tests.Length; i++)
+            int i = 0;
+            foreach (var res in  morph.Parse(tests.Select(x => x.X)))
             {
                 var test = tests[i];
-                var res = results[i];
-                foreach (var tag in res.Tags)
-                {
-                    if (tag.Lemma == test.Y)
-                    {
-                        correctCount++;
-                        break;
-                    }
-                }
-
+                if (res.HasLemma(test.Y))
+                    correctCount++;
+                
+                i++;
             }
             float result = correctCount / totalCount;
             Console.WriteLine($"Lemmatization acc: {result}");
@@ -117,7 +112,7 @@ namespace MetricsCalc
             foreach (var gram in grams)
             {
                 Console.WriteLine($"Calculating {gram} classification");
-                var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: false);
+                var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: true);
                 var tests = LoadTests(gram).ToArray();
                 var results = morph.Parse(tests.Select(x => x.X)).ToArray();
                 float testsCount = tests.Length;
@@ -130,6 +125,7 @@ namespace MetricsCalc
                     var test = tests[i];
                     var res = results[i];
                     var etRez = test.Y.Split(';');
+                    
                     var rez = res[gram].Grams.ToArray();
                     totalClassesCount += etRez.Length;
 
@@ -161,7 +157,7 @@ namespace MetricsCalc
         private static void TestMainClassification()
         {
             Console.WriteLine("Calculating main classification");
-            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: false);
+            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: true);
             var tests = LoadTests("main").ToArray();
             var results = morph.Parse(tests.Select(x => x.X)).ToArray();
             float testsCount = tests.Length;

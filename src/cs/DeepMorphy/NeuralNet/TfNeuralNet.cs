@@ -87,13 +87,12 @@ namespace DeepMorphy.NeuralNet
             int wordsCount,
             IEnumerable<int[]> indexes,
             IEnumerable<int> values,
-            int[] seqLens,
-            int k)
+            int[] seqLens)
         {
             var runner = _session.GetRunner();
             runner.AddInput(_xIndexesOpName, indexes.ToArray());
             runner.AddInput(_xValuesOpName, values.ToArray());
-            runner.AddInput(_xShapeOpName, new int[]{wordsCount, maxLength+1});
+            runner.AddInput(_xShapeOpName, new int[]{wordsCount, maxLength});
             runner.AddInput(_seqLenOpName, seqLens);
             runner.AddInput(_batchSizeName, wordsCount);
 

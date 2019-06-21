@@ -1,3 +1,4 @@
+import string
 import re
 import os
 import gzip
@@ -5,8 +6,6 @@ import yaml
 import tqdm
 import pickle
 import logging
-from lxml import etree
-from xml.etree.ElementTree import ElementTree
 from utils import get_flat_words, config
 
 CONFIG = config()
@@ -142,7 +141,7 @@ def get_numbers():
     return numbers
 
 
-def release_tree_dict(with_wrongs=False):
+def release_tree_dict(with_wrongs=True):
 
     with open(DICT_WORDS_PATH, 'rb') as f:
         words = pickle.load(f)
@@ -188,48 +187,49 @@ def release_tree_dict(with_wrongs=False):
             words.append(word)
 
 
-    root = etree.Element('Tree')
-    cur_items = [(root, words)]
+    ind_keys = string.ascii_lowercase + string.ascii_uppercase
+    index_dict = {}
+    cur_index = 0
+    txt = []
+    for word in words:
+        txt.append(word.text)
+        txt.append('\t')
+        for ind, g in enumerate(word.get_grams()):
+            if 'lemma' in g and g['lemma']:
+                txt.append(g['lemma'])
+            txt.append(':')
+            for g_ind, val in enumerate(g['gram'].split(',')):
+                if val and val not in index_dict:
+                    index_dict[val] = ind_keys[cur_index]
+                    cur_index+=1
 
-    while len(cur_items) != 0:
-        new_cur_items = []
-        for par_el, par_words in cur_items:
+                if val:
+                    txt.append(index_dict[val])
 
-            c_dic = {}
-            for w in par_words:
-                if w.current() not in c_dic:
-                    c_dic[w.current()] = []
-                c_dic[w.current()].append(w)
+                if g_ind != len(GRAMMEMES_TYPES):
+                    txt.append(',')
 
-            for c in c_dic:
-                words = c_dic[c]
-                leaf = etree.Element('L')
-                leaf.set('c', c)
-                not_fin_words = []
-                for word in words:
-                    word.next()
-                    if word.is_finished():
-                        leaf.set('t', word.text)
-                        for gram in word.get_grams():
-                            gram_el = etree.Element('G')
-                            gram_el.set('v', gram['gram'])
-                            if gram['lemma']:
-                                gram_el.set('l', gram['lemma'])
-                            leaf.append(gram_el)
-                    else:
-                        not_fin_words.append(word)
+            if ind != len(word.grams)-1:
+                txt.append(';')
 
-                par_el.append(leaf)
-                if len(not_fin_words)>0:
-                    new_cur_items.append((leaf, not_fin_words))
+        txt.append('\n')
 
-        cur_items = new_cur_items
+    txt.insert(0, "\n")
+    for key in index_dict:
+        txt.insert(0, f"{index_dict[key]}={key}\n")
 
-    tree = ElementTree(root)
+    txt = "".join(txt)
+    rez = txt.encode('utf-8')
+
     for path in REZ_PATHS:
-        path = os.path.join(path, "tree_dict.xml.gz")
+        path = os.path.join(path, "dict.txt.gz")
         with gzip.open(path, 'wb+') as f:
-            tree.write(f, xml_declaration=True, encoding='utf-8')
+            f.write(rez)
+
+
+
+
+
 
     logging.info("Tree dictionary released")
     logging.info(f"Words count {len(words)}")

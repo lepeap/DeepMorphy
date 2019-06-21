@@ -27,7 +27,8 @@ namespace ExampleConsole
             "дотошный",
             "красотка",
             "центральные",
-            "укрывал"
+            "укрывал",
+            "шоссе"
         };
         static void Main(string[] args)
         {
@@ -201,7 +202,8 @@ namespace ExampleConsole
                 "раскладывала", 
                 "обучает",
                 "юбка",
-                "пересказывают"
+                "пересказывают",
+                "шоссе"
             };
             
             var results = m.Parse(words).ToArray();

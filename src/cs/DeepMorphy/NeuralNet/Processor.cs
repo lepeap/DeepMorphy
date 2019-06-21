@@ -94,7 +94,7 @@ namespace DeepMorphy.NeuralNet
                     out int[] seqLens
                 );
 
-                var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens, K);
+                var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens);
                 for (int i = 0; i < srcMas.Length; i++)
                 {
                     yield return new MorphInfo(

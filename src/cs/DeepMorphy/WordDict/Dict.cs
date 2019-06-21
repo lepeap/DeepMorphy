@@ -3,99 +3,88 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
 
 namespace DeepMorphy.WordDict
 {
     class Dict
     {
+        
         private static readonly char[] CommmaSplitDict = new[] {','};
-        private readonly Leaf _root;
+        private readonly Dictionary<string, string> _gramDic = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _index = new Dictionary<string, string>();
+        private readonly bool _withLemmatization;
+        private readonly bool _useEnGrams;
         public Dict(bool useEnGrams, bool withLemmatization)
         {
-            using (Stream stream = _getXmlStream())
+            _withLemmatization = withLemmatization;
+            _useEnGrams = useEnGrams;
+            using (var reader = new StreamReader(_getTxtStream(), Encoding.UTF8))
             {
-                var rdr = XmlReader.Create(new StreamReader(stream, Encoding.UTF8));
-                _root = new Leaf(); 
-                var leafStack = new Stack<Leaf>();
-                while (rdr.Read())
+                var line = reader.ReadLine();
+                while (!string.IsNullOrWhiteSpace(line))
                 {
-                    if (rdr.IsStartElement("L") )
-                    {
-                        var leaf = new Leaf(rdr.GetAttribute("t"), useEnGrams);
-                        leaf.Char = rdr.GetAttribute("c")[0];
-                        if (leafStack.Count==0)
-                            _root.AddLeaf(leaf);
-                        else
-                            leafStack.Peek().AddLeaf(leaf);
-                        
-                        leafStack.Push(leaf);
-                    }
-                    else if (rdr.IsStartElement("G") )
-                    {
-                        var leaf = leafStack.Peek();
-                        var lemma = withLemmatization ? rdr.GetAttribute("l") : null;
-                        if (withLemmatization && lemma == null)
-                            lemma = leaf.Text;
-                        
-                        var keys = rdr.GetAttribute("v").Split(CommmaSplitDict);
-                        
-                        if (!useEnGrams)
-                            keys = keys.Select(x => string.IsNullOrEmpty(x) ? null : GramInfo.EnRuDic[x])
-                                .ToArray();
-                        
-                        var gramDic = keys.Select((val, i) => (gram: val, index: i))
-                            .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
-                            .ToDictionary(
-                                x => useEnGrams 
-                                    ? GramInfo.GramCatIndexDic[x.index].KeyEn 
-                                    : GramInfo.GramCatIndexDic[x.index].KeyRu,
-                                x => x.gram
-                            );   
-                        
-                        leaf.AddResult(
-                            new Leaf.LeafResult(
-                                new ReadOnlyDictionary<string, string>(gramDic), 
-                                lemma
-                            )
-                        );
-                    }
-                    else if (rdr.Name == "L")
-                    {
-                        leafStack.Pop();
-                    }
+                    var spltRez = line.Split('=');
+                    _gramDic[spltRez[0]] = spltRez[1];
+                    line = reader.ReadLine();
+                }
+
+                while (!reader.EndOfStream)
+                {
+                    line = reader.ReadLine();
+                    var spltRez = line.Split('\t');
+                    _index[spltRez[0]] = spltRez[1];
                 }
             }
         }
-        private Stream _getXmlStream()
+        private Stream _getTxtStream()
         {
-            var resourceName = $"DeepMorphy.WordDict.tree_dict.xml.gz";
+            var resourceName = $"DeepMorphy.WordDict.dict.txt.gz";
             return Utils.GetCompressedResourceStream(resourceName);
         }
         
         public MorphInfo Parse(string word)
         {
-            return _parse(0, word, _root);
+            if (_index.ContainsKey(word))
+            {
+                var srcTags = _index[word];
+                var tags = _parseTags(word, srcTags).ToArray();            
+                return new MorphInfo(word, tags, _useEnGrams);
+            }
+
+            return null;
         }
-        
-        private MorphInfo _parse(int i, string word, Leaf leaf)
+
+        private IEnumerable<Tag> _parseTags(string word, string srcTags)
         {
-            if (i == word.Length && leaf.HasResults)
-                return leaf.MorphInfo;
+            var tagsSrcs = srcTags.Split(';').ToArray();
+            foreach (var form in tagsSrcs)
+            {
+                var splRez = form.Split(':');
+                var gramDic = splRez[1]
+                                .Split(',')
+                                .Select((val, i) => (
+                                    gram: string.IsNullOrEmpty(val) ? string.Empty : _gramDic[val], 
+                                    index: i
+                                ))
+                                .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
+                                .ToDictionary(
+                                    x => _useEnGrams 
+                                        ? GramInfo.GramCatIndexDic[x.index].KeyEn 
+                                        : GramInfo.GramCatIndexDic[x.index].KeyRu,
+                                    x => _useEnGrams ? x.gram : GramInfo.EnRuDic[x.gram]
+                                );
+                string lemma = null;
+                if (_withLemmatization && !string.IsNullOrWhiteSpace(splRez[0]))
+                    lemma = splRez[0];    
+                else if (_withLemmatization)
+                    lemma = word;
 
-            if (i == word.Length)
-                return null;
-            
-            
-            var nLeaf = leaf[word[i]];
-
-            if (nLeaf == null)
-                return null;
-
-            return _parse(i + 1, word, nLeaf);
-
+                yield return new Tag(
+                    new ReadOnlyDictionary<string, string>(gramDic),
+                    (float) 1.0 / tagsSrcs.Length,
+                    lemma
+                );
+            }
         }
-
-
     }
 }

@@ -96,7 +96,8 @@ namespace DeepMorphy.PreProc
                     new Dictionary<string, GramCategory>()
                     {
                         {gram, new GramCategory(new[]{new Gram(tag, (float)1.0)})}
-                    }
+                    },
+                    _useEnGrams
                 );
 
                 TokensCache[tagKey] = token;

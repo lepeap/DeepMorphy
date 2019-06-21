@@ -10,17 +10,39 @@ namespace DeepMorphy
     /// </summary>
     public sealed class MorphInfo
     {
+        private readonly bool _useEnGrams;
         private Dictionary<string, GramCategory> _gramCats;
         
         internal MorphInfo(
             string text,
             Tag[] tags,
-            Dictionary<string, GramCategory> gramCats
+            Dictionary<string, GramCategory> gramCats,
+            bool useEnGrams=false
         )
         {
             Text = text;
             Tags = tags;
             _gramCats = gramCats;
+            _useEnGrams = useEnGrams;
+        }
+        
+        internal MorphInfo(
+            string text,
+            Tag[] tags,
+            bool useEnGrams
+        )
+        {
+            Text = text;
+            Tags = tags;
+            _useEnGrams = useEnGrams;
+        }
+        
+        internal MorphInfo MakeCopy()
+        {
+            if (_gramCats!=null)
+                return new MorphInfo(Text, Tags, _gramCats, _useEnGrams);
+            
+            return new MorphInfo(Text, Tags, _useEnGrams);
         }
         
         internal MorphInfo MakeCopy(string text, Func<string, string> lemmaGen)
@@ -31,7 +53,38 @@ namespace DeepMorphy
                     lemmaGen?.Invoke(t.Lemma), 
                     t.ClassIndex)
             ).ToArray();
-            return new MorphInfo(text, tagCombs, _gramCats);
+            return new MorphInfo(text, tagCombs, _gramCats, _useEnGrams);
+        }
+
+        private Dictionary<string, GramCategory> GramsCat
+        {
+            get
+            {
+                if (_gramCats == null)
+                {
+                    _gramCats = new Dictionary<string, GramCategory>();
+                    foreach (var gram in GramInfo.GramsInfo)
+                    {
+                        var gramName = _useEnGrams ? gram.KeyEn : gram.KeyRu;
+                        var grams = Tags.Select(x => x[gramName])
+                            .Where(x => x != null)
+                            .Distinct()
+                            .ToArray();
+
+                        if (grams.Length == 0)
+                        {
+                            grams = gram.Classes
+                                .Select(x => _useEnGrams ? x.KeyEn : x.KeyRu)
+                                .ToArray();
+                        }
+                        
+                        var power = (float)1.0 / grams.Length;
+                        _gramCats[gramName] = new GramCategory(grams.Select(x => new Gram(x, power)).ToArray());
+                    }
+                }
+
+                return _gramCats;
+            }
         }
         
         /// <summary>
@@ -78,10 +131,10 @@ namespace DeepMorphy
         {
             get
             {
-                if (!_gramCats.ContainsKey(gramCatKey))
+                if (!GramsCat.ContainsKey(gramCatKey))
                     return null;
                 
-                return _gramCats[gramCatKey];
+                return GramsCat[gramCatKey];
             }
         }
         
@@ -94,10 +147,10 @@ namespace DeepMorphy
         {
             get
             {
-                if (!_gramCats.ContainsKey(gramCatKey))
+                if (!GramsCat.ContainsKey(gramCatKey))
                     return new Gram(gramKey, 0);
 
-                var gramVal = _gramCats[gramCatKey].Grams
+                var gramVal = GramsCat[gramCatKey].Grams
                                             .FirstOrDefault(x=>x.Key==gramKey);
                 if (gramVal==null)
                     return new Gram(gramKey, 0);

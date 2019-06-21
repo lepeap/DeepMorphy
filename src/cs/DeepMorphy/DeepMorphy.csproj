@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="grams.xml" />
-        <EmbeddedResource Include="WordDict\tree_dict.xml.gz" />
+        <EmbeddedResource Include="WordDict\dict.txt.gz" />
         <EmbeddedResource Include="NeuralNet\frozen_model_small.pb" />
         <EmbeddedResource Include="NeuralNet\release_small.xml" />
     </ItemGroup>
