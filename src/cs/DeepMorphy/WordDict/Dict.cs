@@ -35,6 +35,9 @@ namespace DeepMorphy.WordDict
                     {
                         var leaf = leafStack.Peek();
                         var lemma = withLemmatization ? rdr.GetAttribute("l") : null;
+                        if (withLemmatization && lemma == null)
+                            lemma = leaf.Text;
+                        
                         var keys = rdr.GetAttribute("v").Split(CommmaSplitDict);
                         
                         if (!useEnGrams)

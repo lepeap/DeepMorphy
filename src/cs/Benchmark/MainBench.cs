@@ -60,13 +60,13 @@ namespace Benchmark
         }
          
         [Benchmark]
-        [ArgumentsSource(nameof(Get))]
+        [ArgumentsSource(nameof(GetData))]
         public MorphInfo[] Process(string[] words, int value)
         {
             return _process(words);
         }
         
-        public IEnumerable<object[]> Get()
+        public IEnumerable<object[]> GetData()
         {
             yield return new object[] { Words, Words.Length };
             

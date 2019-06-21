@@ -104,7 +104,27 @@ namespace DeepMorphy
                 
                 return gramVal;
             }
-        }       
+        }
+        
+        /// <summary>
+        /// Checks if word can have same lexeme
+        /// </summary>
+        /// <param name="mi">Second word</param>
+        /// <returns>True if words can have same lexeme</returns>
+        public bool CanBeSameLexeme(MorphInfo mi)
+        {
+            var l1 = mi.Tags
+                       .Select(x => x.Lemma)
+                       .ToList();
+            l1.Add(mi.Text);
+            
+            var l2 = Tags
+                .Select(x => x.Lemma)
+                .ToList();
+            l2.Add(Text);
+
+            return l1.Intersect(l2).Any();
+        }
 
         public override string ToString()
         {

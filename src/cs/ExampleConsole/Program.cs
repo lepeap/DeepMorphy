@@ -42,8 +42,9 @@ namespace ExampleConsole
             AnalisysPartExample1();
             AnalisysPartExample2();
             AnalisysPartExample3();
-
+            
             LemmatizationExample1();
+            LemmatizationExample2();
         }
 
         static void SimpleExample()
@@ -160,6 +161,7 @@ namespace ExampleConsole
             
             var words = new string[]
             {
+                "королевский",
                 "королевские",
                 "корабли",
                 "укрывал",
@@ -169,7 +171,36 @@ namespace ExampleConsole
                 "раскладывала", 
                 "обучает",
                 "юбка",
-                "шоссе",
+                "пересказывают",
+                "королевского"
+            };
+            
+            var results = m.Parse(words).ToArray();
+            var mainWord = results[0];
+            foreach (var morphInfo in results)
+            {
+                if (mainWord.CanBeSameLexeme(morphInfo))    
+                    Console.WriteLine(morphInfo.Text);
+            }
+        }
+
+                
+        static void LemmatizationExample2()
+        {
+            var m = new MorphAnalyzer(withLemmatization: true);
+            WriteHeader("Выводим все леммы из главных тэгов");
+            
+            var words = new string[]
+            {
+                "королевские",
+                "корабли",
+                "укрывал",
+                "обновляя",
+                "выходящие",
+                "собаковод",
+                "раскладывала", 
+                "обучает",
+                "юбка",
                 "пересказывают"
             };
             
@@ -177,11 +208,9 @@ namespace ExampleConsole
 
             foreach (var morphInfo in results)
             {
-                if (morphInfo.HasLemma("королевский"))    
-                    Console.WriteLine(morphInfo.Text);
+                Console.WriteLine(morphInfo.BestTag.Lemma);
             }
         }
-
 
         static void WriteHeader(string message)
         {
