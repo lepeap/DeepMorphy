@@ -17,8 +17,12 @@ namespace DeepMorphy
             Lemma = lemma;
         }
         
-        internal ReadOnlyDictionary<string, string> GramsDic { get; }
         internal int? ClassIndex { get; }
+        
+        /// <summary>
+        /// Gram key -> Gram value dictionary
+        /// </summary>
+        public ReadOnlyDictionary<string, string> GramsDic { get; }
 
         /// <summary>
         /// Array of grammemes keys for current word
