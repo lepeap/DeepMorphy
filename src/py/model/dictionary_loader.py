@@ -95,7 +95,7 @@ def set_lemmas(words, link_types, links):
         for norm_f in LEMMAS_PROPS:
             is_lemma = True
             for key in norm_f:
-                if word[key] != norm_f[key]:
+                if key in word and word[key] != norm_f[key]:
                     is_lemma = False
                     break
 
