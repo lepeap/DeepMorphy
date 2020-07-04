@@ -77,7 +77,6 @@ def parse_link_types(itr):
 
 def parse_links(itr):
     event, element = next(itr)
-
     while not (event == 'end' and element.tag == 'links'):
         if event == 'end' and element.tag == 'link':
             yield {
@@ -89,7 +88,6 @@ def parse_links(itr):
 
 
 def set_lemmas(words, link_types, links):
-
     lemmas_dict = {}
     for word in words:
         for norm_f in LEMMAS_PROPS:
@@ -145,8 +143,6 @@ def set_lemmas(words, link_types, links):
                 lemmas_dict[word['id']] = lemma
             else:
                 del word['lemma']
-
-
 
 
 doc = etree.iterparse(DIC_PATH, events=('start', 'end'))

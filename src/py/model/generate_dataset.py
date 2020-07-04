@@ -33,7 +33,6 @@ def vectorize_text(text):
             word_vect[index] = CHARS_INDEXES["UNDEFINED"]
 
     seq_len = len(text)
-
     return word_vect, seq_len
 
 
@@ -74,7 +73,6 @@ def select_uniform_items(items_dict, persent, ds_info):
             i += 1
 
 
-
 def save_dataset(items_dict, file_prefix):
     total_count = sum([len(items_dict[key]) for key in items_dict])
     logging.info(f"Class '{file_prefix}': {total_count}")
@@ -87,7 +85,6 @@ def save_dataset(items_dict, file_prefix):
     for key in items_dict:
         items.extend(items_dict[key])
     RANDOM.shuffle(items)
-
 
     logging.info(f"Saving '{file_prefix}' train dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_train_dataset.pkl"), 'wb+') as f:
@@ -137,7 +134,6 @@ def generate_classification_dataset(vec_words, cls_type, cls_dic):
             })
             rez_items[cur_cls] = items
 
-
     save_dataset(rez_items, cls_type)
 
 
@@ -174,10 +170,10 @@ def create_lemma_dataset(vec_words, main_cls_dic):
 
 
 def create_datasets(words):
-    #if os.path.isdir(DATASET_PATH):
-    #    shutil.rmtree(DATASET_PATH)
+    if os.path.isdir(DATASET_PATH):
+        shutil.rmtree(DATASET_PATH)
 
-    #os.mkdir(DATASET_PATH)
+    os.mkdir(DATASET_PATH)
     vec_words = vectorize_words(words)
     for cls_type in CLASSES_INDEXES:
         cls_dic = CLASSES_INDEXES[cls_type]
