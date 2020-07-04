@@ -1,12 +1,11 @@
 import logging
 import pickle
 from tqdm import tqdm
-from utils import get_grams_info, config
-from utils import get_flat_words
 from lxml import etree
+from utils import get_grams_info, CONFIG
+from utils import get_flat_words
 
 
-CONFIG = config()
 DIC_PATH = CONFIG['dict_path']
 MAX_WORD_SIZE = CONFIG['max_word_size']
 DATASET_WORDS_PATH = CONFIG['dataset_words_path']
@@ -56,6 +55,7 @@ def parse_words(itr):
             cur_word = None
 
         event, element = next(itr)
+
 
 def parse_link_types(itr):
     event, element = next(itr)

@@ -6,9 +6,9 @@ import yaml
 import tqdm
 import pickle
 import logging
-from utils import get_flat_words, config
+from utils import CONFIG
 
-CONFIG = config()
+CONFIG = CONFIG()
 NAR_REG = re.compile("\d+-.*")
 RANDOM_SEED = 1917
 DATASET_PATH = CONFIG['dataset_path']
@@ -59,7 +59,6 @@ for key in p_dic:
     POST_POWER_DICT[key] = p_dic[key]['power'] if 'power' in p_dic[key] else 1
 
 
-
 class Word:
     def __init__(self, word):
         self.word = word
@@ -95,7 +94,6 @@ class Word:
 
     def __repr__(self):
         return f"{self.text} - {self.text[self.index:]}"
-
 
 
 def get_numbers():
@@ -142,7 +140,6 @@ def get_numbers():
 
 
 def release_tree_dict(with_wrongs=True):
-
     with open(DICT_WORDS_PATH, 'rb') as f:
         words = pickle.load(f)
         words = [Word(s_word) for s_word in words]
@@ -186,7 +183,6 @@ def release_tree_dict(with_wrongs=True):
 
             words.append(word)
 
-
     ind_keys = string.ascii_lowercase + string.ascii_uppercase
     index_dict = {}
     cur_index = 0
@@ -226,13 +222,9 @@ def release_tree_dict(with_wrongs=True):
         with gzip.open(path, 'wb+') as f:
             f.write(rez)
 
-
-
-
-
-
     logging.info("Tree dictionary released")
     logging.info(f"Words count {len(words)}")
+
 
 if __name__ == "__main__":
     release_tree_dict()

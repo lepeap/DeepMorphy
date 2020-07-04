@@ -1,9 +1,13 @@
+random_seed: 1917
 validation_persent: 2
 test_persent: 1
-dict_path: /home/alex/Downloads/dict.opcorpora.xml
-dataset_words_path: dataset_words.pkl
-dict_words_path: dict_words.pkl
-dataset_path: dataset
+dict_path: /Users/Admin/Projects/DeepMorphy/dict.opcorpora.xml
+dataset_words_path: data/dataset_words.pkl
+dict_words_path: data/dict_words.pkl
+vect_words_path: data/vec_words.pkl
+cls_classes_path: data/classification_classes.pkl
+dataset_path: data/dataset
+
 max_word_size: 32
 model_key: small #big
 export_path: export
@@ -366,6 +370,7 @@ grammemes_types:
         desc_ru: средний род
         keys:
           - neut
+
 
   nmbr:
     index: 2

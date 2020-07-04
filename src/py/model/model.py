@@ -5,13 +5,13 @@ from graph.gram_cls import GramCls
 from graph.main_cls import MainCls
 from graph.lemm import Lemm
 from graph.base import TfContext
-from utils import MyDefaultDict, config
+from utils import MyDefaultDict, CONFIG
 from tensorflow.python.tools import freeze_graph
 
 
 class RNN:
     def __init__(self, for_usage):
-        self.config = config()
+        self.config = CONFIG()
         self.filler = self.config['filler']
         self.checkpoints_keep = 200000
         self.for_usage = for_usage
@@ -45,10 +45,9 @@ class RNN:
         if not os.path.exists(self.save_path):
             os.mkdir(self.save_path)
 
-        self.__build_graph__()
+        self._build_graph()
 
-
-    def __build_graph__(self):
+    def _build_graph(self):
         self.graph = tf.Graph()
         self.checks = []
         self.xs = []
@@ -125,6 +124,16 @@ class RNN:
             self.lem_graph_part.build_graph_end()
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=self.checkpoints_keep)
 
+    def _restore(self, tc):
+        latest_checkpoint = tf.train.latest_checkpoint(self.save_path)
+        for gram in self.gram_keys:
+            if gram not in self.config['ignore_restore']:
+                self.gram_graph_parts[gram].restore(tc, latest_checkpoint)
+        if self.main_graph_part.key not in self.config['ignore_restore']:
+            self.main_graph_part.restore(tc, latest_checkpoint)
+        if self.lem_graph_part.key not in self.config['ignore_restore']:
+            self.lem_graph_part.restore(tc, latest_checkpoint)
+
     def train(self):
         config = tf.ConfigProto(allow_soft_placement=True)
         if not os.path.isdir(self.save_path):
@@ -135,7 +144,7 @@ class RNN:
             sess.run(tf.local_variables_initializer())
 
             tc = TfContext(sess, self.saver, self.learn_rate)
-            self.__restore__(tc)
+            self._restore(tc)
             sess.run(self.reset_optimizer)
 
             for gram in self.gram_keys:
@@ -147,23 +156,6 @@ class RNN:
 
             if self.lem_graph_part.key in self.train_steps:
                 self.lem_graph_part.train(tc)
-
-
-    def __restore__(self, tc):
-        latest_checkpoint = tf.train.latest_checkpoint(self.save_path)
-        for gram in self.gram_keys:
-            if gram not in self.config['ignore_restore']:
-                self.gram_graph_parts[gram].restore(tc, latest_checkpoint)
-        if self.main_graph_part.key not in self.config['ignore_restore']:
-            self.main_graph_part.restore(tc, latest_checkpoint)
-        if self.lem_graph_part.key not in self.config['ignore_restore']:
-            self.lem_graph_part.restore(tc, latest_checkpoint)
-
-
-
-
-
-
 
     def release(self):
         with tf.Session(graph=self.graph) as sess:
@@ -177,7 +169,6 @@ class RNN:
 
             if os.path.isdir(self.export_path):
                 shutil.rmtree(self.export_path)
-
 
             output_dic = {}
             gram_op_dic = {}
@@ -239,4 +230,3 @@ class RNN:
             return frozen_path, \
                    gram_op_dic , \
                    op_dic
-

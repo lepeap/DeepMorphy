@@ -3,12 +3,12 @@ import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 from model import RNN
-from utils import config, decode_word
+from utils import CONFIG, decode_word
 
 
 class Tester:
     def __init__(self):
-        self.config = config()
+        self.config = CONFIG()
         self.config['graph_part_configs']['lemm']['use_cls_placeholder'] = True
         self.rnn = RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
@@ -241,8 +241,6 @@ class Tester:
             error_words = list(set(error_words))
             print(f'Total unique error: {len(error_words)}')
             return error_words
-
-
 
     def get_test_lemmas(self, words):
         with tf.Session(graph=self.rnn.graph) as sess:

@@ -4,7 +4,7 @@ import logging
 import numpy as np
 from shutil import copyfile
 from model import RNN
-from utils import config
+from utils import CONFIG
 from lxml import etree
 from xml.etree.ElementTree import ElementTree
 from tester import Tester
@@ -12,7 +12,7 @@ from tester import Tester
 
 class Releaser:
     def __init__(self):
-        self.config = config()
+        self.config = CONFIG()
         self.dataset_path = self.config['dict_path']
         self.model_key = self.config['model_key']
         self.chars = self.config['chars']
