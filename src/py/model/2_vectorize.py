@@ -37,6 +37,8 @@ def vectorize_words(words_dic):
                 form['text'] = form['text'].replace('ё', 'е')
                 if 'lemma' in form:
                     form['lemma'] = form['lemma'].replace('ё', 'е')
+
+                form['id'] = ('е', form['id'])
                 forms.append(form)
             word = word.replace('ё', 'е')
             vect_dic[word] = {

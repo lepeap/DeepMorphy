@@ -15,7 +15,6 @@ SRC_CONVERT, CLASSES_INDEXES = get_grams_info(CONFIG)
 
 def generate_dataset(vec_words, cls_type, cls_dic):
     ordered_keys = [cls for cls in sorted(cls_dic, key=lambda cls: cls_dic[cls])]
-
     weights = [0 for key in ordered_keys]
     for word in tqdm(vec_words, desc=f"Calculating {cls_type} weights"):
         for form in vec_words[word]['forms']:
@@ -52,9 +51,9 @@ def generate_dataset(vec_words, cls_type, cls_dic):
 
 
 def generate_all(vec_words):
-    for cls_type in CLASSES_INDEXES:
-        cls_dic = CLASSES_INDEXES[cls_type]
-        generate_dataset(vec_words, cls_type, cls_dic)
+    #for cls_type in CLASSES_INDEXES:
+    #    cls_dic = CLASSES_INDEXES[cls_type]
+    #    generate_dataset(vec_words, cls_type, cls_dic)
 
     un_classes = []
     for word in tqdm(vec_words, desc="Setting main class"):
@@ -74,8 +73,8 @@ def generate_all(vec_words):
         tpl: index
         for index, tpl in enumerate(un_classes)
     }
-    generate_dataset(vec_words, 'main', cls_dic)
-    logging.info(f"Main classes count: {len(cls_dic)}")
+    #generate_dataset(vec_words, 'main', cls_dic)
+    #logging.info(f"Main classes count: {len(cls_dic)}")
     with open(CLS_CLASSES_PATH, 'wb+') as f:
         pickle.dump(cls_dic, f)
 

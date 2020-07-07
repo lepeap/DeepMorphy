@@ -87,7 +87,8 @@ def parse_links(itr):
         event, element = next(itr)
 
 
-def set_lemmas(words, link_types, links):
+def set_lemma_and_inflect_id(words, link_types, links):
+    same_inflect_id_post = ['noun', 'adjf', 'infn']
     lemmas_dict = {}
     for word in words:
         for norm_f in LEMMAS_PROPS:
@@ -102,16 +103,20 @@ def set_lemmas(words, link_types, links):
                 del word['lemma']
                 break
 
+        if 'lemma' in word and word['post'] in same_inflect_id_post:
+            word['inflect_id'] = word['id']
+
     inv_link_type_dict = {
         link_types[key]: key
         for key in link_types
     }
 
     links = {
-        (link['to'], inv_link_type_dict[link['type']]) : link['from']
+        (link['to'], inv_link_type_dict[link['type']]): link['from']
         for link in links
     }
 
+    prtf_dict = {}
     for word in words:
         link_type = None
         if word['post'] == 'verb':
@@ -125,24 +130,35 @@ def set_lemmas(words, link_types, links):
         elif word['post'] == 'comp':
             link_type = 'ADJF-COMP'
 
-        if link_type:
-            key = (word['id'], link_type)
-            if key in links and links[key] in lemmas_dict:
-                lemma = lemmas_dict[links[key]]
-                word['lemma'] = lemma
-                lemmas_dict[word['id']] = lemma
-            else:
-                del word['lemma']
+        if not link_type:
+            continue
+
+        key = (word['id'], link_type)
+        if key in links and links[key] in lemmas_dict:
+            lemma = lemmas_dict[links[key]]
+            word['lemma'] = lemma
+            lemmas_dict[word['id']] = lemma
+        else:
+            del word['lemma']
+
+        if key in links:
+            word['inflect_id'] = links[key]
+
+        if key in links and word['post'] == 'prtf':
+            prtf_dict[word['id']] = word['inflect_id']
 
     for word in words:
-        if word['post'] == 'prts':
-            key = (word['id'], 'PRTF-PRTS')
-            if key in links:
-                lemma = lemmas_dict[links[key]]
-                word['lemma'] = lemma
-                lemmas_dict[word['id']] = lemma
-            else:
-                del word['lemma']
+        if word['post'] != 'prts':
+            continue
+
+        key = (word['id'], 'PRTF-PRTS')
+        if key in links:
+            lemma = lemmas_dict[links[key]]
+            word['lemma'] = lemma
+            word['inflect_id'] = prtf_dict[links[key]]
+            lemmas_dict[word['id']] = lemma
+        else:
+            del word['lemma']
 
 
 doc = etree.iterparse(DIC_PATH, events=('start', 'end'))
@@ -156,13 +172,10 @@ words = list(parse_words(itr))
 link_types = parse_link_types(itr)
 links = list(parse_links(itr))
 words = list(get_flat_words(words))
-
-set_lemmas(words, link_types, links)
-
+set_lemma_and_inflect_id(words, link_types, links)
 words = [dict(t) for t in {tuple(sorted(d.items())) for d in words}]
 dict_words = [word for word in words if word['post'] in DICT_POST_TYPES]
 dataset_words = [word for word in words if word['post'] not in DICT_POST_TYPES]
-
 dataset_words_dic = {}
 for word in tqdm(dataset_words):
     if len(word['text']) > MAX_WORD_SIZE:
