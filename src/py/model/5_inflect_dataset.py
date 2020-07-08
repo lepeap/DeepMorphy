@@ -63,9 +63,11 @@ def generate_dataset(forms_dict, vect_words, cls_dic):
                 rez_dict[y_cls] = []
 
             rez_dict[y_cls].append(dict(
+                x_src=root['text'],
                 x=x,
                 x_cls=x_cls,
                 x_len=x_len,
+                y_src=form['text'],
                 y=y,
                 y_cls=y_cls,
                 y_len=y_len

@@ -191,8 +191,6 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
     with open(path, 'rb') as f:
         items = pickle.load(f)
 
-    tttt = 0
-
     batches = [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
     cur_step = []
     for batch in batches:
@@ -220,6 +218,45 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
             y_src=y_src
         ))
 
+    if len(cur_step) == devices_count and all([len(step['x']) == batch_size for step in cur_step]):
+        yield cur_step
+
+
+def load_inflect_dataset(dataset_path, devices_count, type, batch_size):
+    path = os.path.join(dataset_path, f"inflect_{type}_dataset.pkl")
+    with open(path, 'rb') as f:
+        items = pickle.load(f)
+
+    tttt = 0
+
+    batches = [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
+    cur_step = []
+    for batch in batches:
+        x = np.stack([item['x'] for item in batch])
+        x_seq_len = np.asarray([item['x_len'] for item in batch], np.int)
+        x_cls = np.asarray([item['x_cls'] for item in batch], np.int)
+        y_seq_len = np.asarray([item['y_len'] for item in batch], np.int)
+        y_cls = np.asarray([item['y_cls'] for item in batch], np.int)
+        max_len = y_seq_len.max()
+        y = np.asarray([item['y'][:max_len] for item in batch])
+        x_src = [item['x_src'] for item in batch]
+        y_src = [item['y_src'] for item in batch]
+
+        if len(cur_step) == devices_count:
+            yield cur_step
+            cur_step = []
+
+        cur_step.append(dict(
+            x=x,
+            x_seq_len=x_seq_len,
+            x_cls=x_cls,
+            y=y,
+            y_seq_len=y_seq_len,
+            y_cls=y_cls,
+            x_src=x_src,
+            y_src=y_src
+        ))
+
         #TODO remove
         #if tttt>0:
         #    return
@@ -227,7 +264,6 @@ def load_lemma_dataset(dataset_path, devices_count, type, batch_size):
 
     if len(cur_step) == devices_count and all([len(step['x']) == batch_size for step in cur_step]):
         yield cur_step
-
 
 def decoder(helper, encoder_outputs, seq_len, settings, chars_count, batch_size, for_usage):
     #attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(

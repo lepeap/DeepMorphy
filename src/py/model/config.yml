@@ -37,23 +37,25 @@ publish_test_paths:
 publish_gram_doc_path: ../../../gram.md
 
 train_devices:
-  - /gpu:0
-  - /gpu:1
-  - /gpu:2
+  - /cpu:0
+#  - /gpu:0
+#  - /gpu:1
+#  - /gpu:2
 filler: "############################################################################"
 start_token: 36
 end_token: 35
 main_class_k: 4
 
 train_steps:
-  - post
-  - gndr
-  - nmbr
-  - case
-  - tens
-  - pers
-  - main
-  - lemm
+  #- post
+  #- gndr
+  #- nmbr
+  #- case
+  #- tens
+  #- pers
+  #- main
+  #- lemm
+  - inflect
 
 
 ignore_restore: []
@@ -90,6 +92,29 @@ graph_part_configs:
     train_batch_size: 4096
 
   lemm:
+    char_vector_size: 64
+    max_length: 33
+    batch_size: 8192
+    stop_training_acc_delta: 0.00001
+    return_step: 2
+    learn_rate: 0.0001
+    use_sampling: false
+    main_metric_type: Accuracy
+    sampling_probability: 0.25
+    use_cls_placeholder: false
+    encoder:
+      char_vector_size: 64
+      rnn_state_size: 64
+      rnn_layers_count: 2
+      rnn_bidirectional: true
+      use_residual: false
+    decoder:
+      rnn_state_size: 128
+      rnn_layers_count: 1
+      keep_drop: 1
+      use_residual: false
+
+  inflect:
     char_vector_size: 64
     max_length: 33
     batch_size: 8192

@@ -161,7 +161,7 @@ class GraphPartBase(ABC):
             vars = [
                 var
                 for var in tf.global_variables(self.main_scope_name)
-                #if "Adam" not in var.name
+                if "Adam" not in var.name
             ]
             saver = tf.train.Saver(var_list=vars)
             saver.restore(tc.sess, check_point)

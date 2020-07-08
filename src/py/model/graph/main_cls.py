@@ -27,7 +27,6 @@ class MainCls(GraphPartBase):
 
         y = tf.placeholder(dtype=tf.int32, shape=(None, self.main_classes_count), name='Y')
         weights = tf.placeholder(dtype=tf.float32, shape=(None,), name='Weight')
-
         x_emd_init = tf.random_normal((self.chars_count, self.settings['char_vector_size']))
         x_emb = tf.get_variable("Embeddings", initializer=x_emd_init)
         rnn_input = tf.nn.embedding_lookup(x_emb, x)
@@ -39,7 +38,6 @@ class MainCls(GraphPartBase):
         self.keep_drops.append(cls_keep_drop)
 
         init_state = tf.concat(gram_probs, 1)
-
         with tf.variable_scope("InitRnnState", reuse=tf.AUTO_REUSE) as scope:
             rez_size = self.settings['rnn_state_size']
             w_softmax = tf.get_variable("W", (init_state.shape[1], rez_size))
