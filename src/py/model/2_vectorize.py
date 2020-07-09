@@ -30,21 +30,6 @@ def vectorize_words(words_dic):
             'vect': vectorize_text(word),
             'forms': words_dic[word]
         }
-        if 'ё' in word:
-            forms = []
-            for form in words_dic[word]:
-                form = dict(form)
-                form['text'] = form['text'].replace('ё', 'е')
-                if 'lemma' in form:
-                    form['lemma'] = form['lemma'].replace('ё', 'е')
-
-                form['id'] = ('е', form['id'])
-                forms.append(form)
-            word = word.replace('ё', 'е')
-            vect_dic[word] = {
-                'vect': vectorize_text(word),
-                'forms': forms
-            }
 
     return vect_dic
 
@@ -56,5 +41,3 @@ vec_words = vectorize_words(words_dic)
 
 with open(VECT_PATH, 'wb+') as f:
     pickle.dump(vec_words, f)
-
-
