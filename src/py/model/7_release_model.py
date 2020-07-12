@@ -1,18 +1,19 @@
+import logging
 import os
 import pickle
-import logging
-import numpy as np
 from shutil import copyfile
+from xml.etree.ElementTree import ElementTree
+import numpy as np
+from lxml import etree
+
 from model import RNN
 from utils import CONFIG
-from lxml import etree
-from xml.etree.ElementTree import ElementTree
 from tester import Tester
 
 
 class Releaser:
     def __init__(self):
-        self.config = CONFIG()
+        self.config = CONFIG
         self.dataset_path = self.config['dict_path']
         self.model_key = self.config['model_key']
         self.chars = self.config['chars']
@@ -38,6 +39,10 @@ class Releaser:
             os.path.join(path, "dataset_info.txt")
             for path in self.config['publish_dataset_info_paths']
         ]
+        self.public_inflect_templates_paths = [
+            os.path.join(path, "inflect_templates.xml")
+            for path in self.config['public_inflect_templates_paths']
+        ]
         self.tests_results_paths = self.config['publish_test_paths']
         self.classes_dic = self.config['main_classes']
         self.rev_classes_dic = {
@@ -50,6 +55,7 @@ class Releaser:
         for path in self.pd_publish_paths:
             copyfile(pd_release_path, path)
 
+        self.__release_inflect_templates_xml__()
         self.__release_gramm_docs__()
         self.__release_grams_xml__()
         self.__release_test_files__()
@@ -149,6 +155,25 @@ class Releaser:
             with open(path, 'wb+') as f:
                 tree.write(f, xml_declaration=True, encoding='utf-8')
 
+    def __release_inflect_templates_xml__(self):
+        with open(self.config['inflect_templates_path'], 'rb') as f:
+            templates = pickle.load(f)
+
+        root = etree.Element('Templates')
+        for main_key in templates:
+            temp_el = etree.Element("T")
+            temp_el.set('main', str(self.classes_dic[main_key]))
+            root.append(temp_el)
+            for form in templates[main_key]:
+                form_el = etree.Element("F")
+                form_el.set('id', str(self.classes_dic[form]))
+                temp_el.append(form_el)
+
+        tree = ElementTree(root)
+        for path in self.public_inflect_templates_paths:
+            with open(path, 'wb+') as f:
+                tree.write(f, xml_declaration=True, encoding='utf-8')
+
     def __release_dataset_info__(self):
         doc = etree.iterparse(self.dataset_path, events=('start', 'end'))
         itr = iter(doc)
@@ -226,7 +251,7 @@ class Releaser:
             mds.append(f"- **{gram_cat['name'].capitalize()}** (ru='{gram_cat['key_ru']}', en='{gram_cat_key}') :")
 
             classes = dict(gram_cat['classes'])
-            if gram_cat_key=='post':
+            if gram_cat_key == 'post':
                 classes.update(self.config['dict_post_types'])
                 classes.update(self.config['other_post_types'])
 

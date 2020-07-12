@@ -5,6 +5,7 @@ from utils import get_grams_info, CONFIG, save_dataset
 VECT_PATH = CONFIG['vect_words_path']
 CLS_CLASSES_PATH = CONFIG['cls_classes_path']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
+TEMPLATES_PATH = CONFIG['inflect_templates_path']
 SRC_CONVERT, CLASSES_INDEXES = get_grams_info(CONFIG)
 
 
@@ -84,4 +85,7 @@ with open(CLS_CLASSES_PATH, 'rb') as f:
 
 forms_dict = create_forms_dict(vwords)
 templates = create_templates(forms_dict)
+with open(TEMPLATES_PATH, 'wb+') as f:
+    pickle.dump(templates, f)
+
 generate_dataset(forms_dict, vwords, cls_dic)

@@ -156,15 +156,15 @@ class GraphPartBase(ABC):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
             self.__build_graph_for_device__(*args)
 
-    def restore(self, tc, check_point):
+    def restore(self, sess, check_point):
         try:
             vars = [
                 var
-                for var in tf.global_variables(self.main_scope_name)
+                for var in tf.global_variables(f"{self.main_scope_name}/")
                 if "Adam" not in var.name
             ]
             saver = tf.train.Saver(var_list=vars)
-            saver.restore(tc.sess, check_point)
+            saver.restore(sess, check_point)
             tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} success")
         except Exception as ex:
             tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} failed. Error: {ex}")

@@ -46,7 +46,6 @@ class Lemm(GraphPartBase):
         initializer=tf.contrib.layers.xavier_initializer()
         y_seq_len += 1
 
-
         with tf.variable_scope("Encoder", reuse=tf.AUTO_REUSE):
             encoder_char_embeddings = tf.get_variable(
                 "CharEmbeddings",

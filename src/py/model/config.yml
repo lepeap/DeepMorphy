@@ -7,6 +7,7 @@ dict_words_path: data/dict_words.pkl
 vect_words_path: data/vec_words.pkl
 cls_classes_path: data/classification_classes.pkl
 dataset_path: data/dataset
+inflect_templates_path: data/inflect_templates.pkl
 
 max_word_size: 32
 model_key: small #big
@@ -33,6 +34,10 @@ publish_dataset_info_paths:
 
 publish_test_paths:
   - ../../cs/MetricsCalc/
+
+public_inflect_templates_paths:
+  - latest_release
+  - ../../cs/DeepMorphy/
 
 publish_gram_doc_path: ../../../gram.md
 

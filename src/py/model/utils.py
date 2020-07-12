@@ -80,8 +80,7 @@ def get_grams_info(config):
 
 
 def decode_word(vect_mas):
-    conf = CONFIG()
-
+    conf = CONFIG
     word = []
     for ci in vect_mas:
         if ci == conf['end_token']:

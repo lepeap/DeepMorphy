@@ -129,15 +129,15 @@ class RNN:
             self.inflect_graph_part.build_graph_end()
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=self.checkpoints_keep)
 
-    def _restore(self, tc):
+    def restore(self, sess):
         latest_checkpoint = tf.train.latest_checkpoint(self.save_path)
         for gram in self.gram_keys:
             if gram not in self.config['ignore_restore']:
-                self.gram_graph_parts[gram].restore(tc, latest_checkpoint)
+                self.gram_graph_parts[gram].restore(sess, latest_checkpoint)
         if self.main_graph_part.key not in self.config['ignore_restore']:
-            self.main_graph_part.restore(tc, latest_checkpoint)
+            self.main_graph_part.restore(sess, latest_checkpoint)
         if self.lem_graph_part.key not in self.config['ignore_restore']:
-            self.lem_graph_part.restore(tc, latest_checkpoint)
+            self.lem_graph_part.restore(sess, latest_checkpoint)
 
     def train(self):
         config = tf.ConfigProto(allow_soft_placement=True)
@@ -149,7 +149,7 @@ class RNN:
             sess.run(tf.local_variables_initializer())
 
             tc = TfContext(sess, self.saver, self.learn_rate)
-            self._restore(tc)
+            self.restore(sess)
             sess.run(self.reset_optimizer)
 
             for gram in self.gram_keys:
@@ -173,7 +173,7 @@ class RNN:
             # Loading checkpoint
             latest_checkpoint = tf.train.latest_checkpoint(self.save_path)
             if latest_checkpoint:
-                self.saver.restore(sess, latest_checkpoint)
+                self.restore(sess)
 
             if os.path.isdir(self.export_path):
                 shutil.rmtree(self.export_path)
@@ -193,6 +193,8 @@ class RNN:
             output_dic['res_values'] = self.main_graph_part.results[0].values
             output_dic['res_indexes'] = self.main_graph_part.results[0].indices
             output_dic['res_lem'] = self.lem_result
+            output_dic['res_inflect'] = self.inflect_graph_part.results[0]
+
             # Saving model
             tf.saved_model.simple_save(sess,
                                        self.export_path,
@@ -201,7 +203,8 @@ class RNN:
                                            'x_val': self.x_vals[0],
                                            'x_shape': self.x_shape[0],
                                            'seq_len': self.seq_lens[0],
-                                           'batch_size': self.batch_size
+                                           'batch_size': self.batch_size,
+                                           'x_cls': self.inflect_graph_part.x_cls[0]
                                        },
                                        outputs=output_dic)
 

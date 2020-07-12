@@ -8,7 +8,7 @@ from utils import CONFIG, decode_word
 
 class Tester:
     def __init__(self):
-        self.config = CONFIG()
+        self.config = CONFIG
         self.config['graph_part_configs']['lemm']['use_cls_placeholder'] = True
         self.rnn = RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
@@ -21,9 +21,7 @@ class Tester:
         with tf.Session(config=config, graph=self.rnn.graph) as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
-            latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
-            # latest_checkpoint = 'checkpoints/-313'
-            self.rnn.saver.restore(sess, latest_checkpoint)
+            self.rnn.restore(sess)
 
             for gram in self.rnn.gram_keys:
                 full_cls_acc, part_cls_acc = self.__test_classification__(sess, gram, self.rnn.gram_graph_parts[gram])
@@ -203,8 +201,7 @@ class Tester:
         with tf.Session(graph=self.rnn.graph) as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
-            latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
-            self.rnn.saver.restore(sess, latest_checkpoint)
+            self.rnn.restore(sess)
             error_words = []
 
             #main_cls_items = self.__load_all_datasets('main')
