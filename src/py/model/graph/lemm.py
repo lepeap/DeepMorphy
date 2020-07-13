@@ -95,7 +95,6 @@ class Lemm(GraphPartBase):
             )
 
         with tf.variable_scope('Decoder', reuse=tf.AUTO_REUSE) as scope:
-
             if not self.for_usage:
                 start_tokens_emd = tf.nn.embedding_lookup(decoder_char_embeddings, start_tokens)
                 start_tokens_emd = tf.reshape(start_tokens_emd, (batch_size, -1, self.settings['char_vector_size']))

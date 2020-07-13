@@ -112,8 +112,13 @@ class RNN:
                                                                    seq_len,
                                                                    batch_size,
                                                                    cls)
-                        self.lem_result = tf.reshape(self.lem_graph_part.results[0],
-                                                     (self.batch_size, self.main_class_k, -1))
+                        self.lem_cls_result = tf.reshape(self.lem_graph_part.results[0],
+                                                         (self.batch_size, self.main_class_k, -1))
+                        self.lem_graph_part.build_graph_for_device(x,
+                                                                   seq_len,
+                                                                   self.batch_size)
+                        self.lem_result = self.lem_graph_part.results[1]
+                        self.lem_class_pl = self.lem_graph_part.cls[0]
 
                     else:
                         self.lem_graph_part.build_graph_for_device(x,
@@ -121,6 +126,10 @@ class RNN:
                                                                    self.batch_size)
 
                     self.inflect_graph_part.build_graph_for_device(x, seq_len, self.batch_size)
+                    if self.for_usage:
+                        self.inflect_result = self.inflect_graph_part.results[0]
+                        self.inflect_x_class_pl = self.inflect_graph_part.x_cls[0]
+                        self.inflect_y_class_pl = self.inflect_graph_part.y_cls[0]
 
             for gram in self.gram_keys:
                 self.gram_graph_parts[gram].build_graph_end()
@@ -192,8 +201,11 @@ class RNN:
 
             output_dic['res_values'] = self.main_graph_part.results[0].values
             output_dic['res_indexes'] = self.main_graph_part.results[0].indices
-            output_dic['res_lem'] = self.lem_result
-            output_dic['res_inflect'] = self.inflect_graph_part.results[0]
+
+            output_dic['lem_cls_result'] = self.lem_cls_result
+            output_dic['lem_result'] = self.lem_result
+
+            output_dic['inflect_result'] = self.inflect_graph_part.results[0]
 
             # Saving model
             tf.saved_model.simple_save(sess,
@@ -204,7 +216,9 @@ class RNN:
                                            'x_shape': self.x_shape[0],
                                            'seq_len': self.seq_lens[0],
                                            'batch_size': self.batch_size,
-                                           'x_cls': self.inflect_graph_part.x_cls[0]
+                                           'lem_cls': self.lem_class_pl,
+                                           'inflect_x_cls': self.inflect_x_class_pl,
+                                           'inflect_y_cls': self.inflect_y_class_pl
                                        },
                                        outputs=output_dic)
 
