@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace DeepMorphy
 {
     /// <summary>
+    /// Результат морфологического анализа
+    /// --------------------
     /// Result of morphology analysis for word
     /// </summary>
     public sealed class MorphInfo
@@ -25,7 +26,7 @@ namespace DeepMorphy
             _gramCats = gramCats;
             _useEnGrams = useEnGrams;
         }
-        
+
         internal MorphInfo(
             string text,
             Tag[] tags,
@@ -35,6 +36,150 @@ namespace DeepMorphy
             Text = text;
             Tags = tags;
             _useEnGrams = useEnGrams;
+        }
+        
+        /// <summary>
+        /// Анализируемое слово
+        /// --------------------
+        /// Text of analyzed word
+        /// </summary>
+        public string Text { get; }
+        
+        /// <summary>
+        /// Самые вероятные теги слова
+        /// --------------------
+        /// Most probable combinations of grammemes
+        /// </summary>
+        public Tag[] Tags { get; }
+        
+        /// <summary>
+        /// Самое вероятный тег
+        /// --------------------
+        /// Best combination of grammemes
+        /// </summary>
+        public Tag BestTag => Tags?.First();
+        
+        /// <summary>
+        /// Проверяет есть ли в данном теге перечисленные граммемы
+        /// --------------------
+        /// Checks if any of tags has grammeme combination
+        /// </summary>
+        /// <param name="grams">
+        /// Ключи граммем
+        /// --------------------
+        /// Gramme keys
+        /// </param>
+        /// <returns>
+        /// true, если граммемы присутсвуют в теге
+        /// --------------------
+        /// true if has
+        /// </returns>
+        public bool HasCombination(params string[] grams)
+        {
+            return Tags.Any(x => x.Has(grams));
+        }
+        
+        
+        /// <summary>
+        /// Проверяет есть ли в каком-нибудь из тегов указанная лемма
+        /// --------------------
+        /// Checks if any of tags has lemma
+        /// </summary>
+        /// <param name="lemma">
+        /// Лемма
+        /// --------------------
+        /// Lemma value to check
+        /// </param>
+        /// <returns>
+        /// true, если лемма присутсвует
+        /// --------------------
+        /// true if has
+        /// </returns>
+        public bool HasLemma(string lemma)
+        {
+            return Tags.Any(x => x.Lemma == lemma);
+        }
+        
+        /// <summary>
+        /// Возвращает распределение вероятности в грамматической категории
+        /// --------------------
+        /// Returns probability distribution for grammemes in selected grammatical category
+        /// </summary>
+        /// <param name="gramCatKey">
+        /// Ключ грамматической категории
+        /// --------------------
+        /// Grammatical category key
+        /// </param>
+        public GramCategory this[string gramCatKey]
+        {
+            get
+            {
+                if (!GramsCat.ContainsKey(gramCatKey))
+                    return null;
+                
+                return GramsCat[gramCatKey];
+            }
+        }
+        
+        /// <summary>
+        /// Возвращает вероятность граммемы в грамматической категории
+        /// --------------------
+        /// Returns probability of grammeme in grammatical category
+        /// </summary>
+        /// <param name="gramCatKey">
+        /// Ключ грамматической категории
+        /// --------------------
+        /// Grammatical category key
+        /// </param>
+        /// <param name="gramKey">
+        /// Ключ граммемы
+        /// --------------------
+        /// Grammeme key
+        /// </param>
+        public Gram this[string gramCatKey, string gramKey]
+        {
+            get
+            {
+                if (!GramsCat.ContainsKey(gramCatKey))
+                    return new Gram(gramKey, 0);
+
+                var gramVal = GramsCat[gramCatKey].Grams
+                                            .FirstOrDefault(x=>x.Key==gramKey);
+                if (gramVal==null)
+                    return new Gram(gramKey, 0);
+                
+                return gramVal;
+            }
+        }
+        
+        /// <summary>
+        /// Проверяет могут ли слова быть одной формами одной лексемы
+        /// --------------------
+        /// Checks if word can have same lexeme
+        /// </summary>
+        /// <param name="mi">
+        /// Проверяемое слово
+        /// --------------------
+        /// Second word
+        /// </param>
+        public bool CanBeSameLexeme(MorphInfo mi)
+        {
+            var l1 = mi.Tags
+                       .Select(x => x.Lemma)
+                       .ToList();
+            l1.Add(mi.Text);
+            
+            var l2 = Tags
+                .Select(x => x.Lemma)
+                .ToList();
+            l2.Add(Text);
+
+            return l1.Intersect(l2).Any();
+        }
+
+        public override string ToString()
+        {
+            return $"{Text} : {BestTag}";
         }
         
         internal MorphInfo MakeCopy()
@@ -86,104 +231,5 @@ namespace DeepMorphy
                 return _gramCats;
             }
         }
-        
-        /// <summary>
-        /// Text of analyzed word
-        /// </summary>
-        public string Text { get; }
-        
-        /// <summary>
-        /// Most probable combinations of grammemes
-        /// </summary>
-        public Tag[] Tags { get; }
-        
-        /// <summary>
-        /// Best combination of grammemes
-        /// </summary>
-        public Tag BestTag => Tags?.First();
-        
-        /// <summary>
-        /// Checks if any of tags has grammeme combination
-        /// </summary>
-        /// <param name="grams">grammemes</param>
-        /// <returns>True if has</returns>
-        public bool HasCombination(params string[] grams)
-        {
-            return Tags.Any(x => x.Has(grams));
-        }
-        
-        
-        /// <summary>
-        /// Checks if any of tags has lemma
-        /// </summary>
-        /// <param name="lemma">Lemma value to check</param>
-        /// <returns>True if has</returns>
-        public bool HasLemma(string lemma)
-        {
-            return Tags.Any(x => x.Lemma == lemma);
-        }
-        
-        /// <summary>
-        /// Returns probability distribution for grammemes in selected grammatical category
-        /// </summary>
-        /// <param name="gramCatKey">Grammatical category key</param>
-        public GramCategory this[string gramCatKey]
-        {
-            get
-            {
-                if (!GramsCat.ContainsKey(gramCatKey))
-                    return null;
-                
-                return GramsCat[gramCatKey];
-            }
-        }
-        
-        /// <summary>
-        /// Returns probability of grammeme in grammatical category
-        /// </summary>
-        /// <param name="gramCatKey">Grammatical category key</param>
-        /// <param name="gramKey">Grammeme key</param>
-        public Gram this[string gramCatKey, string gramKey]
-        {
-            get
-            {
-                if (!GramsCat.ContainsKey(gramCatKey))
-                    return new Gram(gramKey, 0);
-
-                var gramVal = GramsCat[gramCatKey].Grams
-                                            .FirstOrDefault(x=>x.Key==gramKey);
-                if (gramVal==null)
-                    return new Gram(gramKey, 0);
-                
-                return gramVal;
-            }
-        }
-        
-        /// <summary>
-        /// Checks if word can have same lexeme
-        /// </summary>
-        /// <param name="mi">Second word</param>
-        /// <returns>True if words can have same lexeme</returns>
-        public bool CanBeSameLexeme(MorphInfo mi)
-        {
-            var l1 = mi.Tags
-                       .Select(x => x.Lemma)
-                       .ToList();
-            l1.Add(mi.Text);
-            
-            var l2 = Tags
-                .Select(x => x.Lemma)
-                .ToList();
-            l2.Add(Text);
-
-            return l1.Intersect(l2).Any();
-        }
-
-        public override string ToString()
-        {
-            return $"{Text} : {BestTag}";
-        }
-
-
     }
 }

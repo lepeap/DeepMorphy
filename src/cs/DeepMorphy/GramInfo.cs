@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace DeepMorphy
 {
-    class GramInfo
+    internal class GramInfo
     {
         static GramInfo()
         {
@@ -67,22 +67,11 @@ namespace DeepMorphy
             GramCatIndexDic = new ReadOnlyDictionary<int, GramInfo>(gList.ToDictionary(x => x.Index, x => x));
         }
 
-
-
-        
-        
-        public class Cls
-        {
-            public long? NNIndex { get; set; }
-            public string KeyEn { get; set; }
-            public string KeyRu { get; set; }
-        }
-
         public int Index { get; private set; }
         public string KeyEn { get; private set; }
         public string KeyRu { get; private set; }
         public Cls[] Classes { get; private set; }
-
+        
         private int? _nnClassesCount;
         public int NnClassesCount
         {
@@ -109,12 +98,16 @@ namespace DeepMorphy
             }
         }
         
-
         public static GramInfo[] GramsInfo { get; }
         public static ReadOnlyDictionary<string, string> EnRuDic { get; }
         public static ReadOnlyDictionary<string, GramInfo> GramsDic { get;  }
-        
         public static ReadOnlyDictionary<int, GramInfo> GramCatIndexDic { get; }
-
+        
+        public class Cls
+        {
+            public long? NNIndex { get; set; }
+            public string KeyEn { get; set; }
+            public string KeyRu { get; set; }
+        }
     }
 }

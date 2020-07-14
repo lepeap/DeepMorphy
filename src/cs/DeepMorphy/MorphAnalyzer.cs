@@ -7,6 +7,8 @@ using DeepMorphy.WordDict;
 namespace DeepMorphy
 {
     /// <summary>
+    /// Главный класс морфологического анализатора
+    /// --------------------
     /// Main class of morphology analyzer
     /// </summary>
     public sealed class MorphAnalyzer
@@ -16,13 +18,37 @@ namespace DeepMorphy
         private readonly NeuralNet.Processor _net;
         
         /// <summary>
+        /// Создает морфологический анализатор. В идеале лучше использовать его как синглтон,
+        /// при создании объекта какое-то время уходит на загрузку словарей и сети.
+        /// --------------------
         /// Initializes morphology analyzer
         /// </summary>
-        /// <param name="withLemmatization">Perform lemmatization for each tag</param>
-        /// <param name="useEnGrams">if true returns english gramme names otherwise russian</param>
-        /// <param name="withTrimAndLower">if true analyzer trims and makes words lowercase before processing</param>
-        /// <param name="withPreprocessors">use additional preprocessors before nn</param>
-        /// <param name="maxBatchSize">max batch size for neural network</param>
+        /// <param name="withLemmatization">
+        /// Вычислять ли леммы слов (по умолчанию - false). Если нужна лемматизация, то необходимо выставить в true,
+        /// иначе лучше не включать (без флага работает быстрее).
+        /// --------------------
+        /// Perform lemmatization for each tag
+        /// </param>
+        /// <param name="useEnGrams">
+        /// Использовать английские названия граммем и грамматических категорий
+        /// --------------------
+        /// If true returns english gramme names otherwise russian</param>
+        /// <param name="withTrimAndLower">
+        /// Производить ли обрезку пробелов и приведение слов к нижнему регистру
+        /// --------------------
+        /// If true analyzer trims and makes words lowercase before processing
+        /// </param>
+        /// <param name="withPreprocessors">
+        /// Использовать ли препроцессоры перед нейронной сетью (по умолчанию - true).
+        /// По идее, всегда должно быть true, false ставится только для тестов
+        /// --------------------
+        /// Use additional preprocessors before nn
+        /// </param>
+        /// <param name="maxBatchSize">
+        /// Максимальный батч, который скармливается нейронной сети
+        /// --------------------
+        /// Max batch size for neural network
+        /// </param>
         /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
         public MorphAnalyzer(bool withLemmatization = false, 
                              bool useEnGrams=false, 
@@ -51,10 +77,20 @@ namespace DeepMorphy
         }
         
         /// <summary>
+        /// Производит морфологический разбор слов
+        /// --------------------
         /// Calculates morphology information for words
         /// </summary>
-        /// <param name="words">Words to process</param>
-        /// <returns>Morphology information for each word</returns>
+        /// <param name="words">
+        /// Слова для анализа
+        /// --------------------
+        /// Words to process
+        /// </param>
+        /// <returns>
+        /// Результат анализа для каждого слова
+        /// --------------------
+        /// Morphology information for each word
+        /// </returns>
         public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
         {
             if (_withTrimAndLower)
@@ -76,6 +112,33 @@ namespace DeepMorphy
                 if (!ready)
                     yield return netTok;
             }
+        }
+
+        public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag wordTag)> words)
+        {
+            return null;
+        }
+
+        public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag)> words, Tag resultTag)
+        {
+            var request = words.Select(x => (x.word, x.wordTag, resultTag));
+            return Inflect(request);
+        }
+        
+        public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> words)
+        {
+            yield break;
+        }
+        
+        /// <summary>
+        /// Возвращает все формы данного слова
+        /// </summary>
+        /// <param name="word">Слово</param>
+        /// <param name="wordTag">Тег слова</param>
+        /// <returns>Словарь, тег - слово</returns>
+        public IDictionary<Tag, string> GetAllForms(string word, Tag wordTag)
+        {
+            return null;
         }
     }
 }

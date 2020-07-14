@@ -5,7 +5,9 @@ using System.Linq;
 namespace DeepMorphy
 {
     /// <summary>
-    /// Combination of grammemes for token
+    /// Комбинация граммем для данного слова
+    /// --------------------
+    /// Combination of grammemes for word
     /// </summary>
     public sealed class Tag
     {
@@ -16,43 +18,65 @@ namespace DeepMorphy
             ClassIndex = classIndex;
             Lemma = lemma;
         }
-        
-        internal int? ClassIndex { get; }
-        
+
         /// <summary>
-        /// Gram key -> Gram value dictionary
+        /// Словарь, ключ грамматической категории -> значение граммемы 
+        /// --------------------
+        /// Gram category key -> Gram value dictionary
         /// </summary>
         public ReadOnlyDictionary<string, string> GramsDic { get; }
 
         /// <summary>
-        /// Array of grammemes keys for current word
+        /// Перечисление граммем для данного слова
+        /// --------------------
+        /// Enumeration of grammemes keys for current word
         /// </summary>
         public IEnumerable<string> Grams => GramsDic.Values;
         
         /// <summary>
-        /// Probability for current combination
+        /// Вероятность данной комбинации
+        /// --------------------
+        /// Probability of current combination
         /// </summary>
         public float Power { get; }
         
         /// <summary>
+        /// Лемма для данной комбинации 
+        /// --------------------
         /// Lemma for current combination
         /// </summary>
         public string Lemma { get; }
         
         /// <summary>
+        /// Проверяет, есть ли граммемы в данном теге
+        /// --------------------
         /// Checks for grammemes in current tag
         /// </summary>
-        /// <param name="grams">Grammemes to check</param>
-        /// <returns>true if current tag contains all this grammemes else false</returns>
+        /// <param name="grams">
+        /// Ключи граммем для проверки
+        /// --------------------
+        /// Grammeme keys to check
+        /// </param>
+        /// <returns>
+        /// true, если все перечисленные граммемы присутсвубт в теге
+        /// --------------------
+        /// true if current tag contains all this grammemes else false
+        /// </returns>
         public bool Has(params string[] grams)
         {
             return grams.All(gram => Grams.Contains(gram));
         }
         
         /// <summary>
+        /// Возвращает значение грамматической категории
+        /// --------------------
         /// Returns grammeme for grammatical category
         /// </summary>
-        /// <param name="gramCatKey">Grammatical category key</param>
+        /// <param name="gramCatKey">
+        /// Ключ грамматической категории
+        /// --------------------
+        /// Grammatical category key
+        /// </param>
         public string this[string gramCatKey]
         {
             get
@@ -69,9 +93,10 @@ namespace DeepMorphy
             var tags = string.Join(",", Grams);
             if (Lemma == null)
                 return tags;
-            else
-                return $"Lemma: {Lemma} Tags: {tags}";
+            
+            return $"Lemma: {Lemma} Tags: {tags}";
         }
-
+        
+        internal int? ClassIndex { get; }
     }
 }
