@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Xml;
 
 namespace DeepMorphy.NeuralNet
 {
-    class Config
+    internal class Config
     {
         private readonly char[] _commmaSplitter = {','};
 
@@ -20,19 +18,26 @@ namespace DeepMorphy.NeuralNet
             _loadReleaseInfo();
         }
         
-        public bool UseEnGrams { get; private set; }
-        public bool BigModel { get; private set; }
+        public bool UseEnGrams { get; }
+        public bool BigModel { get; }
         public int UndefinedCharId { get; private set; }
         public int StartCharIndex { get; private set; }
         public int EndCharIndex { get; private set; }
-        
-        public List<int> LemmaSameWordClasses { get; private set; } = new List<int>();
+        public List<int> LemmaSameWordClasses { get; } = new List<int>();
         public Dictionary<int, ReadOnlyDictionary<string, string>> ClsDic  { get; } = new Dictionary<int, ReadOnlyDictionary<string, string>>();
-        public Dictionary<char, int> CharToId { get; private set; } = new Dictionary<char, int>();
-        
-        public Dictionary<int, char> IdToChar { get; private set; } = new Dictionary<int, char>();
-        public Dictionary<string, string> OpDic { get; private set; } = new Dictionary<string, string>();
-        public  Dictionary<string, string>  GramOpDic { get; private set; } = new Dictionary<string, string>();
+        public Dictionary<char, int> CharToId { get; } = new Dictionary<char, int>();
+        public Dictionary<int, char> IdToChar { get; } = new Dictionary<int, char>();
+        public Dictionary<string, string> OpDic { get; } = new Dictionary<string, string>();
+        public  Dictionary<string, string>  GramOpDic { get; } = new Dictionary<string, string>();
+        public GramInfo this[string gramKey] => GramInfo.GramsDic[gramKey];
+        public string this[string gramKey, long i]
+        {
+            get
+            {
+                var cls = GramInfo.GramsDic[gramKey][i];
+                return UseEnGrams ? cls.KeyEn : cls.KeyRu;
+            }
+        }
 
         private void _loadReleaseInfo()
         {
@@ -110,18 +115,6 @@ namespace DeepMorphy.NeuralNet
             var modelKey = bigModel ? "big" : "small";
             var resourceName = $"DeepMorphy.NeuralNet.release_{modelKey}.xml";
             return Utils.GetResourceStream(resourceName);
-        }
-
-
-        public GramInfo this[string gramKey] => GramInfo.GramsDic[gramKey];
-
-        public string this[string gramKey, long i]
-        {
-            get
-            {
-                var cls = GramInfo.GramsDic[gramKey][i];
-                return UseEnGrams ? cls.KeyEn : cls.KeyRu;
-            }
         }
     }
 }

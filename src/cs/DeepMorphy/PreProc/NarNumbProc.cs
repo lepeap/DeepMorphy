@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using DeepMorphy.WordDict;
 
 namespace DeepMorphy.PreProc
 {
-    class NarNumbProc : IPreProcessor
+    internal class NarNumbProc : IPreProcessor
     {
         private readonly bool _withLemmatization; 
         private readonly Dict _dict;

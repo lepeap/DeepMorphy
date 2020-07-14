@@ -1,6 +1,6 @@
 namespace DeepMorphy.PreProc
 {
-    interface IPreProcessor
+    internal interface IPreProcessor
     {
         MorphInfo Parse(string word);
     }

@@ -24,10 +24,10 @@ namespace DeepMorphy
         /// Initializes morphology analyzer
         /// </summary>
         /// <param name="withLemmatization">
-        /// Вычислять ли леммы слов (по умолчанию - false). Если нужна лемматизация, то необходимо выставить в true,
+        /// Вычислять ли леммы слов при разборе слов (по умолчанию - false). Если нужна лемматизация, то необходимо выставить в true,
         /// иначе лучше не включать (без флага работает быстрее).
         /// --------------------
-        /// Perform lemmatization for each tag
+        /// Perform lemmatization on for each tag in while parsing
         /// </param>
         /// <param name="useEnGrams">
         /// Использовать английские названия граммем и грамматических категорий

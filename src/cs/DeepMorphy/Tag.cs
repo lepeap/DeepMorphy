@@ -45,7 +45,14 @@ namespace DeepMorphy
         /// --------------------
         /// Lemma for current combination
         /// </summary>
-        public string Lemma { get; }
+        public string Lemma { get; internal set; }
+
+        /// <summary>
+        /// Задана ли лемма в данном теге
+        /// --------------------
+        /// Is lemma set in current tag
+        /// </summary>
+        public bool HasLemma => Lemma != null;
         
         /// <summary>
         /// Проверяет, есть ли граммемы в данном теге

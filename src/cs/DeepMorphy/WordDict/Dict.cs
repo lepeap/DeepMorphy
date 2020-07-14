@@ -6,9 +6,8 @@ using System.Text;
 
 namespace DeepMorphy.WordDict
 {
-    class Dict
+    internal class Dict
     {
-        
         private static readonly char[] CommmaSplitDict = new[] {','};
         private readonly Dictionary<string, string> _gramDic = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _index = new Dictionary<string, string>();

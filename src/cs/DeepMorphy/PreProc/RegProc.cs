@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace DeepMorphy.PreProc
 {
-    class RegProc : IPreProcessor
+    internal class RegProc : IPreProcessor
     {
         
         private static readonly Regex Reg;

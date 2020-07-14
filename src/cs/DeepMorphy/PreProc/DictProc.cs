@@ -2,7 +2,7 @@ using DeepMorphy.WordDict;
 
 namespace DeepMorphy.PreProc
 {
-    class DictProc : IPreProcessor
+    internal class DictProc : IPreProcessor
     {
         private readonly Dict _dict;
         public DictProc(Dict dict)
