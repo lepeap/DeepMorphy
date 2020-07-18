@@ -62,6 +62,9 @@ namespace DeepMorphy
             }
             _net = new NeuralNet.Processor(maxBatchSize, withLemmatization, useEnGrams, false);
             _withTrimAndLower = withTrimAndLower;
+            EnTags = useEnGrams;
+            GramHelper = new GramHelper();
+            TagHelper = new TagHelper(this, _net.Config);
             if (withPreprocessors)
             {
                 var dict = new Dict(useEnGrams, withLemmatization);
@@ -75,6 +78,12 @@ namespace DeepMorphy
             else
                 _preProcessors = new IPreProcessor[0];
         }
+        
+        public bool EnTags { get; }
+        
+        public TagHelper TagHelper { get; }
+        
+        public GramHelper GramHelper { get; }
         
         /// <summary>
         /// Производит морфологический разбор слов
@@ -113,10 +122,19 @@ namespace DeepMorphy
                     yield return netTok;
             }
         }
+        
+        public string Lemmatize(string word, Tag tag)
+        {
+            var req = new []
+            {
+                (word: word, tag: tag)
+            };
+            return Lemmatize(req).First();
+        }
 
         public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag wordTag)> words)
         {
-            return null;
+            return _net.Lemmatize(words);
         }
 
         public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag)> words, Tag resultTag)

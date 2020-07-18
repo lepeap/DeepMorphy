@@ -54,6 +54,19 @@ namespace DeepMorphy
         /// </summary>
         public bool HasLemma => Lemma != null;
         
+        //TODO: Написать комменты
+        public string Post => _getWithMultilangKey("post");
+
+        public string Gender => _getWithMultilangKey("gndr");
+        
+        public string Number => _getWithMultilangKey("nmbr");
+        
+        public string Case => _getWithMultilangKey("case");
+        
+        public string Tens => _getWithMultilangKey("tens");
+        
+        public string Pers => _getWithMultilangKey("pers");
+
         /// <summary>
         /// Проверяет, есть ли граммемы в данном теге
         /// --------------------
@@ -105,5 +118,14 @@ namespace DeepMorphy
         }
         
         internal int? ClassIndex { get; }
+
+
+        private string _getWithMultilangKey(string enKey)
+        {
+            if (GramsDic.ContainsKey(enKey))
+                return this[enKey];
+
+            return this[GramInfo.EnRuDic[enKey]];
+        }
     }
 }

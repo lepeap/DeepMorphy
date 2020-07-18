@@ -42,7 +42,7 @@ namespace DeepMorphy.NeuralNet
             _xShapePlName = opDic["x_shape"];
             _seqLenPlName = opDic["seq_len"];
             _batchSizePlName = opDic["batch_size"];
-            _lemXClassPlName = opDic["lem_cls"];
+            _lemXClassPlName = opDic["lem_x_cls"];
             _inflectXClassPlName = opDic["inflect_x_cls"];
             _inflectYClassPlName = opDic["inflect_y_cls"];
             _clsWithLemmatization = clsWithLemmatization;

@@ -8,7 +8,6 @@ namespace DeepMorphy.NeuralNet
     {
         private bool _withLemmatization;
         private readonly TfNeuralNet _net;
-        private readonly Config _config;
         private readonly int _maxBatchSize;
         private const int K = 4;
 
@@ -16,11 +15,13 @@ namespace DeepMorphy.NeuralNet
         {
             _maxBatchSize = maxBatchSize;
             _withLemmatization = withLemmatization;
-            _config = new Config(useEnGrams, bigModel);
-            _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, bigModel, withLemmatization);
+            Config = new Config(useEnGrams, bigModel);
+            _net = new TfNeuralNet(Config.OpDic, Config.GramOpDic, bigModel, withLemmatization);
         }
+        
+        public Config Config { get; }
 
-        public char[] AvailableChars => _config.CharToId.Keys.ToArray();
+        public char[] AvailableChars => Config.CharToId.Keys.ToArray();
         
         public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
         {
@@ -41,7 +42,7 @@ namespace DeepMorphy.NeuralNet
                         srcMas[i],
                         Enumerable.Range(0, K)
                             .Select(j => new Tag(
-                                    _config.ClsDic[result.ResultIndexes[i, j]],
+                                    Config.ClsDic[result.ResultIndexes[i, j]],
                                     result.ResultProbs[i, j],
                                     lemma: _withLemmatization 
                                         ? _getLemma(srcMas[i], result.Lemmas, i,j, result.ResultIndexes[i, j]) 
@@ -53,9 +54,9 @@ namespace DeepMorphy.NeuralNet
                         result.GramProbs.ToDictionary(
                             kp => kp.Key,
                             kp => new GramCategory(
-                                Enumerable.Range(0, _config[kp.Key].NnClassesCount)
+                                Enumerable.Range(0, Config[kp.Key].NnClassesCount)
                                     .Select(j => new Gram(
-                                        _config[kp.Key, j],
+                                        Config[kp.Key, j],
                                         result.GramProbs[kp.Key][i, j++]
                                     ))
                                     .OrderByDescending(x => x.Power)
@@ -79,10 +80,13 @@ namespace DeepMorphy.NeuralNet
                     out List<int> values,
                     out int[] seqLens
                 );
-                var result = _net.Lemmatize(maxLength, words.Length, indexes, values, seqLens, classes);
+                
+                var netRes = _net.Lemmatize(maxLength, words.Length, indexes, values, seqLens, classes);
+                for (int i = 0; i < words.Length; i++)
+                {
+                    yield return _getLemma(words[i], netRes, i, 0, classes[i]);
+                }
             }
-
-            return null;
         }
 
         public void _vectorizeWords(string[] srcMas,
@@ -100,14 +104,13 @@ namespace DeepMorphy.NeuralNet
             {
                 for (int j = 0; j < srcMas[i].Length; j++)
                 {
-                    
                     indexes.Add(new int[]{i,j});
                     var curChar = srcMas[i][j];
                     int rezId;
-                    if (_config.CharToId.ContainsKey(curChar))
-                        rezId = _config.CharToId[curChar];
+                    if (Config.CharToId.ContainsKey(curChar))
+                        rezId = Config.CharToId[curChar];
                     else
-                        rezId = _config.UndefinedCharId;
+                        rezId = Config.UndefinedCharId;
 
                     values.Add(rezId);
                 }
@@ -131,7 +134,7 @@ namespace DeepMorphy.NeuralNet
 
         private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, int mainCls)
         {
-            if (_config.LemmaSameWordClasses.Contains(mainCls))
+            if (Config.LemmaSameWordClasses.Contains(mainCls))
                 return sourceWord;
                 
             int cIndex = 0;
@@ -140,13 +143,13 @@ namespace DeepMorphy.NeuralNet
             while (cIndex < maxLength)
             {
                 var cVal = nnRes[wordIndex, kIndex, cIndex];
-                if (cVal == _config.EndCharIndex)
+                if (cVal == Config.EndCharIndex)
                     break;
                 
-                if (cVal == _config.UndefinedCharId)
+                if (cVal == Config.UndefinedCharId)
                     return null;
 
-                sb.Append(_config.IdToChar[cVal]);
+                sb.Append(Config.IdToChar[cVal]);
                 cIndex++;
             }
             return sb.ToString();
