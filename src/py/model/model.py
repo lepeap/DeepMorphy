@@ -104,20 +104,20 @@ class RNN:
                     self.main_graph_part.build_graph_for_device(x, seq_len, gram_probs, gram_keep_drops)
                     self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
                     if self.for_usage and not self.lem_graph_part.use_cls_placeholder:
-                        x = tf.contrib.seq2seq.tile_batch(x, multiplier=self.main_class_k)
-                        seq_len = tf.contrib.seq2seq.tile_batch(seq_len, multiplier=self.main_class_k)
+                        x_tiled = tf.contrib.seq2seq.tile_batch(x, multiplier=self.main_class_k)
+                        seq_len_tiled = tf.contrib.seq2seq.tile_batch(seq_len, multiplier=self.main_class_k)
                         cls = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
-                        batch_size = self.batch_size * self.main_class_k
-                        self.lem_graph_part.build_graph_for_device(x,
-                                                                   seq_len,
-                                                                   batch_size,
+                        batch_size_tiled = self.batch_size * self.main_class_k
+                        self.lem_graph_part.build_graph_for_device(x_tiled,
+                                                                   seq_len_tiled,
+                                                                   batch_size_tiled,
                                                                    cls)
                         self.lem_cls_result = tf.reshape(self.lem_graph_part.results[0],
                                                          (self.batch_size, self.main_class_k, -1))
                         self.lem_graph_part.build_graph_for_device(x,
                                                                    seq_len,
                                                                    self.batch_size)
-                        self.lem_result = self.lem_graph_part.results[1]
+                        self.lem_result = tf.expand_dims(self.lem_graph_part.results[1], 1)
                         self.lem_class_pl = self.lem_graph_part.cls[0]
 
                     else:
@@ -216,7 +216,7 @@ class RNN:
                                            'x_shape': self.x_shape[0],
                                            'seq_len': self.seq_lens[0],
                                            'batch_size': self.batch_size,
-                                           'lem_cls': self.lem_class_pl,
+                                           'lem_x_cls': self.lem_class_pl,
                                            'inflect_x_cls': self.inflect_x_class_pl,
                                            'inflect_y_cls': self.inflect_y_class_pl
                                        },
@@ -251,6 +251,9 @@ class RNN:
             op_dic['x_shape'] = self.x_shape[0].op.name
             op_dic['seq_len'] = self.main_graph_part.seq_lens[0].op.name
             op_dic['batch_size'] = self.batch_size.op.name
+            op_dic['lem_x_cls'] = self.lem_class_pl.op.name
+            op_dic['inflect_x_cls'] = self.inflect_x_class_pl.op.name
+            op_dic['inflect_y_cls'] = self.inflect_y_class_pl.op.name
 
             return frozen_path, \
                    gram_op_dic , \

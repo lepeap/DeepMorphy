@@ -30,6 +30,7 @@ class Lemm(GraphPartBase):
 
         if cls is None or self.use_cls_placeholder:
             cls = tf.placeholder(dtype=tf.int32, shape=(None,), name='XClass')
+            self.cls.append(cls)
 
         if batch_size is None:
             batch_size = self.settings['batch_size']
@@ -43,7 +44,7 @@ class Lemm(GraphPartBase):
         self.y_seq_lens.append(y_seq_len)
 
         start_tokens = tf.fill([batch_size], self.start_char_index)
-        initializer=tf.contrib.layers.xavier_initializer()
+        initializer = tf.contrib.layers.xavier_initializer()
         y_seq_len += 1
 
         with tf.variable_scope("Encoder", reuse=tf.AUTO_REUSE):
@@ -59,7 +60,7 @@ class Lemm(GraphPartBase):
             )
             encoder_init_state = tf.nn.embedding_lookup(encoder_cls_emb, cls)
             encoder_input = tf.nn.embedding_lookup(encoder_char_embeddings, x)
-#
+
         with tf.variable_scope("Decoder", reuse=tf.AUTO_REUSE):
             decoder_char_embeddings = tf.get_variable(
                 "CharEmbeddings",
@@ -108,11 +109,10 @@ class Lemm(GraphPartBase):
                 end_tokens = tf.reshape(end_tokens, (batch_size, 1))
                 y = tf.concat([y, end_tokens], axis=1)
 
-
             if self.for_usage:
                 helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(decoder_char_embeddings,
-                                                                 start_tokens = start_tokens,
-                                                                 end_token = self.end_char_index)
+                                                                 start_tokens=start_tokens,
+                                                                 end_token=self.end_char_index)
             elif self.use_sampling:
                 helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_output,
                                                                           y_seq_len,
@@ -164,7 +164,6 @@ class Lemm(GraphPartBase):
             decoder_ids = outputs[0].sample_id
 
             if not self.for_usage:
-
                 decoder_logits = outputs[0].rnn_output
                 masks = tf.sequence_mask(
                     lengths=y_seq_len,
@@ -222,7 +221,6 @@ class Lemm(GraphPartBase):
                 self.keep_drops.append(keep_drop)
                 self.decoder_keep_drops.append(decoder_keep_drop)
 
-            self.cls.append(cls)
             self.results.append(decoder_ids)
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
