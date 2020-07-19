@@ -1,8 +1,8 @@
-post. full_cls_acc: 0.9847110321639282; part_cls_acc: 0.984846583422225
-gndr. full_cls_acc: 0.9777458409546207; part_cls_acc: 0.9815809393360487
-nmbr. full_cls_acc: 0.991534214488874; part_cls_acc: 0.9920515237197612
-case. full_cls_acc: 0.9812586389137328; part_cls_acc: 0.9881948482014207
+post. full_cls_acc: 0.9868683985155581; part_cls_acc: 0.9869795751890315
+gndr. full_cls_acc: 0.981316144767214; part_cls_acc: 0.9845238095238096
+nmbr. full_cls_acc: 0.9929730634097373; part_cls_acc: 0.9933931099575272
+case. full_cls_acc: 0.9820295983086681; part_cls_acc: 0.9886392389049137
 pers. full_cls_acc: 1.0; part_cls_acc: 1.0
-tens. full_cls_acc: 0.9994792828981626; part_cls_acc: 0.9994824016563147
-main. full_cls_acc: 0.9624766665612048; part_cls_acc: 0.9673426237385873
-lemma_acc: 0.9921792100609157
+tens. full_cls_acc: 0.999702469503124; part_cls_acc: 0.9997041638932032
+main. full_cls_acc: 0.007307120488406668; part_cls_acc: 0.012282458031726475
+lemma_acc: 0.3241426746585438

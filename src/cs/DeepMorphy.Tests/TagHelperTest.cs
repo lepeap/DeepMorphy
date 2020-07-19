@@ -63,6 +63,7 @@ namespace DeepMorphy.Tests
                 lemma: word,
                 adMessageText: "(вызов без заданной леммы)");
         }
+        
 
         private void CheckTag(MorphAnalyzer morph,
             Tag tag,

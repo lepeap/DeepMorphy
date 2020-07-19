@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DeepMorphy.NeuralNet;
 
@@ -51,21 +54,30 @@ namespace DeepMorphy
 
         public Tag CreateForNoun(string word, string number, string gender, string @case, string lemma=null)
         {
-            var keyValuePair = _networkConfig.ClsDic
-                                             .Single(x => x.Value[_postKey] == _nounKey
-                                                                 && x.Value.ContainsKey(_numberKey) 
-                                                                 && x.Value[_numberKey] == number
-                                                                 && x.Value.ContainsKey(_genderKey) 
-                                                                 && x.Value[_genderKey] == gender
-                                                                 && x.Value.ContainsKey(_caseKey) 
-                                                                 && x.Value[_caseKey] == @case);
-            var tag = new Tag(keyValuePair.Value, 1, word, keyValuePair.Key);
+            return _createTag(word,
+                lemma,
+                x => x.Value[_postKey] == _nounKey
+                     && x.Value.ContainsKey(_numberKey)
+                     && x.Value[_numberKey] == number
+                     && x.Value.ContainsKey(_genderKey)
+                     && x.Value[_genderKey] == gender
+                     && x.Value.ContainsKey(_caseKey)
+                     && x.Value[_caseKey] == @case
+            );
+        }
+
+        private Tag _createTag(string word, 
+                               string lemma,
+                               Func<KeyValuePair<int, ReadOnlyDictionary<string, string>>, bool> filter)
+        {
+            var keyValuePair = _networkConfig.ClsDic.Single(filter);
+            var tag = new Tag(keyValuePair.Value, 1, lemma, keyValuePair.Key);
+            
             if (lemma == null)
             {
-                lemma = _morph.Lemmatize(word, tag);
+                tag.Lemma = _morph.Lemmatize(word, tag);
             }
 
-            tag.Lemma = lemma;
             return tag;
         }
     }
