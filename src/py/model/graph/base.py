@@ -18,14 +18,7 @@ class TfContext:
 
 
 class GraphPartBase(ABC):
-    def __init__(self,
-                 for_usage,
-                 global_settings,
-                 current_settings,
-                 optimiser,
-                 key,
-                 metric_names
-                 ):
+    def __init__(self, for_usage, global_settings, current_settings, optimiser, key, metric_names):
         self.key = key
         self.global_settings = global_settings
         self.filler = global_settings['filler']
@@ -54,6 +47,7 @@ class GraphPartBase(ABC):
         self.xs = []
         self.x_seq_lens = []
         self.prints = []
+        self.main_cls_dic = self.global_settings['main_classes']
 
     def train(self, tc):
         self.__init_learn_params__()

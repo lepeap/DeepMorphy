@@ -6,7 +6,6 @@ from graph.base import GraphPartBase
 
 
 class Lemm(GraphPartBase):
-
     def __init__(self, for_usage, global_settings, current_settings, optimiser):
         super().__init__(for_usage, global_settings, current_settings, optimiser, 'lemm', ["Loss", "AccuracyByChar", "Accuracy"])
         self.chars_count = self.chars_count + 1
@@ -69,6 +68,3 @@ class Lemm(GraphPartBase):
             self.settings['batch_size']
         ))
         return items
-
-
-

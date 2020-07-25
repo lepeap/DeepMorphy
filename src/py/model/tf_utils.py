@@ -270,11 +270,11 @@ def seq2seq(graph_part,
             [graph_part.chars_count, graph_part.settings['char_vector_size']],
             initializer=initializer
         )
-        encoder_cls_emb = tf.get_variable(
-            "XInitEmbeddings",
-            (graph_part.main_classes_count, graph_part.settings['encoder']['rnn_state_size']),
-            initializer=initializer
-        )
+
+        encoder_cls_emb = ClsGramEmbedder(graph_part.main_cls_dic,
+                                          graph_part.settings['encoder']['gram_vector_size'],
+                                          graph_part.settings['encoder']['ad_cls_vector_size'])(x_init, batch_size)
+
         encoder_init_state = tf.nn.embedding_lookup(encoder_cls_emb, x_init)
         encoder_input = tf.nn.embedding_lookup(encoder_char_embeddings, x)
 
@@ -284,11 +284,10 @@ def seq2seq(graph_part,
             [graph_part.chars_count, graph_part.settings['char_vector_size']],
             initializer=initializer
         )
-        decoder_cls_emb = tf.get_variable(
-            "YInitEmbeddings",
-            (graph_part.main_classes_count, graph_part.settings['decoder']['rnn_state_size']),
-            initializer=initializer
-        )
+        decoder_cls_emb = ClsGramEmbedder(graph_part.main_cls_dic,
+                                          graph_part.settings['decoder']['gram_vector_size'],
+                                          graph_part.settings['decoder']['ad_cls_vector_size'])(y_init, batch_size)
+
         decoder_init_state = tf.nn.embedding_lookup(decoder_cls_emb, y_init)
         decoder_output = tf.nn.embedding_lookup(decoder_char_embeddings, y)
 
@@ -313,7 +312,6 @@ def seq2seq(graph_part,
         )
 
     with tf.variable_scope('Decoder', reuse=tf.AUTO_REUSE) as scope:
-
         if not graph_part.for_usage:
             start_tokens_emd = tf.nn.embedding_lookup(decoder_char_embeddings, start_tokens)
             start_tokens_emd = tf.reshape(start_tokens_emd, (batch_size, -1, graph_part.settings['char_vector_size']))
@@ -440,3 +438,71 @@ def seq2seq(graph_part,
             graph_part.decoder_keep_drops.append(decoder_keep_drop)
 
         graph_part.results.append(decoder_ids)
+
+
+class ClsGramEmbedder:
+    def __init__(self, cls_dic, gram_vector_size, ad_cls_vector_size):
+        gram_rez_dict = {}
+        tpls = sorted([(key, cls_dic[key]) for key in cls_dic], key=lambda x: x[1])
+        cls_vectors = []
+        for cls_key, cls_index in tpls:
+            cls_vector = []
+            for gram, gram_index in enumerate(list(cls_key)):
+                gram_key = (gram_index, gram)
+                if gram_key not in gram_rez_dict:
+                    gram_rez_dict[gram_key] = len(gram_rez_dict)
+
+                cls_vector.append(gram_rez_dict[gram_key])
+
+            cls_vectors.append(cls_vector)
+
+        tpls = sorted([(key, gram_rez_dict[key]) for key in gram_rez_dict], key=lambda x: x[1])
+        gram_vectors = []
+        for gram_key, gram_index in tpls:
+            if gram_key[0] is None:
+                val = np.zeros(gram_vector_size, dtype=np.float32)
+            else:
+                val = np.random.rand(gram_vector_size).astype(np.float32)
+
+            gram_vectors.append(val)
+
+        self.classes_count = len(cls_dic)
+        self.cls_vectors = np.asarray(cls_vectors, dtype=np.int)
+
+        self.grams_count = len(gram_vectors)
+        self.gram_vector_size = gram_vector_size
+        self.gram_vectors = np.stack(gram_vectors)
+
+        self.ad_cls_vector_size = ad_cls_vector_size
+
+    def __call__(self, cls_pl, batch_size):
+        # [self.grams_count, self.gram_vector_size],
+        gram_embeddings = tf.get_variable(
+            "GramEmbeddings",
+            initializer=tf.constant(self.gram_vectors),
+            dtype=tf.float32
+        )
+        # [self.classes_count, self.grams_count],
+        cls_embeddings = tf.get_variable(
+            "ClsEmbeddings",
+            initializer=tf.constant(self.cls_vectors),
+            dtype=tf.int64
+        )
+
+        gram_rez = tf.nn.embedding_lookup(cls_embeddings, cls_pl)
+        gram_rez = tf.reshape(gram_rez, (-1, ))
+        gram_rez = tf.nn.embedding_lookup(gram_embeddings, gram_rez)
+        gram_rez = tf.reshape(gram_rez, (batch_size, -1))
+
+        ad_cls_embeddings = tf.get_variable(
+            "AdClsEmbeddings",
+            [self.classes_count, self.ad_cls_vector_size],
+            initializer=tf.contrib.layers.xavier_initializer()
+        )
+        ad_cls_rez = tf.nn.embedding_lookup(ad_cls_embeddings, cls_pl)
+
+        result = tf.concat([gram_rez, ad_cls_rez], axis=1)
+        return result
+
+
+

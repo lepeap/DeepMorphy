@@ -16,7 +16,6 @@ class Inflect(GraphPartBase):
         self.y_cls = []
         self.keep_drops = []
         self.decoder_keep_drops = []
-
         self.sampling_probability = None
         self.use_sampling = current_settings['use_sampling']
         self.sampling_probability_value = current_settings['sampling_probability']
@@ -67,6 +66,3 @@ class Inflect(GraphPartBase):
             self.settings['batch_size']
         ))
         return items
-
-
-

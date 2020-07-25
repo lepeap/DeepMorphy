@@ -108,12 +108,16 @@ graph_part_configs:
     sampling_probability: 0.25
     use_cls_placeholder: false
     encoder:
+      gram_vector_size: 8
+      ad_cls_vector_size: 16
       char_vector_size: 64
       rnn_state_size: 64
       rnn_layers_count: 2
       rnn_bidirectional: true
       use_residual: false
     decoder:
+      gram_vector_size: 16
+      ad_cls_vector_size: 32
       rnn_state_size: 128
       rnn_layers_count: 1
       keep_drop: 1
@@ -131,12 +135,16 @@ graph_part_configs:
     sampling_probability: 0.25
     use_cls_placeholder: false
     encoder:
+      gram_vector_size: 16
+      ad_cls_vector_size: 32
       char_vector_size: 128
       rnn_state_size: 128
       rnn_layers_count: 2
       rnn_bidirectional: true
       use_residual: false
     decoder:
+      gram_vector_size: 32
+      ad_cls_vector_size: 64
       rnn_state_size: 256
       rnn_layers_count: 1
       keep_drop: 1
