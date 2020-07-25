@@ -1,5 +1,4 @@
 import pickle
-import logging
 import numpy as np
 from tqdm import tqdm
 from sklearn.preprocessing import normalize
@@ -51,9 +50,9 @@ def generate_dataset(vec_words, cls_type, cls_dic):
 
 
 def generate_all(vec_words):
-    #for cls_type in CLASSES_INDEXES:
-    #    cls_dic = CLASSES_INDEXES[cls_type]
-    #    generate_dataset(vec_words, cls_type, cls_dic)
+    for cls_type in CLASSES_INDEXES:
+        cls_dic = CLASSES_INDEXES[cls_type]
+        generate_dataset(vec_words, cls_type, cls_dic)
 
     un_classes = []
     for word in tqdm(vec_words, desc="Setting main class"):
@@ -73,8 +72,8 @@ def generate_all(vec_words):
         tpl: index
         for index, tpl in enumerate(un_classes)
     }
-    #generate_dataset(vec_words, 'main', cls_dic)
-    #logging.info(f"Main classes count: {len(cls_dic)}")
+    generate_dataset(vec_words, 'main', cls_dic)
+    print(f"Main classes count: {len(cls_dic)}")
     with open(CLS_CLASSES_PATH, 'wb+') as f:
         pickle.dump(cls_dic, f)
 

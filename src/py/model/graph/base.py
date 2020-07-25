@@ -3,6 +3,7 @@ import tensorflow as tf
 import tf_utils as tfu
 from tqdm import tqdm
 from abc import ABC, abstractmethod
+from utils import RANDOM
 
 
 class TfContext:
@@ -122,6 +123,7 @@ class GraphPartBase(ABC):
 
                     return_step = 0
                 else:
+                    RANDOM.shuffle(trains)
                     tqdm.write(f"Return step increased")
                     return_step += 1
 
@@ -149,6 +151,7 @@ class GraphPartBase(ABC):
                 self.grads = tfu.average_gradients(self.dev_grads)
                 if self.settings['clip_grads']:
                     self.grads = [(tf.clip_by_value(grad, -1., 1.), var) for grad, var in self.grads]
+
                 self.optimize = self.optimiser.apply_gradients(self.grads, name='Optimize')
                 self.loss = tf.reduce_sum(self.losses, name='GlobalLoss')
 

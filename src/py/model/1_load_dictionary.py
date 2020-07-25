@@ -70,8 +70,6 @@ def parse_link_types(itr):
             link_types[element.text] = element.attrib['id']
 
         event, element = next(itr)
-
-
     return link_types
 
 

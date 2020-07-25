@@ -147,6 +147,8 @@ class RNN:
             self.main_graph_part.restore(sess, latest_checkpoint)
         if self.lem_graph_part.key not in self.config['ignore_restore']:
             self.lem_graph_part.restore(sess, latest_checkpoint)
+        if self.inflect_graph_part not in self.config['ignore_restore']:
+            self.inflect_graph_part.restore(sess, latest_checkpoint)
 
     def train(self):
         config = tf.ConfigProto(allow_soft_placement=True)

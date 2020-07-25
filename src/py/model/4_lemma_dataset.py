@@ -22,6 +22,9 @@ def generate(vec_words, main_cls_dic):
             else:
                 continue
 
+            if word_y not in vec_words:
+                continue
+
             y_vec = vec_words[word_y]['vect']
 
             items = rez_dict[main_cls]
