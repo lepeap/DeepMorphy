@@ -251,7 +251,7 @@ class RNN:
             op_dic['x_ind'] = self.x_inds[0].op.name
             op_dic['x_val'] = self.x_vals[0].op.name
             op_dic['x_shape'] = self.x_shape[0].op.name
-            op_dic['seq_len'] = self.main_graph_part.seq_lens[0].op.name
+            op_dic['seq_len'] = self.main_graph_part.x_seq_lens[0].op.name
             op_dic['batch_size'] = self.batch_size.op.name
             op_dic['lem_x_cls'] = self.lem_class_pl.op.name
             op_dic['inflect_x_cls'] = self.inflect_x_class_pl.op.name

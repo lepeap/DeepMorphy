@@ -157,8 +157,6 @@ def load_cls_dataset(dataset_path, devices_count, type, batch_size, use_weights,
     with open(path, 'rb') as f:
         items = pickle.load(f)
 
-    tttt = 0
-
     batches = [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
     cur_step = []
     for batch in batches:
@@ -169,11 +167,6 @@ def load_cls_dataset(dataset_path, devices_count, type, batch_size, use_weights,
         if len(cur_step) == devices_count:
             yield cur_step
             cur_step = []
-
-        ##TODO remove
-        #if tttt>12:
-        #    return
-        #tttt+=1
 
         cur_step.append(dict(
             x=x,
@@ -227,8 +220,6 @@ def load_inflect_dataset(dataset_path, devices_count, type, batch_size):
     with open(path, 'rb') as f:
         items = pickle.load(f)
 
-    tttt = 0
-
     batches = [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
     cur_step = []
     for batch in batches:
@@ -257,81 +248,195 @@ def load_inflect_dataset(dataset_path, devices_count, type, batch_size):
             y_src=y_src
         ))
 
-        #TODO remove
-        #if tttt>0:
-        #    return
-        #tttt+=1
-
     if len(cur_step) == devices_count and all([len(step['x']) == batch_size for step in cur_step]):
         yield cur_step
 
-def decoder(helper, encoder_outputs, seq_len, settings, chars_count, batch_size, for_usage):
-    #attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
-    #    num_units=settings['decoder']['rnn_state_size'],
-    #    memory=encoder_outputs,
-    #    memory_sequence_length=seq_len
-    #)
 
-    cell = rnn_cell(settings['decoder'], for_usage)
+def seq2seq(graph_part,
+            batch_size,
+            x,
+            x_init,
+            x_seq_len,
+            y,
+            y_init,
+            y_seq_len):
+    start_tokens = tf.fill([batch_size], graph_part.start_char_index)
+    initializer = tf.contrib.layers.xavier_initializer()
+    y_seq_len += 1
 
+    with tf.variable_scope("Encoder", reuse=tf.AUTO_REUSE):
+        encoder_char_embeddings = tf.get_variable(
+            "CharEmbeddings",
+            [graph_part.chars_count, graph_part.settings['char_vector_size']],
+            initializer=initializer
+        )
+        encoder_cls_emb = tf.get_variable(
+            "XInitEmbeddings",
+            (graph_part.main_classes_count, graph_part.settings['encoder']['rnn_state_size']),
+            initializer=initializer
+        )
+        encoder_init_state = tf.nn.embedding_lookup(encoder_cls_emb, x_init)
+        encoder_input = tf.nn.embedding_lookup(encoder_char_embeddings, x)
 
-    #attn_cell = tf.contrib.seq2seq.AttentionWrapper(
-    #    cell,
-    #    attention_mechanism,
-    #    attention_layer_size=settings['decoder']['rnn_state_size']
-    #)
-    out_cell = tf.contrib.rnn.OutputProjectionWrapper(
-        cell,
-        chars_count,
-    )
+    with tf.variable_scope("Decoder", reuse=tf.AUTO_REUSE):
+        decoder_char_embeddings = tf.get_variable(
+            "CharEmbeddings",
+            [graph_part.chars_count, graph_part.settings['char_vector_size']],
+            initializer=initializer
+        )
+        decoder_cls_emb = tf.get_variable(
+            "YInitEmbeddings",
+            (graph_part.main_classes_count, graph_part.settings['decoder']['rnn_state_size']),
+            initializer=initializer
+        )
+        decoder_init_state = tf.nn.embedding_lookup(decoder_cls_emb, y_init)
+        decoder_output = tf.nn.embedding_lookup(decoder_char_embeddings, y)
 
+    if graph_part.for_usage:
+        keep_drop = tf.constant(1, dtype=tf.float32, name='KeepDrop')
+        decoder_keep_drop = tf.constant(1, dtype=tf.float32, name='DecoderKeepDrop')
+    else:
+        keep_drop = tf.placeholder(dtype=tf.float32, name='KeepDrop')
+        decoder_keep_drop = tf.placeholder(dtype=tf.float32, name='DecoderKeepDrop')
 
-    decoder = tf.contrib.seq2seq.BasicDecoder(
-        cell=out_cell,
-        helper=helper,
-        initial_state=out_cell.zero_state(dtype=tf.float32, batch_size=batch_size)
-    )
-    outputs = tf.contrib.seq2seq.dynamic_decode(
-        decoder=decoder,
-        impute_finished=True,
-        maximum_iterations=settings['max_length']
-    )
-    return outputs[0]
-
-
-def seq2seq(settings, encoder_input, keep_drop, seq_len, init_state, chars_count, for_usage):
     with tf.variable_scope('Encoder', reuse=tf.AUTO_REUSE) as scope:
-        encoder_output = build_rnn(encoder_input,
-                                   keep_drop,
-                                   seq_len,
-                                   settings['encoder'],
-                                   init_state,
-                                   init_state,
-                                   for_usage)
+        _, encoder_output = build_rnn(
+            encoder_input,
+            keep_drop,
+            x_seq_len,
+            graph_part.settings['encoder'],
+            encoder_init_state,
+            encoder_init_state,
+            top_concat=False,
+            for_usage=graph_part.for_usage,
+            with_seq=True
+        )
 
     with tf.variable_scope('Decoder', reuse=tf.AUTO_REUSE) as scope:
 
-        if for_usage:
-            helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(encoder_output, start_token=1, end_token=2)
+        if not graph_part.for_usage:
+            start_tokens_emd = tf.nn.embedding_lookup(decoder_char_embeddings, start_tokens)
+            start_tokens_emd = tf.reshape(start_tokens_emd, (batch_size, -1, graph_part.settings['char_vector_size']))
+            decoder_output = tf.concat(values=[start_tokens_emd, decoder_output], axis=1)
+
+            end_tokens = tf.fill([batch_size], graph_part.end_char_index)
+            end_tokens_emd = tf.nn.embedding_lookup(decoder_char_embeddings, end_tokens)
+            end_tokens_emd = tf.reshape(end_tokens_emd, (batch_size, -1, graph_part.settings['char_vector_size']))
+            decoder_output = tf.concat([decoder_output, end_tokens_emd], axis=1)
+
+            end_tokens = tf.reshape(end_tokens, (batch_size, 1))
+            y = tf.concat([y, end_tokens], axis=1)
+
+        if graph_part.for_usage:
+            helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(decoder_char_embeddings,
+                                                              start_tokens=start_tokens,
+                                                              end_token=graph_part.end_char_index)
+        elif graph_part.use_sampling:
+            helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_output,
+                                                                         y_seq_len,
+                                                                         decoder_char_embeddings,
+                                                                         graph_part.sampling_probability)
         else:
-            helper = tf.contrib.seq2seq.TrainingHelper(encoder_output, seq_len)
+            helper = tf.contrib.seq2seq.TrainingHelper(decoder_output, y_seq_len)
 
-        decoder(helper, encoder_output, seq_len, settings, chars_count, settings['batch_size'], for_usage)
+        attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+            num_units=graph_part.settings['decoder']['rnn_state_size'],
+            memory=encoder_output,
+            memory_sequence_length=x_seq_len,
+            normalize=False
+        )
 
+        cell = rnn_cell(graph_part.settings['decoder'],
+                            graph_part.for_usage,
+                            decoder_keep_drop)
 
-def optimistic_restore(session, save_file):
-    # src https://github.com/tensorflow/tensorflow/issues/312#issuecomment-287455836
-    reader = tf.train.NewCheckpointReader(save_file)
-    saved_shapes = reader.get_variable_to_shape_map()
-    var_names = sorted([(var.name, var.name.split(':')[0]) for var in tf.global_variables()
-        if var.name.split(':')[0] in saved_shapes])
-    restore_vars = []
-    name2var = dict(zip(map(lambda x:x.name.split(':')[0], tf.global_variables()), tf.global_variables()))
-    with tf.variable_scope('', reuse=True):
-        for var_name, saved_var_name in var_names:
-            curr_var = name2var[saved_var_name]
-            var_shape = curr_var.get_shape().as_list()
-            if var_shape == saved_shapes[saved_var_name]:
-                restore_vars.append(curr_var)
-    saver = tf.train.Saver(restore_vars)
-    saver.restore(session, save_file)
+        cell = tf.contrib.seq2seq.AttentionWrapper(
+            cell,
+            attention_mechanism,
+            attention_layer_size=graph_part.settings['decoder']['rnn_state_size'] / 2
+        )
+
+        out_cell = tf.contrib.rnn.OutputProjectionWrapper(
+            cell,
+            graph_part.chars_count,
+        )
+
+        init_state = cell.zero_state(dtype=tf.float32, batch_size=batch_size) \
+            .clone(cell_state=decoder_init_state)
+
+        # init_state = decoder_init_state
+
+        decoder = tf.contrib.seq2seq.BasicDecoder(
+            cell=out_cell,
+            helper=helper,
+            initial_state=init_state
+        )
+
+        max_len = graph_part.settings['max_length'] if graph_part.for_usage else tf.reduce_max(y_seq_len)
+        outputs = tf.contrib.seq2seq.dynamic_decode(
+            decoder=decoder,
+            impute_finished=True,
+            output_time_major=False,
+            maximum_iterations=max_len
+        )
+        decoder_ids = outputs[0].sample_id
+
+        if not graph_part.for_usage:
+            decoder_logits = outputs[0].rnn_output
+            masks = tf.sequence_mask(
+                lengths=y_seq_len,
+                dtype=tf.float32,
+                maxlen=tf.reduce_max(y_seq_len)
+            )
+            seq_mask_int = tf.cast(masks, tf.int32)
+            seq_mask_flat = tf.cast(tf.reshape(masks, (-1,)), tf.int32)
+
+            # seq loss
+            loss = tf.contrib.seq2seq.sequence_loss(
+                decoder_logits,
+                y,
+                masks,
+                name="SeqLoss"
+            )
+            vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=graph_part.main_scope_name)
+            grads = graph_part.optimiser.compute_gradients(loss, var_list=vars)
+            graph_part.create_mean_metric(0, loss)
+
+            labels_flat = tf.reshape(y, (-1,))
+            predictions_flat = tf.reshape(decoder_ids, (-1,))
+            # char accuracy
+            nonzero_indices = tf.where(tf.not_equal(seq_mask_flat, 0))
+            labels_flat = tf.gather(labels_flat, nonzero_indices)
+            labels_flat = tf.reshape(labels_flat, (-1,))
+            predictions_flat = tf.gather(predictions_flat, nonzero_indices)
+            predictions_flat = tf.reshape(predictions_flat, (-1,))
+
+            if graph_part.use_sampling:
+                # remove -1 items where no sampling took place
+                sample_indexes = tf.where(tf.not_equal(predictions_flat, -1))
+                labels_flat = tf.gather(labels_flat, sample_indexes)
+                predictions_flat = tf.gather(predictions_flat, sample_indexes)
+
+            graph_part.create_accuracy_metric(1, labels_flat, predictions_flat)
+
+            # seq accuracy
+            labels = y * seq_mask_int
+            predictions = decoder_ids * seq_mask_int
+            labels_flat = tf.reshape(labels, (-1,))
+            predictions_flat = tf.reshape(predictions, (-1,))
+            sample_zeros = tf.cast(tf.not_equal(predictions_flat, -1), tf.int32)
+            predictions = predictions_flat * sample_zeros
+            labels = labels_flat * sample_zeros
+            predictions = tf.reshape(predictions, (batch_size, max_len))
+            labels = tf.reshape(labels, (batch_size, max_len))
+            delta = labels - predictions
+            labels = tf.reduce_sum(delta * delta, 1)
+            predictions = tf.zeros(batch_size)
+            graph_part.create_accuracy_metric(2, labels, predictions)
+
+            graph_part.dev_grads.append(grads)
+            graph_part.losses.append(loss)
+            graph_part.keep_drops.append(keep_drop)
+            graph_part.decoder_keep_drops.append(decoder_keep_drop)
+
+        graph_part.results.append(decoder_ids)

@@ -52,7 +52,7 @@ class GraphPartBase(ABC):
         self.devices_count = len(self.devices)
         self.dataset_path = global_settings['dataset_path']
         self.xs = []
-        self.seq_lens = []
+        self.x_seq_lens = []
         self.prints = []
 
     def train(self, tc):
@@ -77,7 +77,6 @@ class GraphPartBase(ABC):
                 feed_dic = self.__create_feed_dict__('train', item)
                 feed_dic[tc.learn_rate_op] = self.learn_rate_val
                 tc.sess.run(launch, feed_dic)
-
 
             train_acc = self.__write_metrics_report__(tc.sess, "Train")
             tc.sess.run(self.metrics_reset)
@@ -187,7 +186,7 @@ class GraphPartBase(ABC):
         tqdm.write(result)
         return launch_results[self.main_metric_name]
 
-    def __create_mean_metric__(self, metric_index, values):
+    def create_mean_metric(self, metric_index, values):
         metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
             tf.metrics.mean,
             self.metric_names[metric_index],
@@ -197,7 +196,7 @@ class GraphPartBase(ABC):
         self.metrics_update.append(metr_update)
         self.devices_metrics[self.metric_names[metric_index]].append(metr_epoch_loss)
 
-    def __create_accuracy_metric__(self, metric_index, labels, predictions):
+    def create_accuracy_metric(self, metric_index, labels, predictions):
         metr_epoch_loss, metr_update, metr_reset = tfu.create_reset_metric(
             tf.metrics.accuracy,
             self.metric_names[metric_index],
@@ -212,7 +211,7 @@ class GraphPartBase(ABC):
         feed_dic = {}
         for dev_num, batch in enumerate(item):
             feed_dic[self.xs[dev_num]] = batch['x']
-            feed_dic[self.seq_lens[dev_num]] = batch['x_seq_len']
+            feed_dic[self.x_seq_lens[dev_num]] = batch['x_seq_len']
             self.__update_feed_dict__(op_name, feed_dic, batch, dev_num)
 
         return feed_dic

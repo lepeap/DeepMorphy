@@ -32,7 +32,7 @@ class GramCls(GraphPartBase):
 
     def __build_graph_for_device__(self, x, seq_len):
         self.xs.append(x)
-        self.seq_lens.append(seq_len)
+        self.x_seq_lens.append(seq_len)
 
         if self.for_usage:
             keep_drop = tf.constant(1, dtype=tf.float32, name='KeepDrop')
@@ -92,10 +92,10 @@ class GramCls(GraphPartBase):
         self.dev_grads.append(grads)
 
         # metrics
-        self.__create_mean_metric__(0, loss)
+        self.create_mean_metric(0, loss)
         labels = tf.math.argmax(y, axis=1)
         predictions = tf.math.argmax(probs, axis=1)
-        self.__create_accuracy_metric__(1, labels, predictions)
+        self.create_accuracy_metric(1, labels, predictions)
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         feed_dict[self.keep_drops[dev_num]] = 1 if op_name == 'test' else self.settings['keep_drop']

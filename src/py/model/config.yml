@@ -59,8 +59,8 @@ train_steps:
   #- tens
   #- pers
   #- main
-  #- lemm
-  - inflect
+  - lemm
+  #- inflect
 
 
 ignore_restore: []
@@ -74,7 +74,7 @@ graph_part_configs:
     rnn_layers_count: 2
     rnn_bidirectional: True
     stop_training_acc_delta: 0.00001
-    learn_rate: 0.001
+    learn_rate: 0.01
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
     return_step: 2
@@ -102,7 +102,7 @@ graph_part_configs:
     batch_size: 8192
     stop_training_acc_delta: 0.00001
     return_step: 2
-    learn_rate: 0.001
+    learn_rate: 0.01
     use_sampling: false
     main_metric_type: Accuracy
     sampling_probability: 0.25
@@ -125,10 +125,10 @@ graph_part_configs:
     batch_size: 4096
     stop_training_acc_delta: 0.00001
     return_step: 2
-    learn_rate: 0.0001
+    learn_rate: 0.01
     use_sampling: false
     main_metric_type: Accuracy
-    sampling_probability: 0.1
+    sampling_probability: 0.25
     use_cls_placeholder: false
     encoder:
       char_vector_size: 128

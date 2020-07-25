@@ -22,7 +22,7 @@ class MainCls(GraphPartBase):
 
     def __build_graph_for_device__(self, x, seq_len, gram_probs, gram_drop):
         self.xs.append(x)
-        self.seq_lens.append(seq_len)
+        self.x_seq_lens.append(seq_len)
         self.drops.append(gram_drop)
 
         y = tf.placeholder(dtype=tf.int32, shape=(None, self.main_classes_count), name='Y')
@@ -83,10 +83,10 @@ class MainCls(GraphPartBase):
         self.weights.append(weights)
 
         # metrics
-        self.__create_mean_metric__(0, loss)
+        self.create_mean_metric(0, loss)
         labels = tf.math.argmax(y, axis=1)
         predictions = tf.math.argmax(probs, axis=1)
-        self.__create_accuracy_metric__(1, labels, predictions)
+        self.create_accuracy_metric(1, labels, predictions)
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         for gram_drop in self.drops[dev_num]:
