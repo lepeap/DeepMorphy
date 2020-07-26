@@ -18,7 +18,7 @@ class TfContext:
 
 
 class GraphPartBase(ABC):
-    def __init__(self, for_usage, global_settings, current_settings, optimiser, key, metric_names):
+    def __init__(self, for_usage, global_settings, current_settings, optimiser, reset_optimiser, key, metric_names):
         self.key = key
         self.global_settings = global_settings
         self.filler = global_settings['filler']
@@ -26,6 +26,7 @@ class GraphPartBase(ABC):
         self.settings = current_settings
         self.for_usage = for_usage
         self.optimiser = optimiser
+        self.reset_optimiser = reset_optimiser
         self.metric_names = metric_names
         self.max_word_size = global_settings['max_word_size']
         self.checkpoints_keep = 10000
@@ -61,9 +62,7 @@ class GraphPartBase(ABC):
             tc.sess.run(self.metrics_reset)
 
             for item in tqdm(trains, desc=f"Train, epoch {tc.epoch}"):
-                launch = [
-                    self.optimize
-                ]
+                launch = [self.optimize]
                 launch.extend(self.metrics_update)
                 if len(self.prints):
                     launch.extend(self.prints)
@@ -102,7 +101,8 @@ class GraphPartBase(ABC):
             else:
                 tqdm.write("Best epoch is better then current")
                 tqdm.write(f"Restoring best epoch {self.best_epoch}")
-                tc.saver.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
+                self.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
+                tc.sess.run(self.reset_optimiser)
                 need_decay = True
 
             if need_decay:

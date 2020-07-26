@@ -52,7 +52,7 @@ class RNN:
         self.graph = tf.Graph()
         self.checks = []
         self.xs = []
-        self.seq_lens = []
+        self.x_seq_lens = []
 
         self.x_inds = []
         self.x_vals = []
@@ -67,12 +67,12 @@ class RNN:
             self.optimiser = tf.train.AdamOptimizer(self.learn_rate)
             self.reset_optimizer = tf.variables_initializer(self.optimiser.variables())
             self.gram_graph_parts = {
-                gram: GramCls(gram, self.for_usage, self.config, self.key_configs[gram], self.optimiser)
+                gram: GramCls(gram, self.for_usage, self.config, self.key_configs[gram], self.optimiser, self.reset_optimizer)
                 for gram in self.gram_keys
             }
-            self.lem_graph_part = Lemm(self.for_usage, self.config, self.key_configs["lemm"], self.optimiser)
-            self.main_graph_part = MainCls(self.for_usage, self.config, self.key_configs["main"], self.optimiser)
-            self.inflect_graph_part = Inflect(self.for_usage, self.config, self.key_configs['inflect'], self.optimiser)
+            self.lem_graph_part = Lemm(self.for_usage, self.config, self.key_configs["lemm"], self.optimiser, self.reset_optimizer)
+            self.main_graph_part = MainCls(self.for_usage, self.config, self.key_configs["main"], self.optimiser, self.reset_optimizer)
+            self.inflect_graph_part = Inflect(self.for_usage, self.config, self.key_configs['inflect'], self.optimiser, self.reset_optimizer)
 
             for device_index, device_name in enumerate(self.devices):
                 with tf.device(device_name):
@@ -93,19 +93,19 @@ class RNN:
                         x = tf.placeholder(dtype=tf.int32, shape=(None, None), name='X')
                         self.xs.append(x)
 
-                    seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='SeqLen')
-                    self.seq_lens.append(seq_len)
+                    x_seq_len = tf.placeholder(dtype=tf.int32, shape=(None,), name='SeqLen')
+                    self.x_seq_lens.append(x_seq_len)
 
                     for gram in self.gram_keys:
-                        self.gram_graph_parts[gram].build_graph_for_device(x, seq_len)
+                        self.gram_graph_parts[gram].build_graph_for_device(x, x_seq_len)
 
                     gram_probs = [self.gram_graph_parts[gram].probs[-1] for gram in self.gram_keys]
                     gram_keep_drops = [self.gram_graph_parts[gram].keep_drops[-1] for gram in self.gram_keys]
-                    self.main_graph_part.build_graph_for_device(x, seq_len, gram_probs, gram_keep_drops)
+                    self.main_graph_part.build_graph_for_device(x, x_seq_len, gram_probs, gram_keep_drops)
                     self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
                     if self.for_usage and not self.lem_graph_part.use_cls_placeholder:
                         x_tiled = tf.contrib.seq2seq.tile_batch(x, multiplier=self.main_class_k)
-                        seq_len_tiled = tf.contrib.seq2seq.tile_batch(seq_len, multiplier=self.main_class_k)
+                        seq_len_tiled = tf.contrib.seq2seq.tile_batch(x_seq_len, multiplier=self.main_class_k)
                         cls = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
                         batch_size_tiled = self.batch_size * self.main_class_k
                         self.lem_graph_part.build_graph_for_device(x_tiled,
@@ -115,17 +115,16 @@ class RNN:
                         self.lem_cls_result = tf.reshape(self.lem_graph_part.results[0],
                                                          (self.batch_size, self.main_class_k, -1))
                         self.lem_graph_part.build_graph_for_device(x,
-                                                                   seq_len,
+                                                                   x_seq_len,
                                                                    self.batch_size)
                         self.lem_result = tf.expand_dims(self.lem_graph_part.results[1], 1)
                         self.lem_class_pl = self.lem_graph_part.cls[0]
-
                     else:
                         self.lem_graph_part.build_graph_for_device(x,
-                                                                   seq_len,
+                                                                   x_seq_len,
                                                                    self.batch_size)
 
-                    self.inflect_graph_part.build_graph_for_device(x, seq_len, self.batch_size)
+                    self.inflect_graph_part.build_graph_for_device(x, x_seq_len, self.batch_size)
                     if self.for_usage:
                         self.inflect_result = self.inflect_graph_part.results[0]
                         self.inflect_x_class_pl = self.inflect_graph_part.x_cls[0]
@@ -216,7 +215,7 @@ class RNN:
                                            'x_ind': self.x_inds[0],
                                            'x_val': self.x_vals[0],
                                            'x_shape': self.x_shape[0],
-                                           'seq_len': self.seq_lens[0],
+                                           'seq_len': self.x_seq_lens[0],
                                            'batch_size': self.batch_size,
                                            'lem_x_cls': self.lem_class_pl,
                                            'inflect_x_cls': self.inflect_x_class_pl,

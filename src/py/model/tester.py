@@ -73,7 +73,7 @@ class Tester:
                 lnch,
                 {
                     self.rnn.batch_size: bi,
-                    self.rnn.seq_lens[0]: np.asarray(seq_lens),
+                    self.rnn.x_seq_lens[0]: np.asarray(seq_lens),
                     self.rnn.x_vals[0]: np.asarray(xs),
                     self.rnn.x_inds[0]: np.asarray(indexes),
                     self.rnn.x_shape[0]: np.asarray([bi, max_len])
@@ -143,6 +143,34 @@ class Tester:
         acc = correct / total
         return acc
 
+    def __test_inflect__(self, sess):
+        path = os.path.join(self.config['dataset_path'], "inflect_test_dataset.pkl")
+        with open(path, 'rb') as f:
+            words = pickle.load(f)
+
+        words = [
+            word
+            for word in words
+            if all([c in self.config['chars'] for c in word['x_src']])
+        ]
+
+        words_to_proc = [
+            (word['x_src'], word['main_cls'])
+            for word in words
+        ]
+
+        rez_words = list(self.__infer_lemmas__(sess, words_to_proc))
+        total = len(words)
+        wrong = 0
+        for index, lem in enumerate(rez_words):
+            et_word = words[index]
+            if lem != et_word['y_src']:
+                wrong += 1
+
+        correct = total - wrong
+        acc = correct / total
+        return acc
+
     def __infer_lemmas__(self, sess, words):
         wi = 0
         pbar = tqdm(total=len(words))
@@ -174,7 +202,7 @@ class Tester:
                 lnch,
                 {
                     self.rnn.batch_size: bi,
-                    self.rnn.seq_lens[0]: np.asarray(seq_lens),
+                    self.rnn.x_seq_lens[0]: np.asarray(seq_lens),
                     self.rnn.x_vals[0]: np.asarray(xs),
                     self.rnn.x_inds[0]: np.asarray(indexes),
                     self.rnn.lem_graph_part.cls[0]: np.asarray(clss),
