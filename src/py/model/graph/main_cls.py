@@ -4,8 +4,8 @@ from graph.base import GraphPartBase
 
 
 class MainCls(GraphPartBase):
-    def __init__(self, for_usage, global_settings, current_settings, optimiser):
-        super().__init__(for_usage, global_settings, current_settings, optimiser, 'main', ['Loss', 'Accuracy'])
+    def __init__(self, for_usage, global_settings, current_settings, optimiser, reset_optimiser):
+        super().__init__(for_usage, global_settings, current_settings, optimiser, reset_optimiser, 'main', ['Loss', 'Accuracy'])
         self.checks = []
         self.weights = []
         self.keep_drops = []

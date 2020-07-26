@@ -271,11 +271,17 @@ def seq2seq(graph_part,
             initializer=initializer
         )
 
-        encoder_cls_emb = ClsGramEmbedder(graph_part.main_cls_dic,
+        encoder_init_state = ClsGramEmbedder(graph_part.main_cls_dic,
                                           graph_part.settings['encoder']['gram_vector_size'],
                                           graph_part.settings['encoder']['ad_cls_vector_size'])(x_init, batch_size)
 
-        encoder_init_state = tf.nn.embedding_lookup(encoder_cls_emb, x_init)
+        #encoder_cls_emb = tf.get_variable(
+        #    "XInitEmbeddings",
+        #    (graph_part.main_classes_count, graph_part.settings['encoder']['rnn_state_size']),
+        #    initializer=initializer
+        #)
+        #encoder_init_state = tf.nn.embedding_lookup(encoder_cls_emb, x_init)
+
         encoder_input = tf.nn.embedding_lookup(encoder_char_embeddings, x)
 
     with tf.variable_scope("Decoder", reuse=tf.AUTO_REUSE):
@@ -284,11 +290,18 @@ def seq2seq(graph_part,
             [graph_part.chars_count, graph_part.settings['char_vector_size']],
             initializer=initializer
         )
-        decoder_cls_emb = ClsGramEmbedder(graph_part.main_cls_dic,
+        decoder_init_state = ClsGramEmbedder(graph_part.main_cls_dic,
                                           graph_part.settings['decoder']['gram_vector_size'],
                                           graph_part.settings['decoder']['ad_cls_vector_size'])(y_init, batch_size)
 
-        decoder_init_state = tf.nn.embedding_lookup(decoder_cls_emb, y_init)
+
+        #decoder_cls_emb = tf.get_variable(
+        #    "YInitEmbeddings",
+        #    (graph_part.main_classes_count, graph_part.settings['decoder']['rnn_state_size']),
+        #    initializer=initializer
+        #)
+        #decoder_init_state = tf.nn.embedding_lookup(decoder_cls_emb, x_init)
+
         decoder_output = tf.nn.embedding_lookup(decoder_char_embeddings, y)
 
     if graph_part.for_usage:
@@ -329,13 +342,11 @@ def seq2seq(graph_part,
             helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(decoder_char_embeddings,
                                                               start_tokens=start_tokens,
                                                               end_token=graph_part.end_char_index)
-        elif graph_part.use_sampling:
+        else:
             helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_output,
                                                                          y_seq_len,
                                                                          decoder_char_embeddings,
                                                                          graph_part.sampling_probability)
-        else:
-            helper = tf.contrib.seq2seq.TrainingHelper(decoder_output, y_seq_len)
 
         attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
             num_units=graph_part.settings['decoder']['rnn_state_size'],
@@ -356,13 +367,10 @@ def seq2seq(graph_part,
 
         out_cell = tf.contrib.rnn.OutputProjectionWrapper(
             cell,
-            graph_part.chars_count,
+            graph_part.chars_count
         )
 
-        init_state = cell.zero_state(dtype=tf.float32, batch_size=batch_size) \
-            .clone(cell_state=decoder_init_state)
-
-        # init_state = decoder_init_state
+        init_state = cell.zero_state(dtype=tf.float32, batch_size=batch_size).clone(cell_state=decoder_init_state)
 
         decoder = tf.contrib.seq2seq.BasicDecoder(
             cell=out_cell,
@@ -409,11 +417,10 @@ def seq2seq(graph_part,
             predictions_flat = tf.gather(predictions_flat, nonzero_indices)
             predictions_flat = tf.reshape(predictions_flat, (-1,))
 
-            if graph_part.use_sampling:
-                # remove -1 items where no sampling took place
-                sample_indexes = tf.where(tf.not_equal(predictions_flat, -1))
-                labels_flat = tf.gather(labels_flat, sample_indexes)
-                predictions_flat = tf.gather(predictions_flat, sample_indexes)
+            # remove -1 items where no sampling took place
+            sample_indexes = tf.where(tf.not_equal(predictions_flat, -1))
+            labels_flat = tf.gather(labels_flat, sample_indexes)
+            predictions_flat = tf.gather(predictions_flat, sample_indexes)
 
             graph_part.create_accuracy_metric(1, labels_flat, predictions_flat)
 
@@ -503,6 +510,3 @@ class ClsGramEmbedder:
 
         result = tf.concat([gram_rez, ad_cls_rez], axis=1)
         return result
-
-
-

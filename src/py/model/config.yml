@@ -52,27 +52,25 @@ end_token: 35
 main_class_k: 4
 
 train_steps:
-  #- post
-  #- gndr
-  #- nmbr
-  #- case
-  #- tens
-  #- pers
-  #- main
+  - post
+  - gndr
+  - nmbr
+  - case
+  - tens
+  - pers
+  - main
   - lemm
-  #- inflect
+  - inflect
 
 
-ignore_restore: []
+ignore_restore:
+  #[]
+  #- lemm
+  - inflect
 
 graph_part_configs:
   default:
-    char_vector_size: 32
-    rnn_state_size: 32
-    test_batch_size:  2048
-    train_batch_size: 4096
-    rnn_layers_count: 2
-    rnn_bidirectional: True
+    #learn params
     stop_training_acc_delta: 0.00001
     learn_rate: 0.01
     learn_rate_decay_step: 0.1
@@ -81,8 +79,20 @@ graph_part_configs:
     keep_drop: 1
     use_weights: true
     clip_grads: true
-    main_metric_type: Accuracy
+    test_batch_size:  2048
+    train_batch_size: 4096
+
+    # common params
+    char_vector_size: 32
+    rnn_state_size: 32
+    rnn_layers_count: 2
+    rnn_bidirectional: True
     use_residual: false
+    main_metric_type: Accuracy
+
+    #seq2seq params
+    max_length: 33
+    sampling_probability: 0.01
 
   pers:
     test_batch_size:  256
@@ -98,15 +108,7 @@ graph_part_configs:
 
   lemm:
     char_vector_size: 64
-    max_length: 33
     batch_size: 8192
-    stop_training_acc_delta: 0.00001
-    return_step: 2
-    learn_rate: 0.01
-    use_sampling: false
-    main_metric_type: Accuracy
-    sampling_probability: 0.25
-    use_cls_placeholder: false
     encoder:
       gram_vector_size: 8
       ad_cls_vector_size: 16
@@ -125,15 +127,7 @@ graph_part_configs:
 
   inflect:
     char_vector_size: 128
-    max_length: 33
     batch_size: 4096
-    stop_training_acc_delta: 0.00001
-    return_step: 2
-    learn_rate: 0.01
-    use_sampling: false
-    main_metric_type: Accuracy
-    sampling_probability: 0.25
-    use_cls_placeholder: false
     encoder:
       gram_vector_size: 16
       ad_cls_vector_size: 32
