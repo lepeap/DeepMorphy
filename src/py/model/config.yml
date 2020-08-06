@@ -52,15 +52,15 @@ end_token: 35
 main_class_k: 4
 
 train_steps:
-  - post
-  - gndr
-  - nmbr
-  - case
-  - tens
-  - pers
-  - main
+  #- post
+  #- gndr
+  #- nmbr
+  #- case
+  #- tens
+  #- pers
+  #- main
   - lemm
-  - inflect
+  #- inflect
 
 
 ignore_restore: []
@@ -69,9 +69,9 @@ ignore_restore: []
 
 graph_part_configs:
   default:
-    #learn params
+    #learn params 12
     stop_training_acc_delta: 0.00001
-    learn_rate: 0.01
+    learn_rate: 0.000001
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.000001
     return_step: 2
@@ -91,7 +91,21 @@ graph_part_configs:
 
     #seq2seq params
     max_length: 33
-    sampling_probability: 0.25
+    encoder:
+      gram_vector_size: 8
+      ad_cls_vector_size: 16
+      char_vector_size: 64
+      rnn_state_size: 64
+      rnn_layers_count: 2
+      rnn_bidirectional: true
+      use_residual: false
+    decoder:
+      gram_vector_size: 16
+      ad_cls_vector_size: 32
+      rnn_state_size: 128
+      rnn_layers_count: 1
+      keep_drop: 0.7
+      use_residual: false
 
   pers:
     test_batch_size:  256
@@ -108,40 +122,11 @@ graph_part_configs:
   lemm:
     char_vector_size: 64
     batch_size: 8192
-    encoder:
-      gram_vector_size: 8
-      ad_cls_vector_size: 16
-      char_vector_size: 64
-      rnn_state_size: 64
-      rnn_layers_count: 2
-      rnn_bidirectional: true
-      use_residual: false
-    decoder:
-      gram_vector_size: 16
-      ad_cls_vector_size: 32
-      rnn_state_size: 128
-      rnn_layers_count: 1
-      keep_drop: 1
-      use_residual: false
 
   inflect:
-    char_vector_size: 128
-    batch_size: 4096
-    encoder:
-      gram_vector_size: 16
-      ad_cls_vector_size: 32
-      char_vector_size: 128
-      rnn_state_size: 128
-      rnn_layers_count: 2
-      rnn_bidirectional: true
-      use_residual: false
-    decoder:
-      gram_vector_size: 32
-      ad_cls_vector_size: 64
-      rnn_state_size: 256
-      rnn_layers_count: 1
-      keep_drop: 1
-      use_residual: false
+    transfer_init: true
+    char_vector_size: 64
+    batch_size: 8192
 
 chars:
   - UNDEFINED # неизвестный символ

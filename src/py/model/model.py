@@ -103,7 +103,7 @@ class RNN:
                     gram_keep_drops = [self.gram_graph_parts[gram].keep_drops[-1] for gram in self.gram_keys]
                     self.main_graph_part.build_graph_for_device(x, x_seq_len, gram_probs, gram_keep_drops)
                     self.prints.append(tf.print("main_result", self.main_graph_part.results[0].indices))
-                    if self.for_usage and not self.lem_graph_part.use_cls_placeholder:
+                    if self.for_usage:
                         x_tiled = tf.contrib.seq2seq.tile_batch(x, multiplier=self.main_class_k)
                         seq_len_tiled = tf.contrib.seq2seq.tile_batch(x_seq_len, multiplier=self.main_class_k)
                         cls = tf.reshape(self.main_graph_part.results[0].indices, (-1,))
@@ -148,6 +148,9 @@ class RNN:
             self.lem_graph_part.restore(sess, latest_checkpoint)
         if self.inflect_graph_part not in self.config['ignore_restore']:
             self.inflect_graph_part.restore(sess, latest_checkpoint)
+
+        if self.inflect_graph_part.settings['transfer_init']:
+            self.inflect_graph_part.transfer_learning_init(sess)
 
     def train(self):
         config = tf.ConfigProto(allow_soft_placement=True)

@@ -67,3 +67,25 @@ class Inflect(GraphPartBase):
         #    self.settings['batch_size']
         #))
         return items
+
+    def transfer_learning_init(self, sess):
+        my_prefix = f"{self.main_scope_name}/"
+        vars = {
+            var.name[len(my_prefix):]: var
+            for var in tf.global_variables(my_prefix)
+            if "Adam" not in var.name
+        }
+
+        lem_prefix = f"Lemm/"
+        lem_vars = {
+            var.name[len(lem_prefix):]: var
+            for var in tf.global_variables(lem_prefix)
+            if "Adam" not in var.name
+        }
+
+        for key in vars:
+            my_var = vars[key]
+            lem_var = lem_vars[key]
+            value = sess.run(lem_var)
+            sess.run(my_var.assign(value))
+        print()
