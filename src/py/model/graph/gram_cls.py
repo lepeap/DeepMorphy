@@ -11,8 +11,7 @@ class GramCls(GraphPartBase):
                          optimiser,
                          reset_optimiser,
                          key,
-                         ['Loss', 'Accuracy']
-                         )
+                         ['Loss', 'Accuracy'])
         self.gram = key
         self.grammemes = global_settings['grammemes_types']
         self.classes = self.grammemes[key]['classes']

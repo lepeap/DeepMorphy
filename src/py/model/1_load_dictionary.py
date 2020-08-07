@@ -33,7 +33,8 @@ def parse_words(itr):
             }
 
         if event == 'start' and (element.tag == 'l' or element.tag == 'f'):
-            cur_item = {'text': None}
+            cur_item = {'text': None, 'index': i}
+            i += 1
 
         if event == 'end' and element.tag == 'l':
             cur_item['text'] = element.attrib['t']
@@ -176,7 +177,8 @@ dict_words = [word for word in words if word['post'] in DICT_POST_TYPES]
 dataset_words = [word for word in words if word['post'] not in DICT_POST_TYPES]
 dataset_words_dic = {}
 for word in tqdm(dataset_words):
-    if len(word['text']) > MAX_WORD_SIZE:
+    w_len = len(word['text'])
+    if w_len > MAX_WORD_SIZE:
         continue
 
     if word['text'] not in dataset_words_dic:

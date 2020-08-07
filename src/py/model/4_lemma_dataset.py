@@ -1,14 +1,18 @@
 import pickle
 from tqdm import tqdm
 from collections import defaultdict
-from utils import CONFIG, save_dataset
+from utils import CONFIG, save_dataset, save_dictionary_items
 
 
+MIN_WORD_SIZE = CONFIG['min_word_size']
+PREFIX_FILTER_LENGTH = CONFIG['prefix_filter_length']
 VECT_PATH = CONFIG['vect_words_path']
 CLS_CLASSES_PATH = CONFIG['cls_classes_path']
+DICT_WORDS_PATH = CONFIG['dics_path']
 
 
 def generate(vec_words, main_cls_dic):
+    dict_words = {}
     rez_dict = defaultdict(list)
     for word in tqdm(vec_words, desc="Generating lemma dataset"):
         dic = vec_words[word]
@@ -22,7 +26,16 @@ def generate(vec_words, main_cls_dic):
             else:
                 continue
 
-            if word_y not in vec_words:
+            if word_y not in vec_words \
+               or MIN_WORD_SIZE > len(word_y) \
+               or MIN_WORD_SIZE > len(word):
+                continue
+
+            if word_y[:PREFIX_FILTER_LENGTH] != word[:PREFIX_FILTER_LENGTH] \
+                    and word_y[:PREFIX_FILTER_LENGTH].replace('ё', 'е') != word[:PREFIX_FILTER_LENGTH].replace('ё', 'е')\
+                    and form['post'] != 'comp':
+                #tqdm.write('Word to dictionary: {0} -> {1}'.format(word, word_y))
+                dict_words[(word_y, main_cls)] = word
                 continue
 
             y_vec = vec_words[word_y]['vect']
@@ -40,6 +53,7 @@ def generate(vec_words, main_cls_dic):
             rez_dict[main_cls] = items
 
     save_dataset(rez_dict, 'lemma')
+    save_dictionary_items(dict_words, 'lemma')
 
 
 with open(VECT_PATH, 'rb') as f:

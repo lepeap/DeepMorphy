@@ -1,7 +1,11 @@
 import pickle
+from tqdm import tqdm
+
 from utils import get_grams_info, CONFIG, save_dataset
 
 
+MIN_WORD_SIZE = CONFIG['min_word_size']
+PREFIX_FILTER_LENGTH = CONFIG['prefix_filter_length']
 VECT_PATH = CONFIG['vect_words_path']
 CLS_CLASSES_PATH = CONFIG['cls_classes_path']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
@@ -14,9 +18,6 @@ def create_forms_dict(vect_words):
     forms_dict = {}
     for word in vect_words:
         for form in vect_words[word]['forms']:
-            if isinstance(form['id'], tuple):
-                continue
-
             is_main = 'inflect_id' not in form
             key = form['id'] if is_main else form['inflect_id']
             if key not in forms_dict:
@@ -51,14 +52,35 @@ def create_templates(forms_dict):
 
 def generate_dataset(forms_dict, vect_words, cls_dic):
     rez_dict = {}
-    for key in forms_dict:
+    for key in tqdm(forms_dict, desc="Generating dataset"):
         item = forms_dict[key]
         root = item['root']
         x_cls = cls_dic[root['main']]
         x, x_len = vect_words[root['text']]['vect']
+        prefix_filter = root['text'][:PREFIX_FILTER_LENGTH]
+        prefix_filter_e = prefix_filter.replace('ё', 'е')
+        if MIN_WORD_SIZE > len(root['text']):
+            continue
 
+        form_dict = {}
         for form in item['items']:
+            if MIN_WORD_SIZE > len(form['text']):
+                continue
+
+            if not (form['text'].startswith(prefix_filter) or
+                    form['text'].replace('ё', 'е').startswith(prefix_filter_e)):
+                #tqdm.write("Ignore form {0} for {1}".format(form['text'], root['text']))
+                continue
+
             y_cls = cls_dic[form['main']]
+            if y_cls in form_dict and form_dict[y_cls]['index'] < form['index']:
+                #tqdm.write("Ignore duplicate form {0} [{1}] for {2} ".format(form['text'], form_dict[y_cls]['text'], root['text']))
+                continue
+
+            form_dict[y_cls] = form
+
+        for y_cls in form_dict:
+            form = form_dict[y_cls]
             y, y_len = vect_words[form['text']]['vect']
             if y_cls not in rez_dict:
                 rez_dict[y_cls] = []

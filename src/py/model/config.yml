@@ -6,13 +6,18 @@ dataset_words_path: data/dataset_words.pkl
 dict_words_path: data/dict_words.pkl
 vect_words_path: data/vec_words.pkl
 cls_classes_path: data/classification_classes.pkl
+dics_path: data/
 dataset_path: data/dataset
 inflect_templates_path: data/inflect_templates.pkl
 
+min_word_size: 2
 max_word_size: 32
 model_key: small #big
 export_path: export
 save_path: checkpoints/
+prefix_filter_length: 1
+
+
 
 test_results_paths:
   - latest_release
@@ -52,15 +57,18 @@ end_token: 35
 main_class_k: 4
 
 train_steps:
-  #- post
-  #- gndr
-  #- nmbr
-  #- case
-  #- tens
-  #- pers
-  #- main
+  - mood
+  - invl
+  - voic
+  - post
+  - gndr
+  - nmbr
+  - case
+  - tens
+  - pers
+  - main
   - lemm
-  #- inflect
+  - inflect
 
 
 ignore_restore: []
@@ -69,11 +77,11 @@ ignore_restore: []
 
 graph_part_configs:
   default:
-    #learn params 12
-    stop_training_acc_delta: 0.00001
-    learn_rate: 0.000001
+    #learn params
+    stop_training_acc_delta: 0.0001
+    learn_rate: 0.01
     learn_rate_decay_step: 0.1
-    min_learn_rate: 0.000001
+    min_learn_rate: 0.00001
     return_step: 2
     keep_drop: 1
     use_weights: true
@@ -92,22 +100,34 @@ graph_part_configs:
     #seq2seq params
     max_length: 33
     encoder:
-      gram_vector_size: 8
-      ad_cls_vector_size: 16
+      gram_vector_size: 5
+      ad_cls_vector_size: 19
       char_vector_size: 64
       rnn_state_size: 64
       rnn_layers_count: 2
       rnn_bidirectional: true
       use_residual: false
     decoder:
-      gram_vector_size: 16
-      ad_cls_vector_size: 32
+      gram_vector_size: 10
+      ad_cls_vector_size: 38
       rnn_state_size: 128
       rnn_layers_count: 1
       keep_drop: 0.7
       use_residual: false
 
   pers:
+    test_batch_size:  256
+    train_batch_size: 1024
+    char_vector_size: 8
+    rnn_state_size: 8
+
+  mood:
+    test_batch_size:  256
+    train_batch_size: 1024
+    char_vector_size: 8
+    rnn_state_size: 8
+
+  invl:
     test_batch_size:  256
     train_batch_size: 1024
     char_vector_size: 8
@@ -356,8 +376,6 @@ grammemes_types:
         keys:
           - ADVB
 
-
-
   gndr:
     index: 1
     key_ru: род
@@ -387,6 +405,13 @@ grammemes_types:
         keys:
           - neut
 
+      msf:
+        index: 2
+        key_ru: общ
+        name_ru: общий
+        desc_ru: общий род
+        keys:
+          - ms-f
 
   nmbr:
     index: 2
@@ -568,4 +593,66 @@ grammemes_types:
         keys:
           - futr
 
+  mood:
+    index: 6
+    key_ru: накл
+    name: наклонение
+    classes:
+      pres:
+        index: 0
+        key_ru: изъяв
+        name_ru: изъявительное
+        desc_ru: изъявительное наклонение
+        keys:
+          - indc
+
+      past:
+        index: 1
+        key_ru: повел
+        name_ru: повелительное
+        desc_ru: повелительное наклонение
+        keys:
+          - impr
+
+  invl:
+    index: 7
+    key_ru: совм
+    name: совместность
+    classes:
+      incl:
+        index: 0
+        key_ru: вкл
+        name_ru: включён
+        desc_ru: говорящий включён
+        keys:
+          - incl
+
+      excl:
+        index: 1
+        key_ru: невкл
+        name_ru: не включён
+        desc_ru: говорящий не включён
+        keys:
+          - excl
+
+  voic:
+    index: 8
+    key_ru: залог
+    name: залог
+    classes:
+      incl:
+        index: 0
+        key_ru: дейст
+        name_ru: действительный
+        desc_ru: действительный залог
+        keys:
+          - actv
+
+      excl:
+        index: 1
+        key_ru: страд
+        name_ru: страдательный
+        desc_ru: страдательный залог
+        keys:
+          - pssv
 

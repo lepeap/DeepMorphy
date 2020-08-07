@@ -273,7 +273,8 @@ def seq2seq(graph_part,
 
         encoder_init_state = ClsGramEmbedder(graph_part.main_cls_dic,
                                           graph_part.settings['encoder']['gram_vector_size'],
-                                          graph_part.settings['encoder']['ad_cls_vector_size'])(x_init, batch_size)
+                                          graph_part.settings['encoder']['ad_cls_vector_size'],
+                                          graph_part.settings['encoder']['rnn_state_size'])(x_init, batch_size)
         encoder_input = tf.nn.embedding_lookup(encoder_char_embeddings, x)
 
     with tf.variable_scope("Decoder", reuse=tf.AUTO_REUSE):
@@ -284,7 +285,8 @@ def seq2seq(graph_part,
         )
         decoder_init_state = ClsGramEmbedder(graph_part.main_cls_dic,
                                           graph_part.settings['decoder']['gram_vector_size'],
-                                          graph_part.settings['decoder']['ad_cls_vector_size'])(y_init, batch_size)
+                                          graph_part.settings['decoder']['ad_cls_vector_size'],
+                                          graph_part.settings['decoder']['rnn_state_size'])(y_init, batch_size)
         decoder_output = tf.nn.embedding_lookup(decoder_char_embeddings, y)
 
     if graph_part.for_usage:
@@ -326,10 +328,6 @@ def seq2seq(graph_part,
                                                               start_tokens=start_tokens,
                                                               end_token=graph_part.end_char_index)
         else:
-            #helper = tf.contrib.seq2seq.ScheduledEmbeddingTrainingHelper(decoder_output,
-            #                                                             y_seq_len,
-            #                                                             decoder_char_embeddings,
-            #                                                             graph_part.sampling_probability)
             helper = tf.contrib.seq2seq.TrainingHelper(decoder_output, y_seq_len)
 
         attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
@@ -432,7 +430,7 @@ def seq2seq(graph_part,
 
 
 class ClsGramEmbedder:
-    def __init__(self, cls_dic, gram_vector_size, ad_cls_vector_size):
+    def __init__(self, cls_dic, gram_vector_size, ad_cls_vector_size, rez_size):
         gram_rez_dict = {}
         tpls = sorted([(key, cls_dic[key]) for key in cls_dic], key=lambda x: x[1])
         cls_vectors = []
@@ -457,6 +455,7 @@ class ClsGramEmbedder:
 
             gram_vectors.append(val)
 
+        self.rez_size = rez_size
         self.classes_count = len(cls_dic)
         self.cls_vectors = np.asarray(cls_vectors, dtype=np.int)
 
