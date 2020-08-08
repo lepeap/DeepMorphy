@@ -56,16 +56,16 @@ end_token: 35
 main_class_k: 4
 
 train_steps:
-  - mood
-  - post
-  - gndr
-  - nmbr
-  - case
-  - tens
-  - pers
+  #- mood
+  #- post
+  #- gndr
+  #- nmbr
+  #- case
+  #- tens
+  #- pers
   - main
-  - lemm
-  - inflect
+  #- lemm
+  #- inflect
 
 
 ignore_restore: []
@@ -75,8 +75,8 @@ ignore_restore: []
 graph_part_configs:
   default:
     #learn params
-    stop_training_acc_delta: 0.001
-    learn_rate: 0.01
+    stop_training_acc_delta: 0.0001
+    learn_rate: 0.001
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
     return_step: 2
@@ -97,16 +97,16 @@ graph_part_configs:
     #seq2seq params
     max_length: 33
     encoder:
-      gram_vector_size: 5
-      ad_cls_vector_size: 19
+      gram_vector_size: 7
+      ad_cls_vector_size: 15
       char_vector_size: 64
       rnn_state_size: 64
       rnn_layers_count: 2
       rnn_bidirectional: true
       use_residual: false
     decoder:
-      gram_vector_size: 10
-      ad_cls_vector_size: 38
+      gram_vector_size: 14
+      ad_cls_vector_size: 30
       rnn_state_size: 128
       rnn_layers_count: 1
       keep_drop: 0.7
@@ -133,7 +133,7 @@ graph_part_configs:
     batch_size: 8192
 
   inflect:
-    transfer_init: true
+    transfer_init: false
     char_vector_size: 64
     batch_size: 8192
 
@@ -395,7 +395,7 @@ grammemes_types:
           - neut
 
       msf:
-        index: 2
+        index: 3
         key_ru: общ
         name_ru: общий
         desc_ru: общий род

@@ -12,7 +12,7 @@ class Tester:
         self.config['graph_part_configs']['lemm']['use_cls_placeholder'] = True
         self.rnn = RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
-        self.batch_size = 4096
+        self.batch_size = 16384
         self.show_bad_items = False
 
     def test(self):
@@ -131,7 +131,7 @@ class Tester:
             for word in words
         ]
 
-        rez_words = list(self.__infer_lemmas__(sess, words_to_proc))
+        rez_words = list(self.__infer_lemm__(sess, words_to_proc))
         total = len(words)
         wrong = 0
         for index, lem in enumerate(rez_words):
@@ -159,7 +159,7 @@ class Tester:
             for word in words
         ]
 
-        rez_words = list(self.__infer_lemmas__(sess, words_to_proc))
+        rez_words = list(self.__infer_lemm__(sess, words_to_proc))
         total = len(words)
         wrong = 0
         for index, lem in enumerate(rez_words):
@@ -171,10 +171,10 @@ class Tester:
         acc = correct / total
         return acc
 
-    def __infer_lemmas__(self, sess, words):
+    def __infer_lemm__(self, sess, items):
         wi = 0
-        pbar = tqdm(total=len(words))
-        while wi < len(words):
+        pbar = tqdm(total=len(items))
+        while wi < len(items):
             bi = 0
             xs = []
             clss = []
@@ -182,14 +182,15 @@ class Tester:
             seq_lens = []
             max_len = 0
 
-            while bi < self.batch_size and wi < len(words):
-                word = words[wi][0]
-                cls = words[wi][1]
+            while bi < self.batch_size and wi < len(items):
+                item = items[wi]
+                word = item['x_src']
+                x_cls = item['main_cls']
                 for c_index, char in enumerate(word):
                     xs.append(self.chars[char])
                     indexes.append([bi, c_index])
                 cur_len = len(word)
-                clss.append(cls)
+                clss.append(x_cls)
                 if cur_len > max_len:
                     max_len = cur_len
                 seq_lens.append(cur_len)
@@ -206,6 +207,52 @@ class Tester:
                     self.rnn.x_vals[0]: np.asarray(xs),
                     self.rnn.x_inds[0]: np.asarray(indexes),
                     self.rnn.lem_graph_part.cls[0]: np.asarray(clss),
+                    self.rnn.x_shape[0]: np.asarray([bi, max_len])
+                }
+            )
+            for word_src in results[0]:
+                yield decode_word(word_src)
+
+    def __infer_inflect__(self, sess, items):
+        wi = 0
+        pbar = tqdm(total=len(items))
+        while wi < len(items):
+            bi = 0
+            xs = []
+            x_clss = []
+            y_clss = []
+            indexes = []
+            seq_lens = []
+            max_len = 0
+
+            while bi < self.batch_size and wi < len(items):
+                item = items[wi]
+                word = item['x_src']
+                x_cls = item['x_cls']
+                y_cls = item['y_cls']
+                for c_index, char in enumerate(word):
+                    xs.append(self.chars[char])
+                    indexes.append([bi, c_index])
+                cur_len = len(word)
+                x_clss.append(x_cls)
+                y_clss.append(y_cls)
+                if cur_len > max_len:
+                    max_len = cur_len
+                seq_lens.append(cur_len)
+                bi += 1
+                wi += 1
+                pbar.update(1)
+
+            lnch = [self.rnn.inflect_graph_part.results[0]]
+            results = sess.run(
+                lnch,
+                {
+                    self.rnn.batch_size: bi,
+                    self.rnn.x_seq_lens[0]: np.asarray(seq_lens),
+                    self.rnn.x_vals[0]: np.asarray(xs),
+                    self.rnn.x_inds[0]: np.asarray(indexes),
+                    self.rnn.inflect_graph_part.x_cls[0]: np.asarray(x_clss),
+                    self.rnn.inflect_graph_part.y_cls[0]: np.asarray(y_clss),
                     self.rnn.x_shape[0]: np.asarray([bi, max_len])
                 }
             )
@@ -256,7 +303,7 @@ class Tester:
                 for word in lemma_src
             ]
 
-            lemma_results = list(self.__infer_lemmas__(sess, words_to_proc))
+            lemma_results = list(self.__infer_lemma__(sess, words_to_proc))
             for index, lem in tqdm(enumerate(lemma_results), desc="Selecting lemma bad words"):
                 et_word = lemma_src[index]
                 if lem != et_word['y_src']:
@@ -267,15 +314,53 @@ class Tester:
             print(f'Total unique error: {len(error_words)}')
             return error_words
 
-    def get_test_lemmas(self, words):
+    def get_bad_lemm(self):
         with tf.Session(graph=self.rnn.graph) as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
             latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
             self.rnn.saver.restore(sess, latest_checkpoint)
-            return list(self.__infer_lemmas__(sess, words))
+            good_items = self.__load_all_datasets("lemma")
+            good_items = [
+                word
+                for word in good_items
+                if all([c in self.config['chars'] for c in word['x_src']])
+            ]
+            results = list(self.__infer_lemm__(sess, good_items))
+            for i, item in enumerate(good_items):
+                net_result = results[i]
+                if item['y_src'] != net_result:
+                    print("{0} -> {1} != {2}".format(item['x_src'], item['y_src'], net_result))
+
+    def get_bad_inflect(self):
+        with tf.Session(graph=self.rnn.graph) as sess:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+            latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
+            self.rnn.saver.restore(sess, latest_checkpoint)
+            good_items = self.__load_all_datasets("inflect")
+            good_items = [
+                word
+                for word in good_items
+                if all([c in self.config['chars'] for c in word['x_src']])
+            ]
+            results = list(self.__infer_inflect__(sess, good_items))
+            for i, item in enumerate(good_items):
+                net_result = results[i]
+                if item['y_src'] != net_result:
+                    print("{0} -> {1} != {2}".format(item['x_src'], item['y_src'], net_result))
+            print()
+
+
 
 
 if __name__ == "__main__":
     tester = Tester()
-    tester.test()
+
+    #test = tester.get_bad_lemm()
+
+    res = tester.get_bad_inflect()
+
+
+    print()
+    #tester.test()

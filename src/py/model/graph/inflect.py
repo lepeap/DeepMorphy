@@ -60,12 +60,6 @@ class Inflect(GraphPartBase):
             operation_name,
             self.settings['batch_size']
         ))
-        #items = list(tfu.load_lemma_dataset(
-        #    self.dataset_path,
-        #    self.devices_count,
-        #    operation_name,
-        #    self.settings['batch_size']
-        #))
         return items
 
     def transfer_learning_init(self, sess):

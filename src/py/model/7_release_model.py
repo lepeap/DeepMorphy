@@ -3,12 +3,11 @@ import os
 import pickle
 from shutil import copyfile
 from xml.etree.ElementTree import ElementTree
-import numpy as np
+
 from lxml import etree
 
 from model import RNN
 from utils import CONFIG
-from tester import Tester
 
 
 class Releaser:
@@ -55,16 +54,10 @@ class Releaser:
         for path in self.pd_publish_paths:
             copyfile(pd_release_path, path)
 
-        self.__release_inflect_templates_xml__()
         self.__release_gramm_docs__()
         self.__release_grams_xml__()
-        self.__release_test_files__()
         self.__release_dataset_info__()
         self.__release_model_xml__(out_ops, gram_ops)
-
-        testr = Tester()
-        self.__release_test_results__(testr)
-        self.__build_bad_words__(testr)
 
     def __release_model_xml__(self, out_ops, gram_ops):
         root = etree.Element('Root')
@@ -104,10 +97,22 @@ class Releaser:
             cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
             if cls in lemma_same_words:
                 cls_el.set('lsw', '1')
-
             classes_el.append(cls_el)
-
         root.append(classes_el)
+
+        with open(self.config['inflect_templates_path'], 'rb') as f:
+            inflect_templates = pickle.load(f)
+        inflect_el = etree.Element("Inflect")
+        for main_key in inflect_templates:
+            temp_el = etree.Element("Im")
+            temp_el.set('i', str(self.classes_dic[main_key]))
+            inflect_el.append(temp_el)
+            for form in inflect_templates[main_key]:
+                form_el = etree.Element("I")
+                form_el.set('i', str(self.classes_dic[form]))
+                temp_el.append(form_el)
+        root.append(inflect_el)
+
         tree = ElementTree(root)
         for path in self.xml_publish_paths:
             with open(path, 'wb+') as f:
@@ -155,25 +160,6 @@ class Releaser:
             with open(path, 'wb+') as f:
                 tree.write(f, xml_declaration=True, encoding='utf-8')
 
-    def __release_inflect_templates_xml__(self):
-        with open(self.config['inflect_templates_path'], 'rb') as f:
-            templates = pickle.load(f)
-
-        root = etree.Element('Templates')
-        for main_key in templates:
-            temp_el = etree.Element("T")
-            temp_el.set('main', str(self.classes_dic[main_key]))
-            root.append(temp_el)
-            for form in templates[main_key]:
-                form_el = etree.Element("F")
-                form_el.set('id', str(self.classes_dic[form]))
-                temp_el.append(form_el)
-
-        tree = ElementTree(root)
-        for path in self.public_inflect_templates_paths:
-            with open(path, 'wb+') as f:
-                tree.write(f, xml_declaration=True, encoding='utf-8')
-
     def __release_dataset_info__(self):
         doc = etree.iterparse(self.dataset_path, events=('start', 'end'))
         itr = iter(doc)
@@ -186,59 +172,6 @@ class Releaser:
         for path in self.publish_dataset_info_paths:
             with open(path, 'w+') as f:
                 f.write(f"dictionary\nversion={version}\nrevision={revision}")
-
-    def __release_test_results__(self, tester):
-        results = tester.test()
-        for path in self.test_result_paths:
-            with open(path, 'w+') as f:
-                f.write(results)
-
-    def __release_test_files__(self):
-        for gram in self.gram_types:
-            cls = self.gram_types[gram]['classes']
-            dic = {cls[g_key]['index']: g_key for g_key in cls}
-            self.__release_cls_tests__(gram, dic)
-
-        self.__release_cls_tests__('main', self.rev_classes_dic)
-        self.__release_lemma_tests__()
-
-    def __release_cls_tests__(self, key, cls_dic):
-        path = os.path.join(self.config['dataset_path'], f"{key}_test_dataset.pkl")
-        with open(path, 'rb') as f:
-            words = pickle.load(f)
-
-        root = etree.Element('Tests')
-        for word in words:
-            y = np.argwhere(word['y'] == 1).ravel()
-            y = ';'.join([cls_dic[index] for index in y])
-            test = etree.Element("T")
-            test.set('x', word['src'])
-            test.set('y', y)
-            root.append(test)
-
-        for dir_path in self.tests_results_paths:
-            rez_path = os.path.join(dir_path, f'{key}.xml')
-            tree = ElementTree(root)
-            with open(rez_path, 'wb+') as f:
-                tree.write(f, xml_declaration=True, encoding='utf-8')
-
-    def __release_lemma_tests__(self):
-        path = os.path.join(self.config['dataset_path'], "lemma_test_dataset.pkl")
-        with open(path, 'rb') as f:
-            words = pickle.load(f)
-
-        root = etree.Element('Tests')
-        for word in words:
-            test = etree.Element("T")
-            test.set('x', word['x_src'])
-            test.set('y', word['y_src'])
-            root.append(test)
-
-        for dir_path in self.tests_results_paths:
-            rez_path = os.path.join(dir_path, 'lem.xml')
-            tree = ElementTree(root)
-            with open(rez_path, 'wb+') as f:
-                tree.write(f, xml_declaration=True, encoding='utf-8')
 
     def __release_gramm_docs__(self):
         mds = [
