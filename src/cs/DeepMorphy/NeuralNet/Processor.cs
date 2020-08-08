@@ -89,7 +89,37 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        public void _vectorizeWords(string[] srcMas,
+        public IEnumerable<(int tagId, string word)> Inflect(IEnumerable<(string word, int tag, int resTag)> srcItems)
+        {
+            foreach (var batch in _batchify(srcItems, _maxBatchSize))
+            {
+                var words = batch.Select(tpl => tpl.word).ToArray();
+                var xClasses = batch.Select(tpl => tpl.tag).ToArray();
+                var yClasses = batch.Select(tpl => tpl.resTag).ToArray();
+                _vectorizeWords(words,
+                    out int maxLength,
+                    out List<int[]> indexes,
+                    out List<int> values,
+                    out int[] seqLens
+                );
+                
+                var netRes = _net.Inflect(maxLength, words.Length, indexes, values, seqLens, xClasses, yClasses);
+                for (int i = 0; i < words.Length; i++)
+                {
+                    yield return (yClasses[i], _decodeWord(netRes, i));
+                }
+            }
+        }
+
+        public Dictionary<Tag, string> GetAllForms(string word, int tagId)
+        {
+            var items = this.Config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
+            var results = this.Inflect(items);
+            var resDic = results.ToDictionary(x => new Tag(Config.ClsDic[x.tagId], (float)1.0, word, tagId), x=>x.word);
+            return resDic;
+        }
+
+        private void _vectorizeWords(string[] srcMas,
             out int maxLength,
             out List<int[]> indexes,
             out List<int> values,
@@ -132,7 +162,7 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, int mainCls)
+        private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, long mainCls)
         {
             if (Config.LemmaSameWordClasses.Contains(mainCls))
                 return sourceWord;
@@ -148,6 +178,30 @@ namespace DeepMorphy.NeuralNet
                 
                 if (cVal == Config.UndefinedCharId)
                     return null;
+
+                sb.Append(Config.IdToChar[cVal]);
+                cIndex++;
+            }
+            return sb.ToString();
+        }
+        
+        private string _decodeWord(int[,] nnRes, int wordIndex)
+        {
+            int cIndex = 0;
+            var maxLength = nnRes.GetLength(1);
+            var sb = new StringBuilder();
+            while (cIndex < maxLength)
+            {
+                var cVal = nnRes[wordIndex, cIndex];
+                if (cVal == Config.EndCharIndex)
+                {
+                    break;
+                }
+
+                if (cVal == Config.UndefinedCharId)
+                {
+                    return null;
+                }
 
                 sb.Append(Config.IdToChar[cVal]);
                 cIndex++;

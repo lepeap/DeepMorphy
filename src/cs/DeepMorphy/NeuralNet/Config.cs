@@ -23,13 +23,17 @@ namespace DeepMorphy.NeuralNet
         public int UndefinedCharId { get; private set; }
         public int StartCharIndex { get; private set; }
         public int EndCharIndex { get; private set; }
-        public List<int> LemmaSameWordClasses { get; } = new List<int>();
+        public List<long> LemmaSameWordClasses { get; } = new List<long>();
         public Dictionary<int, ReadOnlyDictionary<string, string>> ClsDic  { get; } = new Dictionary<int, ReadOnlyDictionary<string, string>>();
+        public ReadOnlyDictionary<int, int[]> InflectTemplatesDic { get; private set;  }
+        public ReadOnlyDictionary<int, int> ClsToLemmaDic { get; private set;  }
         public Dictionary<char, int> CharToId { get; } = new Dictionary<char, int>();
         public Dictionary<int, char> IdToChar { get; } = new Dictionary<int, char>();
         public Dictionary<string, string> OpDic { get; } = new Dictionary<string, string>();
         public  Dictionary<string, string>  GramOpDic { get; } = new Dictionary<string, string>();
         public GramInfo this[string gramKey] => GramInfo.GramsDic[gramKey];
+        
+        public string[] InflectPosts { get; }
         public string this[string gramKey, long i]
         {
             get
@@ -41,6 +45,10 @@ namespace DeepMorphy.NeuralNet
 
         private void _loadReleaseInfo()
         {
+            var inflectDic = new Dictionary<int, List<int>>();
+            var clsToLemmaDic = new Dictionary<int, int>();
+            int curInflectLemmaId = -1;
+
             using (Stream stream = _getXmlStream(BigModel))
             {
                 var rdr = XmlReader.Create(new StreamReader(stream, Encoding.UTF8));
@@ -106,8 +114,23 @@ namespace DeepMorphy.NeuralNet
         
                         rdr.MoveToElement();
                     }
+                    
+                    else if (rdr.Name == "Im" && rdr.NodeType == XmlNodeType.Element)
+                    {
+                        curInflectLemmaId = int.Parse(rdr.GetAttribute("i"));
+                        inflectDic[curInflectLemmaId] = new List<int>();
+                    }
+                    else if (rdr.Name == "I" && rdr.NodeType == XmlNodeType.Element)
+                    {
+                        var clsIndex = int.Parse(rdr.GetAttribute("i"));
+                        inflectDic[curInflectLemmaId].Add(clsIndex);
+                        clsToLemmaDic[clsIndex] = curInflectLemmaId;
+                    }
                 }
             }
+            InflectTemplatesDic =
+                new ReadOnlyDictionary<int, int[]>(inflectDic.ToDictionary(x => x.Key, x => x.Value.ToArray()));
+            ClsToLemmaDic = new ReadOnlyDictionary<int, int>(clsToLemmaDic);
         }
 
         private Stream _getXmlStream(bool bigModel)

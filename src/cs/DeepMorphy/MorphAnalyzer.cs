@@ -16,7 +16,7 @@ namespace DeepMorphy
         private readonly bool _withTrimAndLower;
         private readonly IPreProcessor[] _preProcessors;
         private readonly NeuralNet.Processor _net;
-        
+
         /// <summary>
         /// Создает морфологический анализатор. В идеале лучше использовать его как синглтон,
         /// при создании объекта какое-то время уходит на загрузку словарей и сети.
@@ -50,16 +50,17 @@ namespace DeepMorphy
         /// Max batch size for neural network
         /// </param>
         /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
-        public MorphAnalyzer(bool withLemmatization = false, 
-                             bool useEnGrams=false, 
-                             bool withTrimAndLower=true,
-                             bool withPreprocessors=true,
-                             int maxBatchSize=4096)
+        public MorphAnalyzer(bool withLemmatization = false,
+            bool useEnGrams = false,
+            bool withTrimAndLower = true,
+            bool withPreprocessors = true,
+            int maxBatchSize = 4096)
         {
             if (maxBatchSize <= 0)
             {
                 throw new ArgumentException("Batch size must be greater than 0.");
             }
+
             _net = new NeuralNet.Processor(maxBatchSize, withLemmatization, useEnGrams, false);
             _withTrimAndLower = withTrimAndLower;
             EnTags = useEnGrams;
@@ -76,9 +77,11 @@ namespace DeepMorphy
                 };
             }
             else
+            {
                 _preProcessors = new IPreProcessor[0];
+            }
         }
-        
+
         public bool EnTags { get; }
         
         public TagHelper TagHelper { get; }
@@ -152,11 +155,11 @@ namespace DeepMorphy
         /// Возвращает все формы данного слова
         /// </summary>
         /// <param name="word">Слово</param>
-        /// <param name="wordTag">Тег слова</param>
+        /// <param name="tag">Тег слова</param>
         /// <returns>Словарь, тег - слово</returns>
-        public IDictionary<Tag, string> GetAllForms(string word, Tag wordTag)
+        public IDictionary<Tag, string> GetAllForms(string word, Tag tag)
         {
-            return null;
+            return _net.GetAllForms(word, tag.ClassIndex.Value);
         }
     }
 }

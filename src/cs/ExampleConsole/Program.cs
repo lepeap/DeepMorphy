@@ -32,6 +32,9 @@ namespace ExampleConsole
         };
         static void Main(string[] args)
         {
+            GetAllForms();
+            
+            
             SimpleExample();
             
             AnalisysFullExample1();
@@ -212,6 +215,14 @@ namespace ExampleConsole
             {
                 Console.WriteLine(morphInfo.BestTag.Lemma);
             }
+        }
+
+        static void GetAllForms()
+        {
+            var m = new MorphAnalyzer(withLemmatization: false);
+            var results = m.Parse(new []{ "стоять" }).ToArray();
+            var resDic = m.GetAllForms(results[0].Text, results[0].BestTag);
+            
         }
 
         static void WriteHeader(string message)

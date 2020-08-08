@@ -102,7 +102,9 @@ namespace DeepMorphy
             get
             {
                 if (GramsDic.ContainsKey(gramCatKey))
+                {
                     return GramsDic[gramCatKey];
+                }
                 
                 return null;
             }
@@ -112,7 +114,9 @@ namespace DeepMorphy
         {
             var tags = string.Join(",", Grams);
             if (Lemma == null)
+            {
                 return tags;
+            }
             
             return $"Lemma: {Lemma} Tags: {tags}";
         }
@@ -123,7 +127,9 @@ namespace DeepMorphy
         private string _getWithMultilangKey(string enKey)
         {
             if (GramsDic.ContainsKey(enKey))
+            {
                 return this[enKey];
+            }
 
             return this[GramInfo.EnRuDic[enKey]];
         }

@@ -105,7 +105,7 @@ namespace DeepMorphy.NeuralNet
             return (int[,,]) res[0].GetValue();
         }
 
-        public int[,,] Inflect(int maxLength,
+        public int[,] Inflect(int maxLength,
             int wordsCount,
             IEnumerable<int[]> indexes,
             IEnumerable<int> values,
@@ -117,7 +117,7 @@ namespace DeepMorphy.NeuralNet
             runner.AddInput(_inflectXClassPlName, xClasses);
             runner.AddInput(_inflectYClassPlName, yClasses);
             var res = runner.Fetch(_inflectOps).Run();
-            return (int[,,]) res[0].GetValue();
+            return (int[,]) res[0].GetValue();
         }
 
         public void Dispose()
