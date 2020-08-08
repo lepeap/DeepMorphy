@@ -10,6 +10,7 @@ VECT_PATH = CONFIG['vect_words_path']
 CLS_CLASSES_PATH = CONFIG['cls_classes_path']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
 TEMPLATES_PATH = CONFIG['inflect_templates_path']
+IGNORE_TAGS = CONFIG['inflect_ignore_tags']
 SRC_CONVERT, CLASSES_INDEXES = get_grams_info(CONFIG)
 
 
@@ -65,6 +66,10 @@ def generate_dataset(forms_dict, vect_words, cls_dic):
         form_dict = {}
         for form in item['items']:
             if MIN_WORD_SIZE > len(form['text']):
+                continue
+
+            if 'ad_tags' in form and any([tag for tag in IGNORE_TAGS if tag in form['ad_tags']]):
+                #tqdm.write("Ignore form {0} for {1} by tags {2}".format(form['text'], root['text'], form['ad_tags']))
                 continue
 
             if not (form['text'].startswith(prefix_filter) or

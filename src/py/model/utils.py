@@ -27,6 +27,7 @@ logging.basicConfig(
     datefmt='%d.%m.%Y %H:%M:%S'
 )
 DATASET_PATH = CONFIG['dataset_path']
+DICS_PATH = CONFIG['dics_path']
 RANDOM = random.Random(CONFIG['random_seed'])
 
 
@@ -38,19 +39,6 @@ class MyDefaultDict(defaultdict):
         else:
             ret = self[key] = self.default_factory(key)
             return ret
-
-
-def get_flat_words(words):
-    for item in words:
-        lemma = item['lemma']
-        lemma['lemma'] = lemma['text']
-        lemma['id'] = item['id']
-        for form in item['forms']:
-            word = dict(lemma)
-            for key in form:
-                word[key] = form[key]
-
-            yield word
 
 
 def get_grams_info(config):
@@ -133,3 +121,8 @@ def save_dataset(items_dict, file_prefix):
     logging.info(f"Saving '{file_prefix}' test dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_test_dataset.pkl"), 'wb+') as f:
         pickle.dump(test_items, f)
+
+
+def save_dictionary_items(items, file_prefix):
+    with open(os.path.join(DICS_PATH, f"{file_prefix}_dict_items.pkl"), 'wb+') as f:
+        pickle.dump(items, f)

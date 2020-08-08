@@ -1,6 +1,12 @@
 random_seed: 1917
 validation_persent: 2
 test_persent: 1
+min_word_size: 2
+max_word_size: 32
+model_key: small #big
+prefix_filter_length: 1
+
+
 dict_path: /media/alex/hybrid/Projects/Resources/dict.opcorpora.xml
 dataset_words_path: data/dataset_words.pkl
 dict_words_path: data/dict_words.pkl
@@ -9,15 +15,8 @@ cls_classes_path: data/classification_classes.pkl
 dics_path: data/
 dataset_path: data/dataset
 inflect_templates_path: data/inflect_templates.pkl
-
-min_word_size: 2
-max_word_size: 32
-model_key: small #big
 export_path: export
 save_path: checkpoints/
-prefix_filter_length: 1
-
-
 
 test_results_paths:
   - latest_release
@@ -58,8 +57,6 @@ main_class_k: 4
 
 train_steps:
   - mood
-  - invl
-  - voic
   - post
   - gndr
   - nmbr
@@ -78,7 +75,7 @@ ignore_restore: []
 graph_part_configs:
   default:
     #learn params
-    stop_training_acc_delta: 0.0001
+    stop_training_acc_delta: 0.001
     learn_rate: 0.01
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
@@ -122,16 +119,8 @@ graph_part_configs:
     rnn_state_size: 8
 
   mood:
-    test_batch_size:  256
-    train_batch_size: 1024
-    char_vector_size: 8
-    rnn_state_size: 8
-
-  invl:
-    test_batch_size:  256
-    train_batch_size: 1024
-    char_vector_size: 8
-    rnn_state_size: 8
+    char_vector_size: 16
+    rnn_state_size: 16
 
   main:
     char_vector_size: 64
@@ -598,7 +587,7 @@ grammemes_types:
     key_ru: накл
     name: наклонение
     classes:
-      pres:
+      indc:
         index: 0
         key_ru: изъяв
         name_ru: изъявительное
@@ -606,7 +595,7 @@ grammemes_types:
         keys:
           - indc
 
-      past:
+      impr:
         index: 1
         key_ru: повел
         name_ru: повелительное
@@ -614,45 +603,18 @@ grammemes_types:
         keys:
           - impr
 
-  invl:
-    index: 7
-    key_ru: совм
-    name: совместность
-    classes:
-      incl:
-        index: 0
-        key_ru: вкл
-        name_ru: включён
-        desc_ru: говорящий включён
-        keys:
-          - incl
+ad_tags:
+  - actv
+  - pssv
+  - incl
+  - excl
+  - abbr
+  - surn
+  - patr
+  - orgn
+  - trad
+  - cmp2
 
-      excl:
-        index: 1
-        key_ru: невкл
-        name_ru: не включён
-        desc_ru: говорящий не включён
-        keys:
-          - excl
-
-  voic:
-    index: 8
-    key_ru: залог
-    name: залог
-    classes:
-      incl:
-        index: 0
-        key_ru: дейст
-        name_ru: действительный
-        desc_ru: действительный залог
-        keys:
-          - actv
-
-      excl:
-        index: 1
-        key_ru: страд
-        name_ru: страдательный
-        desc_ru: страдательный залог
-        keys:
-          - pssv
-
+inflect_ignore_tags:
+  - incl
+  - cmp2

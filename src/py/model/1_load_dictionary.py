@@ -3,7 +3,6 @@ import pickle
 from tqdm import tqdm
 from lxml import etree
 from utils import get_grams_info, CONFIG
-from utils import get_flat_words
 
 
 DIC_PATH = CONFIG['dict_path']
@@ -12,6 +11,7 @@ DATASET_WORDS_PATH = CONFIG['dataset_words_path']
 DICTS_WORDS_PATH = CONFIG['dict_words_path']
 DICT_POST_TYPES = CONFIG['dict_post_types']
 LEMMAS_PROPS = CONFIG['lemma_same_word']
+AD_TAGS = CONFIG['ad_tags']
 SRC_CONVERT, _ = get_grams_info(CONFIG)
 i = 0
 
@@ -45,6 +45,12 @@ def parse_words(itr):
             src_key = element.attrib['v'].lower()
             gram_type, gram = SRC_CONVERT[src_key]
             cur_item[gram_type] = gram
+        elif event == 'end' and element.tag == 'g' \
+                and element.attrib['v'].lower() in AD_TAGS \
+                and 'ad_tags' not in cur_item:
+            cur_item['ad_tags'] = [element.attrib['v'].lower()]
+        elif event == 'end' and element.tag == 'g' and element.attrib['v'].lower() in AD_TAGS:
+            cur_item['ad_tags'].append(element.attrib['v'].lower())
 
         if event == 'end' and element.tag == 'f':
             cur_item['text'] = element.attrib['t']
@@ -56,6 +62,22 @@ def parse_words(itr):
             cur_word = None
 
         event, element = next(itr)
+
+
+def get_flat_words(words):
+    for item in words:
+        lemma = item['lemma']
+        lemma['lemma'] = lemma['text']
+        lemma['id'] = item['id']
+        for form in item['forms']:
+            word = dict(lemma)
+            for key in form:
+                word[key] = form[key]
+
+            if 'ad_tags' in word:
+                word['ad_tags'] = ','.join(word['ad_tags'])
+
+            yield word
 
 
 def parse_link_types(itr):
