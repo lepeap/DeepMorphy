@@ -49,90 +49,114 @@ class GraphPartBase(ABC):
         self.x_seq_lens = []
         self.prints = []
         self.main_cls_dic = self.global_settings['main_classes']
+        self.learn_rate_val = self.settings['learn_rate']
+        self.best_model_metric = None
+        self.best_epoch = None
+        self.init_checkpoint = None
 
     def train(self, tc):
-        self.__init_learn_params__()
         return_step = 0
         trains = self.__load_dataset__('train')
         valids = self.__load_dataset__('valid')
+        self.best_model_metric = self.__valid_loop__(tc, valids)
+        self.best_epoch = -1
         while True:
             tqdm.write(self.filler)
             tqdm.write(self.filler)
             tqdm.write(self.main_scope_name)
-            tc.sess.run(self.metrics_reset)
 
-            for item in tqdm(trains, desc=f"Train, epoch {tc.epoch}"):
-                launch = [self.optimize]
-                launch.extend(self.metrics_update)
-                if len(self.prints):
-                    launch.extend(self.prints)
+            train_main_metric = self.__train_loop__(tc, trains)
+            valid_main_metric = self.__valid_loop__(tc, valids)
 
-                feed_dic = self.__create_feed_dict__('train', item)
-                feed_dic[tc.learn_rate_op] = self.learn_rate_val
-                tc.sess.run(launch, feed_dic)
-
-            train_acc = self.__write_metrics_report__(tc.sess, "Train")
-            tc.sess.run(self.metrics_reset)
-
-            for item in tqdm(valids, desc=f"Validation, epoch {tc.epoch}"):
-                launch = []
-                launch.extend(self.metrics_update)
-                if len(self.prints):
-                    launch.extend(self.prints)
-                feed_dic = self.__create_feed_dict__('valid', item)
-                tc.sess.run(launch, feed_dic)
-
-            valid_acc = self.__write_metrics_report__(tc.sess, "Valid")
-            tc.sess.run(self.metrics_reset)
-
-            tqdm.write(f"Epoch {tc.epoch} Train {self.main_metric_name}: {train_acc} Validation {self.main_metric_name}: {valid_acc}")
+            tqdm.write(f"Epoch {tc.epoch} Train {self.main_metric_name}: {train_main_metric} Validation {self.main_metric_name}: {valid_main_metric}")
             need_decay = False
-            if valid_acc > self.best_model_val:
-                if (valid_acc - self.best_model_val) < self.settings['stop_training_acc_delta']:
-                    tqdm.write(f"Acc delta is less then min value")
+            delta = self.__calc_metric_delta__(self.best_model_metric, valid_main_metric)
+
+            if delta > 0:
+                if delta < self.settings['stop_main_metric_delta']:
+                    tqdm.write(f"{self.main_metric_name} delta is less then min value")
                     need_decay = True
                 else:
                     return_step = 0
-
-                self.best_model_val = valid_acc
+                self.best_model_metric = valid_main_metric
                 self.best_epoch = tc.epoch
                 tc.saver.save(tc.sess, self.save_path, tc.epoch)
                 tc.epoch += 1
             else:
                 tqdm.write("Best epoch is better then current")
-                tqdm.write(f"Restoring best epoch {self.best_epoch}")
-                self.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
                 tc.sess.run(self.reset_optimiser)
                 need_decay = True
+                self.__restore_best_epoch__(tc)
 
-            if need_decay:
-                if return_step == self.settings['return_step']:
-                    self.__decay_params__()
-                    if self.learn_rate_val < self.settings['min_learn_rate']:
-                        tqdm.write(f"Learning rate {self.learn_rate_val} is less then min learning rate")
-                        finish = self.__before_finish__()
-                        if finish:
-                            break
+            if not need_decay:
+                continue
 
-                    return_step = 0
-                else:
-                    RANDOM.shuffle(trains)
-                    tqdm.write(f"Return step increased")
-                    return_step += 1
+            if return_step == self.settings['return_step']:
+                self.__decay_params__()
+                if self.learn_rate_val < self.settings['min_learn_rate']:
+                    tqdm.write(f"Learning rate {self.learn_rate_val} is less then min learning rate")
+                    finish = self.__before_finish__()
+                    if finish:
+                        break
+                return_step = 0
+            else:
+                RANDOM.shuffle(trains)
+                tqdm.write(f"Return step increased")
+                return_step += 1
 
-        return self.best_epoch, self.best_model_val
+        return self.best_epoch, self.best_model_metric
+
+    def __train_loop__(self, tc, trains):
+        tc.sess.run(self.metrics_reset)
+        for item in tqdm(trains, desc=f"Train, epoch {tc.epoch}"):
+            launch = [self.optimize]
+            launch.extend(self.metrics_update)
+            if len(self.prints):
+                launch.extend(self.prints)
+
+            feed_dic = self.__create_feed_dict__('train', item)
+            feed_dic[tc.learn_rate_op] = self.learn_rate_val
+            tc.sess.run(launch, feed_dic)
+
+        train_main_metric = self.__write_metrics_report__(tc.sess, "Train")
+        return train_main_metric
+
+    def __valid_loop__(self, tc, valids):
+        tc.sess.run(self.metrics_reset)
+        for item in tqdm(valids, desc=f"Validation, epoch {tc.epoch}"):
+            launch = []
+            launch.extend(self.metrics_update)
+            if len(self.prints):
+                launch.extend(self.prints)
+            feed_dic = self.__create_feed_dict__('valid', item)
+            tc.sess.run(launch, feed_dic)
+
+        valid_main_metric = self.__write_metrics_report__(tc.sess, "Valid")
+        return valid_main_metric
+
+    def __calc_metric_delta__(self, best_model_metric, cur_model_metric):
+        delta = best_model_metric - cur_model_metric
+        if self.main_metric_name != "Loss":
+            delta = -delta
+        return delta
 
     def __before_finish__(self):
         return True
 
-    def __init_learn_params__(self):
-        self.best_model_val = -1
-        self.best_epoch = -1
-        self.learn_rate_val = self.settings['learn_rate']
-
     def __decay_params__(self):
         self.learn_rate_val = self.learn_rate_val * self.settings['learn_rate_decay_step']
         tqdm.write(f"Learning rate decayed. New value: {self.learn_rate_val}")
+
+    def __restore_best_epoch__(self, tc):
+        if self.best_epoch == -1 and tc.epoch == 0:
+            tqdm.write(f"Restoring from init_checkpoint {self.best_epoch}")
+            self.restore(tc.sess, self.init_checkpoint)
+        elif self.best_epoch == -1:
+            tqdm.write(f"Restoring best epoch {tc.epoch}")
+            self.restore(tc.sess, os.path.join(self.save_path, f"-{tc.epoch}"))
+        else:
+            tqdm.write(f"Restoring best epoch {self.best_epoch}")
+            self.restore(tc.sess, os.path.join(self.save_path, f"-{self.best_epoch}"))
 
     def build_graph_end(self):
         with tf.variable_scope(self.main_scope_name, reuse=tf.AUTO_REUSE) as scope:
@@ -161,6 +185,7 @@ class GraphPartBase(ABC):
             ]
             saver = tf.train.Saver(var_list=vars)
             saver.restore(sess, check_point)
+            self.init_checkpoint = check_point
             tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} success")
         except Exception as ex:
             tqdm.write(f"Restoration for graph part '{self.key}', scope {self.main_scope_name} failed. Error: {ex}")

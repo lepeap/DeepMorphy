@@ -64,6 +64,8 @@ namespace DeepMorphy
         public string Case => _getWithMultilangKey("case");
         
         public string Tens => _getWithMultilangKey("tens");
+
+        public string Mood => _getWithMultilangKey("mood");
         
         public string Pers => _getWithMultilangKey("pers");
 

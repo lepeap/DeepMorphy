@@ -57,15 +57,16 @@ main_class_k: 4
 
 train_steps:
   #- mood
+  #- voic
   #- post
   #- gndr
   #- nmbr
   #- case
   #- tens
   #- pers
-  - main
-  #- lemm
-  #- inflect
+  #- main
+  - lemm
+  - inflect
 
 
 ignore_restore: []
@@ -75,10 +76,10 @@ ignore_restore: []
 graph_part_configs:
   default:
     #learn params
-    stop_training_acc_delta: 0.0001
-    learn_rate: 0.001
+    stop_main_metric_delta: 0.1
+    learn_rate: 0.00001
     learn_rate_decay_step: 0.1
-    min_learn_rate: 0.00001
+    min_learn_rate: 0.00000001
     return_step: 2
     keep_drop: 1
     use_weights: true
@@ -92,13 +93,13 @@ graph_part_configs:
     rnn_layers_count: 2
     rnn_bidirectional: True
     use_residual: false
-    main_metric_type: Accuracy
+    main_metric_type: Loss
 
     #seq2seq params
     max_length: 33
     encoder:
       gram_vector_size: 7
-      ad_cls_vector_size: 15
+      ad_cls_vector_size: 8
       char_vector_size: 64
       rnn_state_size: 64
       rnn_layers_count: 2
@@ -106,10 +107,10 @@ graph_part_configs:
       use_residual: false
     decoder:
       gram_vector_size: 14
-      ad_cls_vector_size: 30
+      ad_cls_vector_size: 16
       rnn_state_size: 128
       rnn_layers_count: 1
-      keep_drop: 0.7
+      keep_drop: 1.0
       use_residual: false
 
   pers:
@@ -131,11 +132,15 @@ graph_part_configs:
   lemm:
     char_vector_size: 64
     batch_size: 8192
+    main_metric_type: Accuracy
+    stop_main_metric_delta: 0.00001
 
   inflect:
     transfer_init: false
     char_vector_size: 64
     batch_size: 8192
+    main_metric_type: Accuracy
+    stop_main_metric_delta: 0.00001
 
 chars:
   - UNDEFINED # неизвестный символ
@@ -603,9 +608,30 @@ grammemes_types:
         keys:
           - impr
 
+  voic:
+    index: 7
+    key_ru: залог
+    name: залог
+    classes:
+      actv:
+        index: 0
+        key_ru: дейст
+        name_ru: действительный
+        desc_ru: действительный залог
+        keys:
+          - actv
+
+      pssv:
+        index: 1
+        key_ru: страд
+        name_ru: страдательный
+        desc_ru: страдательный залог
+        keys:
+          - pssv
+
+
+
 ad_tags:
-  - actv
-  - pssv
   - incl
   - excl
   - abbr
