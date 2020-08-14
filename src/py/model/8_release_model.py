@@ -30,6 +30,14 @@ class Releaser:
             os.path.join(path, "grams.xml")
             for path in self.config['publish_gramm_paths']
         ]
+        self.xml_numbers_paths = [
+            os.path.join(path, "numbers.xml")
+            for path in self.config['publish_numbers_paths']
+        ]
+        self.xml_tags_paths = [
+            os.path.join(path, "tags.xml")
+            for path in self.config['publish_tags_paths']
+        ]
         self.test_result_paths = [
             os.path.join(path, "test_info.txt")
             for path in self.config['test_results_paths']
@@ -48,16 +56,23 @@ class Releaser:
             self.classes_dic[key]: ",".join([key for key in list(key) if key is not None])
             for key in self.classes_dic
         }
+        with open(CONFIG['numb_classes_path'], 'rb') as f:
+            self.numb_classes_dic = pickle.load(f)
+
+        with open(CONFIG['numb_data_path'], 'rb') as f:
+            self.numb_data = pickle.load(f)
 
     def release_model(self):
-        pd_release_path, gram_ops, out_ops = self.rnn.release()
-        for path in self.pd_publish_paths:
-            copyfile(pd_release_path, path)
+        #pd_release_path, gram_ops, out_ops = self.rnn.release()
+        #for path in self.pd_publish_paths:
+        #    copyfile(pd_release_path, path)
 
+        self.__release_numbers_xml__()
         self.__release_gramm_docs__()
         self.__release_grams_xml__()
+        self.__release_tags_xml__()
         self.__release_dataset_info__()
-        self.__release_model_xml__(out_ops, gram_ops)
+        #self.__release_model_xml__(out_ops, gram_ops)
 
     def __release_model_xml__(self, out_ops, gram_ops):
         root = etree.Element('Root')
@@ -82,26 +97,9 @@ class Releaser:
             grams_el.append(gram_el)
         root.append(grams_el)
 
-        lemma_same_words = []
-        for cls in self.config['lemma_same_word']:
-            key = tuple(
-                cls[key] if key in cls else None
-                for key in self.config['grammemes_types']
-            )
-            lemma_same_words.append(key)
-
-        classes_el = etree.Element('Classes')
-        for cls in self.classes_dic:
-            cls_el = etree.Element("C")
-            cls_el.set('i', str(self.classes_dic[cls]))
-            cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
-            if cls in lemma_same_words:
-                cls_el.set('lsw', '1')
-            classes_el.append(cls_el)
-        root.append(classes_el)
-
         with open(self.config['inflect_templates_path'], 'rb') as f:
             inflect_templates = pickle.load(f)
+
         inflect_el = etree.Element("Inflect")
         for main_key in inflect_templates:
             temp_el = etree.Element("Im")
@@ -157,6 +155,74 @@ class Releaser:
 
         tree = ElementTree(root)
         for path in self.xml_gram_paths:
+            with open(path, 'wb+') as f:
+                tree.write(f, xml_declaration=True, encoding='utf-8')
+
+    def __release_numbers_xml__(self):
+        root = etree.Element('NumbData')
+        root.set("reg", self.numb_data['regex'])
+        root.set("l", str(self.numb_data['lemma_cls_id']))
+        for val in self.numb_data['numbers']:
+            n_el = etree.Element("N")
+            n_el.set('v', str(val))
+            for tpl in self.numb_data['numbers'][val]['p']:
+                w_el = etree.Element("W")
+                w_el.set('t', tpl[0])
+                w_el.set('i', str(tpl[1]))
+                w_el.set('p', '1')
+                n_el.append(w_el)
+
+            for tpl in self.numb_data['numbers'][val]['o']:
+                w_el = etree.Element("W")
+                w_el.set('t', tpl[0])
+                w_el.set('i', str(tpl[1]))
+                n_el.append(w_el)
+
+            nar_ends = self.numb_data['numbers'][val]['nar_end']
+            for cls in nar_ends:
+                w_el = etree.Element("E")
+                w_el.set('t', nar_ends[cls])
+                w_el.set('i', str(cls))
+                n_el.append(w_el)
+
+            root.append(n_el)
+
+        tree = ElementTree(root)
+        for path in self.xml_numbers_paths:
+            with open(path, 'wb+') as f:
+                tree.write(f, xml_declaration=True, encoding='utf-8')
+
+    def __release_tags_xml__(self):
+        root = etree.Element('Tags')
+        lemma_same_words = []
+        for cls in self.config['lemma_same_word']:
+            key = tuple(
+                cls[key] if key in cls else None
+                for key in self.config['grammemes_types']
+            )
+            lemma_same_words.append(key)
+
+        for cls in self.classes_dic:
+            cls_el = etree.Element("T")
+            cls_el.set('i', str(self.classes_dic[cls]))
+            cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
+            cls_el.set('p', "nn")
+            if cls in lemma_same_words:
+                cls_el.set('lem', '1')
+            root.append(cls_el)
+
+        for cls in self.numb_classes_dic:
+            cls_el = etree.Element("T")
+            cls_index = self.numb_classes_dic[cls]
+            cls_el.set('i', str(cls_index))
+            cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
+            cls_el.set('p', "numb")
+            if cls_index == self.numb_data['lemma_cls_id']:
+                cls_el.set('lem', '1')
+            root.append(cls_el)
+
+        tree = ElementTree(root)
+        for path in self.xml_tags_paths:
             with open(path, 'wb+') as f:
                 tree.write(f, xml_declaration=True, encoding='utf-8')
 

@@ -1,7 +1,7 @@
 import pickle
 from tqdm import tqdm
 
-from utils import get_grams_info, CONFIG, save_dataset
+from utils import CONFIG, save_dataset
 
 
 MIN_WORD_SIZE = CONFIG['min_word_size']
@@ -11,7 +11,6 @@ CLS_CLASSES_PATH = CONFIG['cls_classes_path']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
 TEMPLATES_PATH = CONFIG['inflect_templates_path']
 IGNORE_TAGS = CONFIG['inflect_ignore_tags']
-SRC_CONVERT, CLASSES_INDEXES = get_grams_info(CONFIG)
 
 
 def create_forms_dict(vect_words):

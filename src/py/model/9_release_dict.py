@@ -2,13 +2,12 @@ import string
 import re
 import os
 import gzip
-import yaml
 import tqdm
 import pickle
 import logging
 from utils import CONFIG
 
-CONFIG = CONFIG()
+
 NAR_REG = re.compile("\d+-.*")
 RANDOM_SEED = 1917
 DATASET_PATH = CONFIG['dataset_path']
@@ -18,30 +17,6 @@ NOT_DICT_WORDS_PATH = CONFIG['dataset_words_path']
 MAX_WORD_SIZE = CONFIG['max_word_size']
 DICT_POST_TYPES = CONFIG['dict_post_types']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
-SOGL_CHARS = [
-    'б',
-    'в',
-    'г',
-    'д',
-    'ж',
-    'з',
-    'й',
-    'к',
-    'л',
-    'м',
-    'н',
-    'п',
-    'р',
-    'с',
-    'т',
-    'ф',
-    'х',
-    'ц',
-    'ч',
-    'ш',
-    'щ'
-]
-GLASN_CHARS = ['а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я']
 
 
 CLASSES_INDEX_DICT = {
@@ -96,49 +71,6 @@ class Word:
         return f"{self.text} - {self.text[self.index:]}"
 
 
-def get_numbers():
-    with open('numb.yml') as f:
-        numbr_dic = yaml.load(f)
-
-    def get_nar_end(text):
-        end = text[-1]
-        if text[-2] in SOGL_CHARS and text[-1] in GLASN_CHARS:
-            end = text[-2:]
-
-        return end
-
-    numbers = []
-    nar_dict = {}
-    for n_key in numbr_dic:
-        for t in numbr_dic[n_key]:
-            lemma_text = None
-            lemma_number_text = None
-            for index, item in enumerate(numbr_dic[n_key][t]):
-                if index == 0:
-                    lemma_text = item['text']
-
-                item['post'] = 'numb'
-                item['lemma'] = lemma_text
-                numbers.append(Word(item))
-
-                if t == 'p':
-                    end = get_nar_end(item['text'])
-                    if index == 0:
-                        lemma_number_text = end
-
-                    text = f"{n_key}-{end}"
-                    item['lemma'] = lemma_number_text
-                    item['text'] = text
-                    if text in nar_dict:
-                        nar_dict[text].add_gram(item)
-                    else:
-                        word = Word(item)
-                        nar_dict[text] = word
-                        numbers.append(word)
-
-    return numbers
-
-
 def release_tree_dict(with_wrongs=True):
     with open(DICT_WORDS_PATH, 'rb') as f:
         words = pickle.load(f)
@@ -159,9 +91,6 @@ def release_tree_dict(with_wrongs=True):
                 not_io_items.append(not_io_item)
 
             not_dict_words[not_io_word] = not_io_items
-
-    for numb in get_numbers():
-        words.append(numb)
 
     if with_wrongs:
         with open("wrong_words.pkl", 'rb') as f:
