@@ -8,7 +8,6 @@ namespace DeepMorphy.WordDict
 {
     internal class Dict
     {
-        private static readonly char[] CommmaSplitDict = new[] {','};
         private readonly Dictionary<string, string> _gramDic = new Dictionary<string, string>();
         private readonly Dictionary<string, string> _index = new Dictionary<string, string>();
         private readonly bool _withLemmatization;
@@ -17,7 +16,7 @@ namespace DeepMorphy.WordDict
         {
             _withLemmatization = withLemmatization;
             _useEnGrams = useEnGrams;
-            using (var reader = new StreamReader(_getTxtStream(), Encoding.UTF8))
+            using (var reader = new StreamReader(Utils.GetCompressedResourceStream("DeepMorphy.WordDict.dict.txt.gz"), Encoding.UTF8))
             {
                 var line = reader.ReadLine();
                 while (!string.IsNullOrWhiteSpace(line))
@@ -34,11 +33,6 @@ namespace DeepMorphy.WordDict
                     _index[spltRez[0]] = spltRez[1];
                 }
             }
-        }
-        private Stream _getTxtStream()
-        {
-            var resourceName = $"DeepMorphy.WordDict.dict.txt.gz";
-            return Utils.GetCompressedResourceStream(resourceName);
         }
         
         public MorphInfo Parse(string word)

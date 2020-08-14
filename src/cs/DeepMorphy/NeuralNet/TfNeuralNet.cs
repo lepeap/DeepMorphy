@@ -34,7 +34,6 @@ namespace DeepMorphy.NeuralNet
         public TfNeuralNet(
             IDictionary<string, string> opDic,
             IDictionary<string, string> gramOpDic,
-            bool bigModel,
             bool clsWithLemmatization)
         {
             _xIndexesPlName = opDic["x_ind"];
@@ -65,7 +64,7 @@ namespace DeepMorphy.NeuralNet
             _mainClsValsIndex = _mainClsProbsIndex + 1;
             _lemClsIndex = _mainClsValsIndex + 1;
             _graph = new TFGraph();
-            _graph.Import(_getModel(bigModel));
+            _graph.Import(_getModel());
             _session = new TFSession(_graph);
         }
 
@@ -142,10 +141,9 @@ namespace DeepMorphy.NeuralNet
             return runner;
         }
 
-        private byte[] _getModel(bool bigModel)
+        private byte[] _getModel()
         {
-            var modelKey = bigModel ? "big" : "small"; 
-            var resourceName = $"DeepMorphy.NeuralNet.frozen_model_{modelKey}.pb";
+            var resourceName = $"DeepMorphy.NeuralNet.frozen_model_small.pb";
             using (Stream stream = Utils.GetResourceStream(resourceName))
             {
                 using (MemoryStream ms = new MemoryStream())

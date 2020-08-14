@@ -11,11 +11,11 @@ namespace DeepMorphy
     /// </summary>
     public sealed class Tag
     {
-        internal Tag(ReadOnlyDictionary<string, string> gramsDic, float power, string lemma=null, int? classIndex = null)
+        internal Tag(ReadOnlyDictionary<string, string> gramsDic, float power, string lemma=null, int? tagIndex = null)
         {
             GramsDic = gramsDic;
             Power = power;
-            ClassIndex = classIndex;
+            TagIndex = tagIndex;
             Lemma = lemma;
         }
 
@@ -123,7 +123,7 @@ namespace DeepMorphy
             return $"Lemma: {Lemma} Tags: {tags}";
         }
         
-        internal int? ClassIndex { get; }
+        internal int? TagIndex { get; }
 
 
         private string _getWithMultilangKey(string enKey)

@@ -196,7 +196,7 @@ namespace DeepMorphy
                 new Tag(t.GramsDic, 
                     t.Power, 
                     lemmaGen?.Invoke(t.Lemma), 
-                    t.ClassIndex)
+                    t.TagIndex)
             ).ToArray();
             return new MorphInfo(text, tagCombs, _gramCats, _useEnGrams);
         }

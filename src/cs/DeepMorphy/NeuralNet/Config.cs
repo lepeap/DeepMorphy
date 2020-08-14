@@ -9,22 +9,17 @@ namespace DeepMorphy.NeuralNet
 {
     internal class Config
     {
-        private readonly char[] _commmaSplitter = {','};
 
-        public Config(bool useEnGrams, bool bigModel)
+        public Config(bool useEnGrams)
         {
             UseEnGrams = useEnGrams;
-            BigModel = bigModel;
             _loadReleaseInfo();
         }
         
         public bool UseEnGrams { get; }
-        public bool BigModel { get; }
         public int UndefinedCharId { get; private set; }
         public int StartCharIndex { get; private set; }
         public int EndCharIndex { get; private set; }
-        public List<long> LemmaSameWordClasses { get; } = new List<long>();
-        public Dictionary<int, ReadOnlyDictionary<string, string>> ClsDic  { get; } = new Dictionary<int, ReadOnlyDictionary<string, string>>();
         public ReadOnlyDictionary<int, int[]> InflectTemplatesDic { get; private set;  }
         public ReadOnlyDictionary<int, int> ClsToLemmaDic { get; private set;  }
         public Dictionary<char, int> CharToId { get; } = new Dictionary<char, int>();
@@ -49,7 +44,7 @@ namespace DeepMorphy.NeuralNet
             var clsToLemmaDic = new Dictionary<int, int>();
             int curInflectLemmaId = -1;
 
-            using (Stream stream = _getXmlStream(BigModel))
+            using (Stream stream = _getXmlStream())
             {
                 var rdr = XmlReader.Create(new StreamReader(stream, Encoding.UTF8));
                 while (rdr.Read())
@@ -74,31 +69,7 @@ namespace DeepMorphy.NeuralNet
 
                         GramOpDic[key] = rdr.GetAttribute("op");
                     }
-                    else if (rdr.Name.Equals("C") && rdr.NodeType == XmlNodeType.Element)
-                    {
-                        var index = int.Parse(rdr.GetAttribute("i"));
-                        var keysStr = rdr.GetAttribute("v");
-                        var keys = keysStr.Split(_commmaSplitter);
-                        
-                        if (!UseEnGrams)
-                            keys = keys.Select(
-                                x => string.IsNullOrWhiteSpace(x) ? x : GramInfo.EnRuDic[x]
-                            ).ToArray();
-
-                        var gramDic = keys.Select((val, i) => (gram: val, index: i))
-                            .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
-                            .ToDictionary(
-                                x => UseEnGrams 
-                                    ? GramInfo.GramCatIndexDic[x.index].KeyEn 
-                                    : GramInfo.GramCatIndexDic[x.index].KeyRu,
-                                x => x.gram
-                            );
-                        
-                        if (rdr.GetAttribute("lsw") != null)
-                            LemmaSameWordClasses.Add(index);
-                        
-                        ClsDic[index] = new ReadOnlyDictionary<string, string>(gramDic);
-                    }
+                    
                     else if (rdr.Name.Equals("Chars") && rdr.NodeType == XmlNodeType.Element)
                     {
                         StartCharIndex =  int.Parse(rdr.GetAttribute("start_char"));
@@ -133,10 +104,9 @@ namespace DeepMorphy.NeuralNet
             ClsToLemmaDic = new ReadOnlyDictionary<int, int>(clsToLemmaDic);
         }
 
-        private Stream _getXmlStream(bool bigModel)
+        private Stream _getXmlStream()
         {
-            var modelKey = bigModel ? "big" : "small";
-            var resourceName = $"DeepMorphy.NeuralNet.release_{modelKey}.xml";
+            var resourceName = $"DeepMorphy.NeuralNet.release_small.xml";
             return Utils.GetResourceStream(resourceName);
         }
     }

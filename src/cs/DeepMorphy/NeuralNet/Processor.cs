@@ -6,17 +6,22 @@ namespace DeepMorphy.NeuralNet
 {
     internal class Processor
     {
-        private bool _withLemmatization;
+        private readonly bool _withLemmatization;
         private readonly TfNeuralNet _net;
         private readonly int _maxBatchSize;
+        private readonly TagHelper _tagHelper;
         private const int K = 4;
 
-        public Processor(int maxBatchSize, bool withLemmatization = false, bool useEnGrams = false, bool bigModel = false)
+        public Processor(TagHelper tagHelper,
+                         int maxBatchSize, 
+                         bool withLemmatization = false, 
+                         bool useEnGrams = false)
         {
+            _tagHelper = tagHelper;
             _maxBatchSize = maxBatchSize;
             _withLemmatization = withLemmatization;
-            Config = new Config(useEnGrams, bigModel);
-            _net = new TfNeuralNet(Config.OpDic, Config.GramOpDic, bigModel, withLemmatization);
+            Config = new Config(useEnGrams);
+            _net = new TfNeuralNet(Config.OpDic, Config.GramOpDic, withLemmatization);
         }
         
         public Config Config { get; }
@@ -42,12 +47,12 @@ namespace DeepMorphy.NeuralNet
                         srcMas[i],
                         Enumerable.Range(0, K)
                             .Select(j => new Tag(
-                                    Config.ClsDic[result.ResultIndexes[i, j]],
+                                    _tagHelper[result.ResultIndexes[i, j]],
                                     result.ResultProbs[i, j],
                                     lemma: _withLemmatization 
                                         ? _getLemma(srcMas[i], result.Lemmas, i,j, result.ResultIndexes[i, j]) 
                                         : null,
-                                    classIndex: result.ResultIndexes[i, j]
+                                    tagIndex: result.ResultIndexes[i, j]
                                 )
                             )
                             .ToArray(),
@@ -73,7 +78,7 @@ namespace DeepMorphy.NeuralNet
             foreach (var batch in _batchify(srcItems, _maxBatchSize))
             {
                 var words = batch.Select(tpl => tpl.word).ToArray();
-                var classes = batch.Select(tpl => tpl.tag.ClassIndex.Value).ToArray();
+                var classes = batch.Select(tpl => tpl.tag.TagIndex.Value).ToArray();
                 _vectorizeWords(words,
                     out int maxLength,
                     out List<int[]> indexes,
@@ -111,11 +116,11 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        public Dictionary<Tag, string> GetAllForms(string word, int tagId)
+        public Dictionary<Tag, string> Lexeme(string word, int tagId)
         {
-            var items = this.Config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
-            var results = this.Inflect(items);
-            var resDic = results.ToDictionary(x => new Tag(Config.ClsDic[x.tagId], (float)1.0, word, tagId), x=>x.word);
+            var items = Config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
+            var results = Inflect(items);
+            var resDic = results.ToDictionary(x => new Tag(_tagHelper[x.tagId], (float)1.0, word, tagId), x=>x.word);
             return resDic;
         }
 
@@ -162,11 +167,13 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, long mainCls)
+        private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, int mainCls)
         {
-            if (Config.LemmaSameWordClasses.Contains(mainCls))
+            if (TagHelper.LemmasIds.Contains(mainCls))
+            {
                 return sourceWord;
-                
+            }
+
             int cIndex = 0;
             var maxLength = nnRes.GetLength(2);
             var sb = new StringBuilder();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DeepMorphy.Numb;
 using DeepMorphy.PreProc;
 using DeepMorphy.WordDict;
 
@@ -14,7 +15,7 @@ namespace DeepMorphy
     public sealed class MorphAnalyzer
     {
         private readonly bool _withTrimAndLower;
-        private readonly IPreProcessor[] _preProcessors;
+        private readonly IMorphProcessor[] _morphProcessors;
         private readonly NeuralNet.Processor _net;
 
         /// <summary>
@@ -60,25 +61,25 @@ namespace DeepMorphy
             {
                 throw new ArgumentException("Batch size must be greater than 0.");
             }
-
-            _net = new NeuralNet.Processor(maxBatchSize, withLemmatization, useEnGrams, false);
-            _withTrimAndLower = withTrimAndLower;
             EnTags = useEnGrams;
             GramHelper = new GramHelper();
-            TagHelper = new TagHelper(this, _net.Config);
+            TagHelper = new TagHelper(this);
+            _net = new NeuralNet.Processor(TagHelper, maxBatchSize, withLemmatization, useEnGrams);
+            _withTrimAndLower = withTrimAndLower;
+            
             if (withPreprocessors)
             {
                 var dict = new Dict(useEnGrams, withLemmatization);
-                _preProcessors = new IPreProcessor[]
+                _morphProcessors = new IMorphProcessor[]
                 {
-                    new NarNumbProc(dict, withLemmatization),
-                    new DictProc(dict),
-                    new RegProc(_net.AvailableChars, useEnGrams, 50, withLemmatization)
+                    //new NumberProc(dict, withLemmatization),
+                    //new DictProc(dict),
+                    //new RegProc(_net.AvailableChars, useEnGrams, 50, withLemmatization)
                 };
             }
             else
             {
-                _preProcessors = new IPreProcessor[0];
+                _morphProcessors = new IMorphProcessor[0];
             }
         }
 
@@ -111,20 +112,26 @@ namespace DeepMorphy
             foreach (var netTok in _net.Parse(words))
             {
                 bool ready = false;
-                for (int i = 0; i < _preProcessors.Length; i++)
+                for (int i = 0; i < _morphProcessors.Length; i++)
                 {
-                    var preProcResult = _preProcessors[i].Parse(netTok.Text);
-                    if (preProcResult != null)
-                    {
-                        yield return preProcResult;
-                        ready = true;
-                        break;
-                    }
+                    //var preProcResult = _morphProcessors[i].Parse(netTok.Text);
+                    //if (preProcResult != null)
+                    //{
+                    //    yield return preProcResult;
+                    //    ready = true;
+                    //    break;
+                    //}
                 }
                 if (!ready)
                     yield return netTok;
             }
         }
+
+        public IEnumerable<MorphInfo> Parse(params string[] words)
+        {
+            return Parse((IEnumerable<string>)words);
+        }
+        
         
         public string Lemmatize(string word, Tag tag)
         {
@@ -157,9 +164,9 @@ namespace DeepMorphy
         /// <param name="word">Слово</param>
         /// <param name="tag">Тег слова</param>
         /// <returns>Словарь, тег - слово</returns>
-        public IDictionary<Tag, string> GetAllForms(string word, Tag tag)
+        public IDictionary<Tag, string> Lexeme(string word, Tag tag)
         {
-            return _net.GetAllForms(word, tag.ClassIndex.Value);
+            return _net.Lexeme(word, tag.TagIndex.Value);
         }
     }
 }
