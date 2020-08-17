@@ -29,6 +29,7 @@ logging.basicConfig(
 DATASET_PATH = CONFIG['dataset_path']
 DICS_PATH = CONFIG['dics_path']
 RANDOM = random.Random(CONFIG['random_seed'])
+GRAMMEMES_TYPES = CONFIG['grammemes_types']
 
 
 class MyDefaultDict(defaultdict):
@@ -123,6 +124,17 @@ def save_dataset(items_dict, file_prefix):
         pickle.dump(test_items, f)
 
 
+def get_dict_path(file_prefix):
+    return os.path.join(DICS_PATH, f"{file_prefix}_dict_items.pkl")
+
+
 def save_dictionary_items(items, file_prefix):
-    with open(os.path.join(DICS_PATH, f"{file_prefix}_dict_items.pkl"), 'wb+') as f:
+    with open(get_dict_path(file_prefix), 'wb+') as f:
         pickle.dump(items, f)
+
+
+def create_cls_tuple(item):
+    return tuple(
+        item[key] if key in item else None
+        for key in GRAMMEMES_TYPES
+    )

@@ -1,13 +1,12 @@
 import yaml
 import pickle
-from utils import CONFIG
+from utils import CONFIG, create_cls_tuple
 
 
 VECT_PATH = CONFIG['vect_words_path']
 CLS_CLASSES_PATH = CONFIG['cls_classes_path']
 NMB_CLASSES_PATH = CONFIG['numb_classes_path']
 NMB_DATA_PATH =  CONFIG['numb_data_path']
-GRAMMEMES_TYPES = CONFIG['grammemes_types']
 SOGL_CHARS = ['б', 'в', 'г', 'д', 'ж', 'з', 'й', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ']
 GLASN_CHARS = ['а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я']
 
@@ -26,6 +25,7 @@ def get_nar_end(text):
 
     return end
 
+
 lemma_cls_id = None
 res_dict = {}
 numb_cls_dict = {}
@@ -42,11 +42,7 @@ for n_key in numbr_src_dic:
 
         for index, item in enumerate(numbr_src_dic[n_key][t]):
             item['post'] = 'numb'
-            cls_tpl = tuple(
-                item[key] if key in item else None
-                for key in GRAMMEMES_TYPES
-            )
-
+            cls_tpl = create_cls_tuple(item)
             if cls_tpl not in numb_cls_dict:
                 numb_cls_dict[cls_tpl] = cur_classes_count
                 cur_classes_count += 1

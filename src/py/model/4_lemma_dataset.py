@@ -12,7 +12,7 @@ DICT_WORDS_PATH = CONFIG['dics_path']
 
 
 def generate(vec_words, main_cls_dic):
-    dict_words = {}
+    dict_words = []
     rez_dict = defaultdict(list)
     for word in tqdm(vec_words, desc="Generating lemma dataset"):
         dic = vec_words[word]
@@ -35,13 +35,19 @@ def generate(vec_words, main_cls_dic):
                     and word_y[:PREFIX_FILTER_LENGTH].replace('ё', 'е') != word[:PREFIX_FILTER_LENGTH].replace('ё', 'е')\
                     and form['post'] != 'comp':
                 #tqdm.write('Word to dictionary: {0} -> {1}'.format(word, word_y))
-                dict_words[(word_y, main_cls)] = word
+                dict_words.append(dict(
+                    text=word,
+                    text_y=word_y,
+                    main=main_cls,
+                    id=form['inflect_id']
+                ))
                 continue
 
             y_vec = vec_words[word_y]['vect']
 
             items = rez_dict[main_cls]
             items.append({
+                'id': form['inflect_id'],
                 'x_src': word,
                 'x': x_vec[0],
                 'x_len': x_vec[1],

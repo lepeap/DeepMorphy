@@ -14,11 +14,13 @@ vect_words_path: data/vec_words.pkl
 cls_classes_path: data/classification_classes.pkl
 numb_classes_path: data/numb_classes.pkl
 numb_data_path: data/numb.pkl
+tags_path: data/tags.pkl
 dics_path: data/
 dataset_path: data/dataset
 inflect_templates_path: data/inflect_templates.pkl
 export_path: export
 save_path: checkpoints/
+bad_path: data/
 
 test_results_paths:
   - latest_release
@@ -213,6 +215,18 @@ lemma_same_word:
   - post: infn
 
   - post: advb
+
+  - post: prep
+
+  - post: conj
+
+  - post: prcl
+
+  - post: intj
+
+  - post: pred
+    tens: pres
+
 
 
 other_post_types:

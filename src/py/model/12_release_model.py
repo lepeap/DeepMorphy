@@ -8,6 +8,7 @@ from lxml import etree
 
 from model import RNN
 from utils import CONFIG
+from tester import Tester
 
 
 class Releaser:
@@ -18,6 +19,7 @@ class Releaser:
         self.chars = self.config['chars']
         self.gram_types = self.config['grammemes_types']
         self.rnn = RNN(True)
+        self.tester = Tester(self.rnn)
         self.pd_publish_paths = [
             os.path.join(path, f"frozen_model_{self.model_key}.pb")
             for path in self.config['publish_net_paths']
@@ -56,8 +58,8 @@ class Releaser:
             self.classes_dic[key]: ",".join([key for key in list(key) if key is not None])
             for key in self.classes_dic
         }
-        with open(CONFIG['numb_classes_path'], 'rb') as f:
-            self.numb_classes_dic = pickle.load(f)
+        with open(CONFIG['tags_path'], 'rb') as f:
+            self.tags = pickle.load(f)
 
         with open(CONFIG['numb_data_path'], 'rb') as f:
             self.numb_data = pickle.load(f)
@@ -67,12 +69,19 @@ class Releaser:
         #for path in self.pd_publish_paths:
         #    copyfile(pd_release_path, path)
 
+        self.__release_test_metrics__()
         self.__release_numbers_xml__()
         self.__release_gramm_docs__()
         self.__release_grams_xml__()
         self.__release_tags_xml__()
         self.__release_dataset_info__()
         #self.__release_model_xml__(out_ops, gram_ops)
+
+    def __release_test_metrics__(self):
+        results = self.tester.test()
+        for path in self.test_result_paths:
+            with open(path, 'w+') as f:
+                f.write(results)
 
     def __release_model_xml__(self, out_ops, gram_ops):
         root = etree.Element('Root')
@@ -194,31 +203,14 @@ class Releaser:
 
     def __release_tags_xml__(self):
         root = etree.Element('Tags')
-        lemma_same_words = []
-        for cls in self.config['lemma_same_word']:
-            key = tuple(
-                cls[key] if key in cls else None
-                for key in self.config['grammemes_types']
-            )
-            lemma_same_words.append(key)
-
-        for cls in self.classes_dic:
+        for tag in self.tags:
+            val = self.tags[tag]
             cls_el = etree.Element("T")
-            cls_el.set('i', str(self.classes_dic[cls]))
-            cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
-            cls_el.set('p', "nn")
-            if cls in lemma_same_words:
-                cls_el.set('lem', '1')
-            root.append(cls_el)
-
-        for cls in self.numb_classes_dic:
-            cls_el = etree.Element("T")
-            cls_index = self.numb_classes_dic[cls]
-            cls_el.set('i', str(cls_index))
-            cls_el.set('v', ",".join([key if key is not None else '' for key in cls]))
-            cls_el.set('p', "numb")
-            if cls_index == self.numb_data['lemma_cls_id']:
-                cls_el.set('lem', '1')
+            cls_el.set('i', str(val['i']))
+            cls_el.set('v', ",".join([key if key is not None else '' for key in tag]))
+            cls_el.set('p', val['p'])
+            if val['l']:
+                cls_el.set('l', '1')
             root.append(cls_el)
 
         tree = ElementTree(root)

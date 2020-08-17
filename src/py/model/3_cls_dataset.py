@@ -29,16 +29,19 @@ def generate_dataset(vec_words, cls_type, cls_dic):
     for word in tqdm(vec_words, desc=f"Generating classification {cls_type} dataset"):
         y = np.zeros((len(ordered_keys),), dtype=np.int)
         has_classes = False
+        ids = []
         for form in vec_words[word]['forms']:
             if cls_type in form:
                 cur_cls = form[cls_type]
                 index = cls_dic[cur_cls]
                 y[index] = 1
                 has_classes = True
+                ids.append(form['inflect_id'] if 'inflect_id' in form else form['id'])
 
         if has_classes:
             items = rez_items[cur_cls]
             items.append({
+                'ids': ids,
                 'src': word,
                 'x': vec_words[word]['vect'],
                 'y': y,

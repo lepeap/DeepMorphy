@@ -7,10 +7,10 @@ from utils import CONFIG, decode_word
 
 
 class Tester:
-    def __init__(self):
+    def __init__(self, rnn=None):
         self.config = CONFIG
         self.config['graph_part_configs']['lemm']['use_cls_placeholder'] = True
-        self.rnn = RNN(True)
+        self.rnn = rnn if rnn else RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
         self.batch_size = 16384
         self.show_bad_items = False
@@ -22,26 +22,67 @@ class Tester:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
             self.rnn.restore(sess)
-
             for gram in self.rnn.gram_keys:
-                full_cls_acc, part_cls_acc = self.__test_classification__(sess, gram, self.rnn.gram_graph_parts[gram])
+                full_cls_acc, part_cls_acc, _ = self.__test_classification__(sess, gram, self.rnn.gram_graph_parts[gram], 'test')
                 result = f"{gram}. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
                 results.append(result)
                 tqdm.write(result)
-            #
-            full_cls_acc, part_cls_acc = self.__test_classification__(sess, 'main', self.rnn.main_graph_part)
+
+            full_cls_acc, part_cls_acc, _ = self.__test_classification__(sess, 'main', self.rnn.main_graph_part, 'test')
             result = f"main. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
             results.append(result)
             tqdm.write(result)
-            lemm_acc = self.__test_lemmas__(sess)
+            lemm_acc, _ = self.__test_lemmas__(sess, 'test')
             result = f"lemma_acc: {lemm_acc}"
+            tqdm.write(result)
+            results.append(result)
+            inflect_acc, _ = self.__test_inflect__(sess, 'test')
+            result = f"inflect_acc: {inflect_acc}"
+            tqdm.write(result)
             results.append(result)
             tqdm.write(result)
 
         return "\n".join(results)
 
-    def __get_classification_info__(self, sess, items, graph_part):
+    def build_bad(self):
+        config = tf.ConfigProto(allow_soft_placement=True)
+        with tf.Session(config=config, graph=self.rnn.graph) as sess:
+            sess.run(tf.global_variables_initializer())
+            sess.run(tf.local_variables_initializer())
+            self.rnn.restore(sess)
 
+            print("Building bad main")
+            _, _, main_bad = self.__test_classification__(sess, 'main', self.rnn.main_graph_part, 'test', 'train', 'valid')
+            print(f"Main bad count: {len(main_bad)}")
+            with open(os.path.join(self.config['bad_path'], "bad_main.pkl"), 'wb+') as f:
+                pickle.dump(main_bad, f)
+
+            print("Building bad lemma")
+            _, lemm_bad = self.__test_lemmas__(sess, 'test', 'train', 'valid')
+            print(f"Lemma bad count: {len(lemm_bad)}")
+            with open(os.path.join(self.config['bad_path'], "bad_lemma.pkl"), 'wb+') as f:
+                pickle.dump(lemm_bad, f)
+
+            print("Building bad inflect")
+            _, inflect_bad = self.__test_inflect__(sess, 'test', 'train', 'valid')
+            print(f"Inflect bad count: {len(inflect_bad)}")
+            with open(os.path.join(self.config['bad_path'], "bad_inflect.pkl"), 'wb+') as f:
+                pickle.dump(inflect_bad, f)
+
+    def __load_datasets__(self, main_type, *ds_type):
+        words = []
+
+        def load_words(type):
+            path = os.path.join(self.config['dataset_path'], f"{main_type}_{type}_dataset.pkl")
+            with open(path, 'rb') as f:
+                words.extend(pickle.load(f))
+
+        for key in ds_type:
+            load_words(key)
+
+        return words
+
+    def __get_classification_items__(self, sess, items, graph_part):
         wi = 0
         pbar = tqdm(total=len(items), desc='Getting classification info')
         results = []
@@ -83,95 +124,7 @@ class Tester:
 
         return results, etalon
 
-    def __test_classification__(self, sess, key, graph_part):
-        path = os.path.join(self.rnn.config['dataset_path'], f"{key}_test_dataset.pkl")
-        with open(path, 'rb') as f:
-            et_items = pickle.load(f)
-
-        results, etalon = self.__get_classification_info__(sess, et_items, graph_part)
-        total = len(etalon)
-        total_classes = 0
-        full_correct = 0
-        part_correct = 0
-
-        for index, et in enumerate(etalon):
-            classes_count = et.sum()
-            good_classes = np.argwhere(et == 1).ravel()
-            rez_classes = np.argsort(results[index])[-classes_count:]
-
-            total_classes += classes_count
-            correct = True
-            for cls in rez_classes:
-                if cls in good_classes:
-                    part_correct += 1
-                else:
-                    correct = False
-
-            if correct:
-                full_correct += 1
-
-        full_acc = full_correct / total
-        cls_correct = part_correct / total_classes
-
-        return full_acc, cls_correct
-
-    def __test_lemmas__(self, sess):
-        path = os.path.join(self.config['dataset_path'], "lemma_test_dataset.pkl")
-        with open(path, 'rb') as f:
-            words = pickle.load(f)
-
-        words = [
-            word
-            for word in words
-            if all([c in self.config['chars'] for c in word['x_src']])
-        ]
-
-        words_to_proc = [
-            (word['x_src'], word['main_cls'])
-            for word in words
-        ]
-
-        rez_words = list(self.__infer_lemm__(sess, words_to_proc))
-        total = len(words)
-        wrong = 0
-        for index, lem in enumerate(rez_words):
-            et_word = words[index]
-            if lem != et_word['y_src']:
-                wrong += 1
-
-        correct = total - wrong
-        acc = correct / total
-        return acc
-
-    def __test_inflect__(self, sess):
-        path = os.path.join(self.config['dataset_path'], "inflect_test_dataset.pkl")
-        with open(path, 'rb') as f:
-            words = pickle.load(f)
-
-        words = [
-            word
-            for word in words
-            if all([c in self.config['chars'] for c in word['x_src']])
-        ]
-
-        words_to_proc = [
-            (word['x_src'], word['main_cls'])
-            for word in words
-        ]
-
-        rez_words = list(self.__infer_lemm__(sess, words_to_proc))
-        total = len(words)
-        wrong = 0
-        for index, lem in enumerate(rez_words):
-            et_word = words[index]
-            if lem != et_word['y_src']:
-                wrong += 1
-
-        correct = total - wrong
-        acc = correct / total
-        return acc
-
-    def __infer_lemm__(self, sess, items):
+    def __get_lemma_items__(self, sess, items):
         wi = 0
         pbar = tqdm(total=len(items))
         while wi < len(items):
@@ -198,7 +151,7 @@ class Tester:
                 wi += 1
                 pbar.update(1)
 
-            lnch = [self.rnn.lem_graph_part.results[0]]
+            lnch = [self.rnn.lem_result]
             results = sess.run(
                 lnch,
                 {
@@ -206,14 +159,14 @@ class Tester:
                     self.rnn.x_seq_lens[0]: np.asarray(seq_lens),
                     self.rnn.x_vals[0]: np.asarray(xs),
                     self.rnn.x_inds[0]: np.asarray(indexes),
-                    self.rnn.lem_graph_part.cls[0]: np.asarray(clss),
+                    self.rnn.lem_class_pl: np.asarray(clss),
                     self.rnn.x_shape[0]: np.asarray([bi, max_len])
                 }
             )
             for word_src in results[0]:
-                yield decode_word(word_src)
+                yield decode_word(word_src[0])
 
-    def __infer_inflect__(self, sess, items):
+    def __get_inflect_items__(self, sess, items):
         wi = 0
         pbar = tqdm(total=len(items))
         while wi < len(items):
@@ -256,111 +209,86 @@ class Tester:
                     self.rnn.x_shape[0]: np.asarray([bi, max_len])
                 }
             )
+
             for word_src in results[0]:
                 yield decode_word(word_src)
 
-    def __load_all_datasets(self, tp):
-        words = []
+    def __test_classification__(self, sess, key, graph_part, *ds_types):
+        et_items = self.__load_datasets__(key, *ds_types)
+        results, etalon = self.__get_classification_items__(sess, et_items, graph_part)
+        total = len(etalon)
+        total_classes = 0
+        full_correct = 0
+        part_correct = 0
+        bad_items = []
 
-        def load_words(type):
-            path = os.path.join(self.config['dataset_path'], f"{tp}_{type}_dataset.pkl")
-            with open(path, 'rb') as f:
-                words.extend(pickle.load(f))
+        for index, et in enumerate(etalon):
+            classes_count = et.sum()
+            good_classes = np.argwhere(et == 1).ravel()
+            rez_classes = np.argsort(results[index])[-classes_count:]
 
-        load_words("test")
-        load_words("valid")
-        load_words("train")
-        return words
+            total_classes += classes_count
+            correct = True
+            for cls in rez_classes:
+                if cls in good_classes:
+                    part_correct += 1
+                else:
+                    correct = False
 
-    def get_bad_words(self):
-        with tf.Session(graph=self.rnn.graph) as sess:
-            sess.run(tf.global_variables_initializer())
-            sess.run(tf.local_variables_initializer())
-            self.rnn.restore(sess)
-            error_words = []
+            if correct:
+                full_correct += 1
+            else:
+                bad_items.append((et_items[index], rez_classes))
 
-            #main_cls_items = self.__load_all_datasets('main')
-            #results, etalon = self.__get_classification_info__(sess, main_cls_items, self.rnn.main_graph_part)
-            #for index, et in tqdm(enumerate(etalon), "Selecting main cls bad words"):
-            #    classes_count = et.sum()
-            #    good_classes = np.argwhere(et == 1).ravel()
-            #    rez_classes = np.argsort(results[index])[-classes_count:]
-#
-            #    if rez_classes[0] not in good_classes:
-            #        error_words.append(main_cls_items[index]['src'])
-#
-            #print(f'Main cls error: {len(error_words)}')
-            lemma_src = self.__load_all_datasets('lemma')
+        full_acc = full_correct / total
+        cls_correct = part_correct / total_classes
+        return full_acc, cls_correct, bad_items
 
-            lemma_src = [
-                word
-                for word in lemma_src
-                if all([c in self.config['chars'] for c in word['x_src']])
-            ]
+    def __test_lemmas__(self, sess, *ds_types):
+        good_items = self.__load_datasets__("lemma", *ds_types)
+        good_items = [
+            word
+            for word in good_items
+            if all([c in self.config['chars'] for c in word['x_src']])
+        ]
+        results = list(self.__get_lemma_items__(sess, good_items))
 
-            words_to_proc = [
-                (word['x_src'], word['main_cls'])
-                for word in lemma_src
-            ]
+        bad_words = []
+        total = len(good_items)
+        wrong = 0
+        for index, rez in enumerate(results):
+            et_word = good_items[index]
+            if rez != et_word['y_src']:
+                wrong += 1
+                bad_words.append((et_word, rez))
 
-            lemma_results = list(self.__infer_lemma__(sess, words_to_proc))
-            for index, lem in tqdm(enumerate(lemma_results), desc="Selecting lemma bad words"):
-                et_word = lemma_src[index]
-                if lem != et_word['y_src']:
-                    error_words.append(et_word['x_src'])
+        correct = total - wrong
+        acc = correct / total
+        return acc, bad_words
 
-            print(f'Total error: {len(error_words)}')
-            error_words = list(set(error_words))
-            print(f'Total unique error: {len(error_words)}')
-            return error_words
+    def __test_inflect__(self, sess, *ds_types):
+        good_items = self.__load_datasets__("inflect", *ds_types)
+        good_items = [
+            word
+            for word in good_items
+            if all([c in self.config['chars'] for c in word['x_src']])
+        ]
 
-    def get_bad_lemm(self):
-        with tf.Session(graph=self.rnn.graph) as sess:
-            sess.run(tf.global_variables_initializer())
-            sess.run(tf.local_variables_initializer())
-            latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
-            self.rnn.saver.restore(sess, latest_checkpoint)
-            good_items = self.__load_all_datasets("lemma")
-            good_items = [
-                word
-                for word in good_items
-                if all([c in self.config['chars'] for c in word['x_src']])
-            ]
-            results = list(self.__infer_lemm__(sess, good_items))
-            for i, item in enumerate(good_items):
-                net_result = results[i]
-                if item['y_src'] != net_result:
-                    print("{0} -> {1} != {2}".format(item['x_src'], item['y_src'], net_result))
+        bad_items = []
+        rez_words = list(self.__get_inflect_items__(sess, good_items))
+        total = len(good_items)
+        wrong = 0
+        for index, rez in enumerate(rez_words):
+            et_word = good_items[index]
+            if rez != et_word['y_src']:
+                wrong += 1
+                bad_items.append((et_word, rez))
 
-    def get_bad_inflect(self):
-        with tf.Session(graph=self.rnn.graph) as sess:
-            sess.run(tf.global_variables_initializer())
-            sess.run(tf.local_variables_initializer())
-            latest_checkpoint = tf.train.latest_checkpoint(self.rnn.save_path)
-            self.rnn.saver.restore(sess, latest_checkpoint)
-            good_items = self.__load_all_datasets("inflect")
-            good_items = [
-                word
-                for word in good_items
-                if all([c in self.config['chars'] for c in word['x_src']])
-            ]
-            results = list(self.__infer_inflect__(sess, good_items))
-            for i, item in enumerate(good_items):
-                net_result = results[i]
-                if item['y_src'] != net_result:
-                    print("{0} -> {1} != {2}".format(item['x_src'], item['y_src'], net_result))
-            print()
-
-
+        correct = total - wrong
+        acc = correct / total
+        return acc, bad_items
 
 
 if __name__ == "__main__":
     tester = Tester()
-
-    #test = tester.get_bad_lemm()
-
-    res = tester.get_bad_inflect()
-
-
-    print()
-    #tester.test()
+    tester.test()
