@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,75 +7,55 @@ namespace DeepMorphy.WordDict
 {
     internal class Dict
     {
-        private readonly Dictionary<string, string> _gramDic = new Dictionary<string, string>();
-        private readonly Dictionary<string, string> _index = new Dictionary<string, string>();
-        private readonly bool _withLemmatization;
-        private readonly bool _useEnGrams;
-        public Dict(bool useEnGrams, bool withLemmatization)
+        private readonly Dictionary<string, int[]> _indexDic = new Dictionary<string, int[]>();
+        private readonly Dictionary<int, string> _lexemeDic = new Dictionary<int, string>();
+
+        public Dict(string dictKey)
         {
-            _withLemmatization = withLemmatization;
-            _useEnGrams = useEnGrams;
-            using (var reader = new StreamReader(Utils.GetCompressedResourceStream("DeepMorphy.WordDict.dict.txt.gz"), Encoding.UTF8))
+            using (var reader = new StreamReader(Utils.GetCompressedResourceStream($"DeepMorphy.WordDict.{dictKey}_index.txt.gz"), Encoding.UTF8))
             {
                 var line = reader.ReadLine();
-                while (!string.IsNullOrWhiteSpace(line))
+                while (!reader.EndOfStream && !string.IsNullOrWhiteSpace(line))
                 {
-                    var spltRez = line.Split('=');
-                    _gramDic[spltRez[0]] = spltRez[1];
+                    var spltRez = line.Split(':');
+                    _indexDic[spltRez[0]] = spltRez[1].Split(',').Select(x => int.Parse(x)).ToArray();
                     line = reader.ReadLine();
                 }
-
-                while (!reader.EndOfStream)
+            }
+            
+            using (var reader = new StreamReader(Utils.GetCompressedResourceStream($"DeepMorphy.WordDict.{dictKey}.txt.gz"), Encoding.UTF8))
+            {
+                var line = reader.ReadLine();
+                while (!reader.EndOfStream && !string.IsNullOrWhiteSpace(line))
                 {
-                    line = reader.ReadLine();
                     var spltRez = line.Split('\t');
-                    _index[spltRez[0]] = spltRez[1];
+                    _lexemeDic[int.Parse(spltRez[0])] = spltRez[1];
+                    line = reader.ReadLine();
                 }
             }
         }
         
-        public MorphInfo Parse(string word)
+        public IEnumerable<IEnumerable<(string word, int tag)>> Get(string word)
         {
-            if (_index.ContainsKey(word))
+            var isInDic = _indexDic.TryGetValue(word, out int[] forms);
+            if (!isInDic)
             {
-                var srcTags = _index[word];
-                var tags = _parseTags(word, srcTags).ToArray();            
-                return new MorphInfo(word, tags, _useEnGrams);
+                yield break;
             }
 
-            return null;
+            foreach (var formId in forms)
+            {
+                yield return _parseLexeme(formId);
+            }
         }
 
-        private IEnumerable<Tag> _parseTags(string word, string srcTags)
+        private IEnumerable<(string word, int tag)> _parseLexeme(int lexemeId)
         {
-            var tagsSrcs = srcTags.Split(';').ToArray();
-            foreach (var form in tagsSrcs)
+            var srcVal = _lexemeDic[lexemeId];
+            foreach (var formVal in srcVal.Split(';'))
             {
-                var splRez = form.Split(':');
-                var gramDic = splRez[1]
-                                .Split(',')
-                                .Select((val, i) => (
-                                    gram: string.IsNullOrEmpty(val) ? string.Empty : _gramDic[val], 
-                                    index: i
-                                ))
-                                .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
-                                .ToDictionary(
-                                    x => _useEnGrams 
-                                        ? GramInfo.GramCatIndexDic[x.index].KeyEn 
-                                        : GramInfo.GramCatIndexDic[x.index].KeyRu,
-                                    x => _useEnGrams ? x.gram : GramInfo.EnRuDic[x.gram]
-                                );
-                string lemma = null;
-                if (_withLemmatization && !string.IsNullOrWhiteSpace(splRez[0]))
-                    lemma = splRez[0];    
-                else if (_withLemmatization)
-                    lemma = word;
-
-                yield return new Tag(
-                    new ReadOnlyDictionary<string, string>(gramDic),
-                    (float) 1.0 / tagsSrcs.Length,
-                    lemma
-                );
+                var splMas = formVal.Split(':');
+                yield return (splMas[0], int.Parse(splMas[1]));
             }
         }
     }

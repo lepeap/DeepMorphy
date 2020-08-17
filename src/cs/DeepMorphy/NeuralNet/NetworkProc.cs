@@ -4,33 +4,33 @@ using System.Text;
 
 namespace DeepMorphy.NeuralNet
 {
-    internal class Processor
+    internal class NetworkProc
     {
+        private const int K = 4;
         private readonly bool _withLemmatization;
         private readonly TfNeuralNet _net;
         private readonly int _maxBatchSize;
         private readonly TagHelper _tagHelper;
-        private const int K = 4;
+        private readonly Config _config;
 
-        public Processor(TagHelper tagHelper,
-                         int maxBatchSize, 
-                         bool withLemmatization = false, 
-                         bool useEnGrams = false)
+        public NetworkProc(TagHelper tagHelper,
+            int maxBatchSize,
+            bool withLemmatization = false,
+            bool useEnGrams = false)
         {
             _tagHelper = tagHelper;
             _maxBatchSize = maxBatchSize;
             _withLemmatization = withLemmatization;
-            Config = new Config(useEnGrams);
-            _net = new TfNeuralNet(Config.OpDic, Config.GramOpDic, withLemmatization);
+            _config = new Config(useEnGrams);
+            _net = new TfNeuralNet(_config.OpDic, _config.GramOpDic, withLemmatization);
         }
-        
-        public Config Config { get; }
 
-        public char[] AvailableChars => Config.CharToId.Keys.ToArray();
-        
-        public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
+        public char[] AvailableChars => _config.CharToId.Keys.ToArray();
+
+        public IEnumerable<(string srcWord, IEnumerable<Tag> tags, Dictionary<string, GramCategory> gramCats)> Parse(IEnumerable<string> words)
         {
-            foreach (var batch in _batchify(words, _maxBatchSize)){
+            foreach (var batch in _batchify(words, _maxBatchSize))
+            {
                 var srcMas = batch.ToArray();
 
                 _vectorizeWords(srcMas,
@@ -43,33 +43,30 @@ namespace DeepMorphy.NeuralNet
                 var result = _net.Classify(maxLength, srcMas.Length, indexes, values, seqLens);
                 for (int i = 0; i < srcMas.Length; i++)
                 {
-                    yield return new MorphInfo(
-                        srcMas[i],
-                        Enumerable.Range(0, K)
-                            .Select(j => new Tag(
-                                    _tagHelper[result.ResultIndexes[i, j]],
-                                    result.ResultProbs[i, j],
-                                    lemma: _withLemmatization 
-                                        ? _getLemma(srcMas[i], result.Lemmas, i,j, result.ResultIndexes[i, j]) 
-                                        : null,
-                                    tagIndex: result.ResultIndexes[i, j]
-                                )
-                            )
-                            .ToArray(),
-                        result.GramProbs.ToDictionary(
-                            kp => kp.Key,
-                            kp => new GramCategory(
-                                Enumerable.Range(0, Config[kp.Key].NnClassesCount)
-                                    .Select(j => new Gram(
-                                        Config[kp.Key, j],
-                                        result.GramProbs[kp.Key][i, j++]
-                                    ))
-                                    .OrderByDescending(x => x.Power)
-                                    .ToArray()
-                            )
-                        )
-                    );
-                }      
+                    var srcword = srcMas[i];
+                    var tags = Enumerable.Range(0, K)
+                                         .Select(j => new Tag(
+                                                 _tagHelper[result.ResultIndexes[i, j]],
+                                                 result.ResultProbs[i, j],
+                                                 lemma: _withLemmatization
+                                                     ? _getLemma(srcMas[i], result.Lemmas, i, j, result.ResultIndexes[i, j])
+                                                     : null,
+                                                 tagIndex: result.ResultIndexes[i, j]
+                                             )
+                                         );
+                    var gramDic = result.GramProbs.ToDictionary(
+                        kp => kp.Key,
+                        kp => new GramCategory(
+                            Enumerable.Range(0, _config[kp.Key].NnClassesCount)
+                                .Select(j => new Gram(
+                                    _config[kp.Key, j],
+                                    result.GramProbs[kp.Key][i, j++]
+                                ))
+                                .OrderByDescending(x => x.Power)
+                                .ToArray()
+                        ));
+                    yield return (srcWord: srcword, tags: tags, gramDic: gramDic);
+                }
             }
         }
 
@@ -85,7 +82,7 @@ namespace DeepMorphy.NeuralNet
                     out List<int> values,
                     out int[] seqLens
                 );
-                
+
                 var netRes = _net.Lemmatize(maxLength, words.Length, indexes, values, seqLens, classes);
                 for (int i = 0; i < words.Length; i++)
                 {
@@ -107,7 +104,7 @@ namespace DeepMorphy.NeuralNet
                     out List<int> values,
                     out int[] seqLens
                 );
-                
+
                 var netRes = _net.Inflect(maxLength, words.Length, indexes, values, seqLens, xClasses, yClasses);
                 for (int i = 0; i < words.Length; i++)
                 {
@@ -118,9 +115,9 @@ namespace DeepMorphy.NeuralNet
 
         public Dictionary<Tag, string> Lexeme(string word, int tagId)
         {
-            var items = Config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
+            var items = _config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
             var results = Inflect(items);
-            var resDic = results.ToDictionary(x => new Tag(_tagHelper[x.tagId], (float)1.0, word, tagId), x=>x.word);
+            var resDic = results.ToDictionary(x => new Tag(_tagHelper[x.tagId], (float) 1.0, word, tagId), x => x.word);
             return resDic;
         }
 
@@ -139,13 +136,13 @@ namespace DeepMorphy.NeuralNet
             {
                 for (int j = 0; j < srcMas[i].Length; j++)
                 {
-                    indexes.Add(new int[]{i,j});
+                    indexes.Add(new int[] {i, j});
                     var curChar = srcMas[i][j];
                     int rezId;
-                    if (Config.CharToId.ContainsKey(curChar))
-                        rezId = Config.CharToId[curChar];
+                    if (_config.CharToId.ContainsKey(curChar))
+                        rezId = _config.CharToId[curChar];
                     else
-                        rezId = Config.UndefinedCharId;
+                        rezId = _config.UndefinedCharId;
 
                     values.Add(rezId);
                 }
@@ -156,14 +153,14 @@ namespace DeepMorphy.NeuralNet
                 seqLens[i] = srcMas[i].Length;
             }
         }
-        
+
         private IEnumerable<IEnumerable<T>> _batchify<T>(IEnumerable<T> srcItems, int batchSize)
         {
             IEnumerable<T> items = srcItems.ToArray();
             while (items.Any())
             {
                 yield return items.Take(batchSize);
-                items = items.Skip(batchSize);    
+                items = items.Skip(batchSize);
             }
         }
 
@@ -180,18 +177,19 @@ namespace DeepMorphy.NeuralNet
             while (cIndex < maxLength)
             {
                 var cVal = nnRes[wordIndex, kIndex, cIndex];
-                if (cVal == Config.EndCharIndex)
+                if (cVal == _config.EndCharIndex)
                     break;
-                
-                if (cVal == Config.UndefinedCharId)
+
+                if (cVal == _config.UndefinedCharId)
                     return null;
 
-                sb.Append(Config.IdToChar[cVal]);
+                sb.Append(_config.IdToChar[cVal]);
                 cIndex++;
             }
+
             return sb.ToString();
         }
-        
+
         private string _decodeWord(int[,] nnRes, int wordIndex)
         {
             int cIndex = 0;
@@ -200,19 +198,20 @@ namespace DeepMorphy.NeuralNet
             while (cIndex < maxLength)
             {
                 var cVal = nnRes[wordIndex, cIndex];
-                if (cVal == Config.EndCharIndex)
+                if (cVal == _config.EndCharIndex)
                 {
                     break;
                 }
 
-                if (cVal == Config.UndefinedCharId)
+                if (cVal == _config.UndefinedCharId)
                 {
                     return null;
                 }
 
-                sb.Append(Config.IdToChar[cVal]);
+                sb.Append(_config.IdToChar[cVal]);
                 cIndex++;
             }
+
             return sb.ToString();
         }
     }

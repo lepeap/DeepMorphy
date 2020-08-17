@@ -4,8 +4,8 @@ namespace DeepMorphy
 {
     internal interface IMorphProcessor
     {
-        IEnumerable<MorphInfo> Parse(IEnumerable<string> words);
-        IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> tasks);
-        IEnumerable<(Tag tag, string text)> Lexeme(string word, Tag tag);
+        IEnumerable<(int tagId, string lemma)> Parse(string word);
+        string Inflect(string word, int wordTag, int resultTag);
+        IEnumerable<(int tag, string text)> Lexeme(string word, int tag);
     }
 }

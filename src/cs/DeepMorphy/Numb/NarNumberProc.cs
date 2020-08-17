@@ -9,7 +9,10 @@ namespace DeepMorphy.Numb
     {
         private static readonly Regex NarChislReg = new Regex(@"(\d+)-([а-я]+)", RegexOptions.Compiled);
         private static readonly char[] GlasnChars = {'а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я'};
-        private static readonly char[] SoglChars = {'б', 'в', 'г', 'д', 'ж', 'з', 'й', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ'};
+
+        private static readonly char[] SoglChars =
+            {'б', 'в', 'г', 'д', 'ж', 'з', 'й', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ'};
+
         private static readonly Dictionary<string, string> Templates = new Dictionary<string, string>()
         {
             {"11", "11"},
@@ -70,64 +73,43 @@ namespace DeepMorphy.Numb
             _withLemmatization = withLemmatization;
         }
 
-        public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
-        {
-            foreach (var word in words)
-            {
-                var data = _tryParse(word);
-                if (data == null)
-                {
-                    yield return null;
-                    continue;
-                }
-
-                var numbData = data.NumberData;
-                var lemmaEnd = numbData.NarEnd[NumbInfo.LemmaTagId];
-                var items = numbData.Ordinal.Where(kp => kp.Value.EndsWith(data.OriginalEnd)).ToArray();
-                var power = (float)1.0 / items.Length;
-                var lemma = _withLemmatization ? $"{data.Digit}-{lemmaEnd}" : null;
-                var tags = items.Select(kp => new Tag(_tagsDic[kp.Key], power, lemma, kp.Key)).ToArray();
-                yield return new MorphInfo(word, tags, _useEnTags);
-            }
-        }
-
-        public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> tasks)
-        {
-            foreach (var task in tasks)
-            {
-                var data = _tryParse(task.word);
-                if (data == null)
-                {
-                    yield return null;
-                    continue;
-                }
-                
-                var numbData = data.NumberData;
-                var tagIndex = task.resultTag.TagIndex;
-                if (!tagIndex.HasValue || !numbData.NarEnd.ContainsKey(tagIndex.Value))
-                {
-                    yield return null;
-                    continue;
-                }
-
-                var result = $"{data.Digit}-{numbData.NarEnd[tagIndex.Value]}";
-                yield return result;
-            }
-        }
-
-        public IEnumerable<(Tag tag, string text)> Lexeme(string word, Tag tag)
+        public IEnumerable<(int tagId, string lemma)> Parse(string word)
         {
             var data = _tryParse(word);
             if (data == null)
             {
                 return null;
             }
-            
+
             var numbData = data.NumberData;
             var lemmaEnd = numbData.NarEnd[NumbInfo.LemmaTagId];
-            var lemma = $"{data.Digit}-{lemmaEnd}";
-            return numbData.NarEnd.Select(kp =>
-                (new Tag(_tagsDic[kp.Key], (float) 1.0, lemma, kp.Key), $"{data.Digit}-{kp.Value}"));
+            var lemma = _withLemmatization ? $"{data.Digit}-{lemmaEnd}" : null;
+            return numbData.Ordinal.Where(kp => kp.Value.EndsWith(data.OriginalEnd)).Select(kp => (kp.Key, lemma));
+        }
+
+        public string Inflect(string word, int wordTag, int resultTag)
+        {
+            var data = _tryParse(word);
+            if (data == null)
+            {
+                return null;
+            }
+
+            var numbData = data.NumberData;
+            if (!numbData.NarEnd.ContainsKey(resultTag))
+            {
+                return null;
+            }
+
+            var result = $"{data.Digit}-{numbData.NarEnd[resultTag]}";
+            return result;
+        }
+
+        public IEnumerable<(int tag, string text)> Lexeme(string word, int tag)
+        {
+            var data = _tryParse(word);
+            var numbData = data?.NumberData;
+            return numbData?.NarEnd.Select(kp => (kp.Key, $"{data.Digit}-{kp.Value}"));
         }
 
         private NarNumberData _tryParse(string word)

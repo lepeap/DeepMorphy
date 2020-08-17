@@ -6,79 +6,56 @@ namespace DeepMorphy.Numb
 {
     internal class NumberProc : IMorphProcessor
     {
-        private readonly bool _useEnTags;
-        private readonly bool _withLemmatization;
-        private readonly Dictionary<int, ReadOnlyDictionary<string, string>> _tagsDic;
-
-        public NumberProc(bool useEnTags, bool withLemmatization)
+        public IEnumerable<(int tagId, string lemma)> Parse(string word)
         {
-            _useEnTags = useEnTags;
-            _tagsDic = useEnTags ? TagHelper.TagsEnDic : TagHelper.TagsRuDic;
-            _withLemmatization = withLemmatization;
-        }
-
-        public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
-        {
-            foreach (var word in words)
-            {
-                if (!_tryParse(word, out string prefix, 
-                                     out string mainWord,
-                                     out Dictionary<int, string> curLexemeDic))
-                {
-                    yield return null;
-                    continue;
-                }
-
-                var items = curLexemeDic.Where(x => x.Value == mainWord).ToArray();
-                var lemma = curLexemeDic[NumbInfo.LemmaTagId];
-                var power = (float)1.0 / items.Length;
-                lemma = _withLemmatization ? $"{prefix}{lemma}" : null;
-                var tags = items.Select(kp => new Tag(_tagsDic[kp.Key], power, lemma, kp.Key)).ToArray();
-                yield return new MorphInfo(word, tags, _useEnTags);
-            }
-        }
-
-        public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> tasks)
-        {
-            foreach (var task in tasks)
-            {
-                if (!_tryParse(task.word, out string prefix, 
-                    out string mainWord,
-                    out Dictionary<int, string> curLexemeDic))
-                {
-                    yield return null;
-                    continue;
-                }
-                
-                var tagIndex = task.resultTag.TagIndex;
-                if (!tagIndex.HasValue || !curLexemeDic.ContainsKey(tagIndex.Value))
-                {
-                    yield return null;
-                    continue;
-                }
-
-                var mainValue = curLexemeDic.FirstOrDefault(x => x.Key == task.resultTag.TagIndex).Value;
-                yield return $"{prefix}{mainValue}";
-            }
-        }
-
-        public IEnumerable<(Tag tag, string text)> Lexeme(string word, Tag tag)
-        {
-            if (!_tryParse(word, 
-                           out string prefix, 
-                           out string mainWord,
-                           out Dictionary<int, string> curLexemeDic))
+            if (!_tryParse(word, out string prefix,
+                out string mainWord,
+                out Dictionary<int, string> curLexemeDic))
             {
                 return null;
             }
+
+            var lemma = curLexemeDic[NumbInfo.LemmaTagId];
+            return curLexemeDic.Where(x => x.Value == mainWord).Select(kp => (kp.Key, lemma));
+        }
+
+        public string Inflect(string word, int wordTag, int resultTag)
+        {
+            if (!_tryParse(word, 
+                out string prefix,
+                out string mainWord,
+                out Dictionary<int, string> curLexemeDic))
+            {
+                return null;
+            }
+
+            if (!curLexemeDic.ContainsKey(resultTag))
+            {
+                return null;
+            }
+
+            var mainValue = curLexemeDic.FirstOrDefault(x => x.Key == resultTag).Value;
+            return $"{prefix}{mainValue}";
+        }
+
+        public IEnumerable<(int tag, string text)> Lexeme(string word, int tagId)
+        {
+            if (!_tryParse(word,
+                out string prefix,
+                out string mainWord,
+                out Dictionary<int, string> curLexemeDic))
+            {
+                return null;
+            }
+
             var lemma = $"{prefix}{curLexemeDic[NumbInfo.LemmaTagId]}";
-            return curLexemeDic.Select(kp => (new Tag(_tagsDic[kp.Key], (float) 1.0, lemma, kp.Key), $"{prefix}{kp.Value}"));
+            return curLexemeDic.Select(kp => (kp.Key, $"{prefix}{kp.Value}"));
         }
 
         private bool _tryParse(string word,
-                               out string prefix,
-                               out string mainWord,
-                               out Dictionary<int, string> curLexemeDic)
+            out string prefix,
+            out string mainWord,
+            out Dictionary<int, string> curLexemeDic)
         {
             prefix = null;
             mainWord = null;
@@ -90,7 +67,7 @@ namespace DeepMorphy.Numb
             {
                 return false;
             }
-            
+
             foreach (var kp in NumbInfo.RegexGroups)
             {
                 var grVal = match.Groups[kp.Key];
@@ -120,7 +97,7 @@ namespace DeepMorphy.Numb
                 curLexemeDic = numbData.Quantitative;
                 return true;
             }
-            
+
             return false;
         }
     }

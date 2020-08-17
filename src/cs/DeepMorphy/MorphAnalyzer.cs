@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DeepMorphy.Numb;
-using DeepMorphy.PreProc;
 using DeepMorphy.WordDict;
 
 namespace DeepMorphy
@@ -16,7 +15,7 @@ namespace DeepMorphy
     {
         private readonly bool _withTrimAndLower;
         private readonly IMorphProcessor[] _morphProcessors;
-        private readonly NeuralNet.Processor _net;
+        private readonly NeuralNet.NetworkProc _net;
 
         /// <summary>
         /// Создает морфологический анализатор. В идеале лучше использовать его как синглтон,
@@ -64,17 +63,16 @@ namespace DeepMorphy
             EnTags = useEnGrams;
             GramHelper = new GramHelper();
             TagHelper = new TagHelper(this);
-            _net = new NeuralNet.Processor(TagHelper, maxBatchSize, withLemmatization, useEnGrams);
+            _net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGrams);
             _withTrimAndLower = withTrimAndLower;
             
             if (withPreprocessors)
             {
-                var dict = new Dict(useEnGrams, withLemmatization);
                 _morphProcessors = new IMorphProcessor[]
                 {
-                    //new NumberProc(dict, withLemmatization),
-                    //new DictProc(dict),
-                    //new RegProc(_net.AvailableChars, useEnGrams, 50, withLemmatization)
+                    new NumberProc(),
+                    new DictProc(),
+                    new RegProc(_net.AvailableChars, 50)
                 };
             }
             else
@@ -122,9 +120,10 @@ namespace DeepMorphy
                     //    break;
                     //}
                 }
-                if (!ready)
-                    yield return netTok;
+                //if (!ready)
+                //    yield return netTok;
             }
+            yield break;
         }
 
         public IEnumerable<MorphInfo> Parse(params string[] words)

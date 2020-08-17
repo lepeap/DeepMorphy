@@ -33,7 +33,6 @@ namespace DeepMorphy
                         var keysStr = rdr.GetAttribute("v");
                         var keysEn = keysStr.Split(_commmaSplitter);
                         var keysRu = keysEn.Select(x => string.IsNullOrWhiteSpace(x) ? x : GramInfo.EnRuDic[x]).ToArray();
-
                         
                         var gramDicEn = keysRu.Select((val, i) => (gram: val, index: i))
                             .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
@@ -48,7 +47,7 @@ namespace DeepMorphy
                                 x => x.gram
                             );
                         
-                        if (rdr.GetAttribute("lem") != null)
+                        if (rdr.GetAttribute("l") != null)
                         {
                             lemmasList.Add(index);
                         }
@@ -69,7 +68,6 @@ namespace DeepMorphy
         private readonly string _genderKey;
         private readonly string _caseKey;
         private readonly string _infnKey;
-        
         
         private readonly string _nounKey;
         private readonly string _numberKey;
