@@ -1,11 +1,11 @@
-post. full_cls_acc: 0.9866013071895425; part_cls_acc: 0.9867434040351785
-gndr. full_cls_acc: 0.9596983994003263; part_cls_acc: 0.9665704577837858
-nmbr. full_cls_acc: 0.9917264202978489; part_cls_acc: 0.9922219341457091
-case. full_cls_acc: 0.9791927278792427; part_cls_acc: 0.9867544478407398
+post. full_cls_acc: 0.987678530574893; part_cls_acc: 0.9878190630048466
+gndr. full_cls_acc: 0.9604920851889414; part_cls_acc: 0.9672658190851966
+nmbr. full_cls_acc: 0.9931398234969664; part_cls_acc: 0.9935646606086085
+case. full_cls_acc: 0.9806930486635252; part_cls_acc: 0.9876671968294527
 pers. full_cls_acc: 1.0; part_cls_acc: 1.0
-tens. full_cls_acc: 0.9992127843816422; part_cls_acc: 0.9992161780843393
-mood. full_cls_acc: 0.9973787680209698; part_cls_acc: 0.9975161450571287
-voic. full_cls_acc: 0.9998888147653991; part_cls_acc: 0.9998888147653991
-main. full_cls_acc: 0.9551004460651841; part_cls_acc: 0.9623871515774086
-lemma_acc: 0.9944835418906037
-inflect_acc: 0.9913896583564173
+tens. full_cls_acc: 1.0; part_cls_acc: 1.0
+mood. full_cls_acc: 0.9986893840104849; part_cls_acc: 0.9987577639751553
+voic. full_cls_acc: 1.0; part_cls_acc: 1.0
+main. full_cls_acc: 0.9551451187335093; part_cls_acc: 0.9647049460825275
+lemma_acc: 0.9955360766171577
+inflect_acc: 0.9919260230487889

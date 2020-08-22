@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 from model import RNN
-from utils import CONFIG, decode_word
+from utils import CONFIG, decode_word, load_datasets
 
 
 class Tester:
@@ -68,19 +68,6 @@ class Tester:
             print(f"Inflect bad count: {len(inflect_bad)}")
             with open(os.path.join(self.config['bad_path'], "bad_inflect.pkl"), 'wb+') as f:
                 pickle.dump(inflect_bad, f)
-
-    def __load_datasets__(self, main_type, *ds_type):
-        words = []
-
-        def load_words(type):
-            path = os.path.join(self.config['dataset_path'], f"{main_type}_{type}_dataset.pkl")
-            with open(path, 'rb') as f:
-                words.extend(pickle.load(f))
-
-        for key in ds_type:
-            load_words(key)
-
-        return words
 
     def __get_classification_items__(self, sess, items, graph_part):
         wi = 0
@@ -214,7 +201,7 @@ class Tester:
                 yield decode_word(word_src)
 
     def __test_classification__(self, sess, key, graph_part, *ds_types):
-        et_items = self.__load_datasets__(key, *ds_types)
+        et_items = load_datasets(key, *ds_types)
         results, etalon = self.__get_classification_items__(sess, et_items, graph_part)
         total = len(etalon)
         total_classes = 0
@@ -245,7 +232,7 @@ class Tester:
         return full_acc, cls_correct, bad_items
 
     def __test_lemmas__(self, sess, *ds_types):
-        good_items = self.__load_datasets__("lemma", *ds_types)
+        good_items = load_datasets("lemma", *ds_types)
         good_items = [
             word
             for word in good_items
@@ -267,7 +254,7 @@ class Tester:
         return acc, bad_words
 
     def __test_inflect__(self, sess, *ds_types):
-        good_items = self.__load_datasets__("inflect", *ds_types)
+        good_items = load_datasets("inflect", *ds_types)
         good_items = [
             word
             for word in good_items

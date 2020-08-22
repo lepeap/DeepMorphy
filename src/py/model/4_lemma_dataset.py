@@ -44,7 +44,6 @@ def generate(vec_words, main_cls_dic):
                 continue
 
             y_vec = vec_words[word_y]['vect']
-
             items = rez_dict[main_cls]
             items.append({
                 'id': form['inflect_id'],

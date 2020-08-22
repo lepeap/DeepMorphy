@@ -170,7 +170,7 @@ class Releaser:
     def __release_numbers_xml__(self):
         root = etree.Element('NumbData')
         root.set("reg", self.numb_data['regex'])
-        root.set("l", str(self.numb_data['lemma_cls_id']))
+        root.set("l", ','.join([str(i) for i in self.numb_data['lemma_cls_ids']]))
         for val in self.numb_data['numbers']:
             n_el = etree.Element("N")
             n_el.set('v', str(val))

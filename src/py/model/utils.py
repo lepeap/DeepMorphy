@@ -138,3 +138,16 @@ def create_cls_tuple(item):
         item[key] if key in item else None
         for key in GRAMMEMES_TYPES
     )
+
+def load_datasets(main_type, *ds_type):
+    words = []
+
+    def load_words(type):
+        path = os.path.join(CONFIG['dataset_path'], f"{main_type}_{type}_dataset.pkl")
+        with open(path, 'rb') as f:
+            words.extend(pickle.load(f))
+
+    for key in ds_type:
+        load_words(key)
+
+    return words

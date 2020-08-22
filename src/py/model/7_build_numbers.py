@@ -26,7 +26,7 @@ def get_nar_end(text):
     return end
 
 
-lemma_cls_id = None
+lemma_cls_ids = set()
 res_dict = {}
 numb_cls_dict = {}
 for n_key in numbr_src_dic:
@@ -51,8 +51,8 @@ for n_key in numbr_src_dic:
             if index == 0:
                 n_key_data['lemma'] = item['text']
 
-            if index == 0 and lemma_cls_id is None:
-                lemma_cls_id = cur_class
+            if index == 0 and cls_tpl not in lemma_cls_ids:
+                lemma_cls_ids.add(cur_class)
 
             if t == 'p':
                 items = n_key_data['p']
@@ -87,6 +87,6 @@ with open(NMB_CLASSES_PATH, 'wb+') as f:
 with open(NMB_DATA_PATH, 'wb+') as f:
     pickle.dump({
         'regex': regex,
-        'lemma_cls_id': lemma_cls_id,
+        'lemma_cls_ids': list(lemma_cls_ids),
         'numbers': res_dict
     }, f)

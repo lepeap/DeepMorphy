@@ -9,8 +9,7 @@ with open(CONFIG['numb_data_path'], 'rb') as f:
 
 lemma_same_words = []
 for cls in CONFIG['lemma_same_word']:
-    key = create_cls_tuple(cls)
-    lemma_same_words.append(key)
+    lemma_same_words.append(create_cls_tuple(cls))
 
 items = {}
 classes_dic = CONFIG['main_classes']
@@ -18,7 +17,7 @@ for tpl in classes_dic:
     items[tpl] = {
         'i': classes_dic[tpl],
         'p': 'nn',
-        'l':  classes_dic[tpl] in lemma_same_words
+        'l':  tpl in lemma_same_words
     }
 
 for tpl in numb_classes_dic:
@@ -26,7 +25,7 @@ for tpl in numb_classes_dic:
     items[tpl] = {
         'i': cls_index,
         'p': 'numb',
-        'l': cls_index == numb_data['lemma_cls_id']
+        'l': cls_index in numb_data['lemma_cls_ids']
     }
 
 max_cls_id = max([numb_classes_dic[key] for key in numb_classes_dic])
@@ -44,7 +43,7 @@ for key in CONFIG['other_post_types']:
     max_cls_id += 1
 
 tpl = [None for item in CONFIG['grammemes_types']]
-tpl[post_index] = 'dict'
+tpl[post_index] = 'unkn'
 tpl = tuple(tpl)
 items[tpl] = {
     'i': max_cls_id,

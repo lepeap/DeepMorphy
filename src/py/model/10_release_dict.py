@@ -5,7 +5,7 @@ import gzip
 import tqdm
 import pickle
 import logging
-from utils import CONFIG, get_dict_path
+from utils import CONFIG, get_dict_path, load_datasets
 
 
 NAR_REG = re.compile("\d+-.*")
@@ -18,6 +18,7 @@ MAX_WORD_SIZE = CONFIG['max_word_size']
 DICT_POST_TYPES = CONFIG['dict_post_types']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
 
+REPLACE_WORD_DICT_ID = 1
 
 CLASSES_INDEX_DICT = {
     cls: GRAMMEMES_TYPES[gram]['classes'][cls]['index']
@@ -33,42 +34,22 @@ p_dic = GRAMMEMES_TYPES['post']['classes']
 for key in p_dic:
     POST_POWER_DICT[key] = p_dic[key]['power'] if 'power' in p_dic[key] else 1
 
+with open(CONFIG['inflect_templates_path'], 'rb') as f:
+    inflect_templates = pickle.load(f)
 
-class Word:
-    def __init__(self, word):
-        self.word = word
-        self.index = 0
-        self.text = word['text']
-        self.length = len(word['text'])
-        self.grams = []
-        self.add_gram(word)
+with open(CONFIG['tags_path'], 'rb') as f:
+    tpl_cls_dict = pickle.load(f)
 
-    def add_gram(self, word):
-        grams = [word[key] if key in word else None for key in sorted(GRAMMEMES_TYPES, key=lambda k: GRAMMEMES_TYPES[k]['index'])]
-        power = [CLASSES_INDEX_DICT[key] if key and key in CLASSES_INDEX_DICT else 1000 for key in grams]
-        power.insert(0, -POST_POWER_DICT[word['post']])
-        power = tuple(power)
-        self.grams.append({
-            'lemma': word['lemma'] if 'lemma' in word else None,
-            'gram': ",".join([gram if gram else '' for gram in grams]),
-            'power': power
-        })
+lemma_cls_dict = {}
+for lemma_tpl in inflect_templates:
+    lemma_id = tpl_cls_dict[lemma_tpl]['i']
+    for tpl in inflect_templates[lemma_tpl]:
+        lemma_cls_dict[tpl_cls_dict[tpl]['i']] = lemma_id
 
-    def next(self):
-        self.index += 1
-
-    def is_finished(self):
-        return self.index == self.length
-
-    def current(self):
-        return self.text[self.index]
-
-    def get_grams(self):
-        items = sorted(self.grams, key=lambda g: g['power'])
-        return items
-
-    def __repr__(self):
-        return f"{self.text} - {self.text[self.index:]}"
+lemma_dict = {}
+for item in load_datasets('inflect', 'test', 'train', 'valid'):
+    if item['id'] not in lemma_dict:
+        lemma_dict[item['id']] = (item['x_src'], item['x_cls'])
 
 
 def build_index(words_dics):
@@ -81,10 +62,10 @@ def build_index(words_dics):
             text_forms_dict[text].append(item)
 
     index = []
-    for text in words_dics:
-        classes = [str(item['main']) for item in words_dics[text]]
-        classes = ','.join(classes)
-        index.append(f"{text}:{classes}")
+    for text in text_forms_dict:
+        lexemes = [str(item['id']) for item in text_forms_dict[text]]
+        lexemes = ','.join(lexemes)
+        index.append(f"{text}:{lexemes}")
 
     index = list(set(index))
     index = '\n'.join(index)
@@ -102,13 +83,17 @@ def create_dictionary(words_dics):
         for item in words_dics[id]:
             if item['text'] not in cur_forms_dict:
                 cur_forms_dict[item['text']] = []
-            cur_forms_dict[item['text']].append(item['main'])
+            reaplace_other = item['reaplace_other'] if 'reaplace_other' in item else False
+            cur_forms_dict[item['text']].append((item['main'], reaplace_other))
 
         for text in cur_forms_dict:
             cur_lexeme.append(text)
             cur_lexeme.append(':')
-            for cls in cur_forms_dict[text]:
+            for cls, reaplace_other in cur_forms_dict[text]:
                 cur_lexeme.append(str(cls))
+                if reaplace_other is not None:
+                    cur_lexeme.append('!')
+
                 cur_lexeme.append(",")
 
             del cur_lexeme[-1]
@@ -138,7 +123,6 @@ def release_dict_items():
         words = pickle.load(f)
 
     words = [word for word in words if word['post'] != 'numb']
-
     dict_words = {}
     for word in words:
         if word['id'] not in dict_words:
@@ -154,35 +138,44 @@ def release_correction_items():
     with open(get_dict_path('lemma'), 'rb') as f:
         items = pickle.load(f)
     for word in items:
+        if word['id'] not in lemma_dict:
+            continue
+
         if word['id'] not in dict_words:
             dict_words[word['id']] = []
-        dict_words[word['id']].append(word)
 
-    #with open(os.path.join(CONFIG['bad_path'], "bad_main.pkl"), 'rb') as f:
-    #    items = pickle.load(f)
+        dict_words[word['id']].append(word)
+        dict_words[word['id']].append({
+            'id': word['id'],
+            'text': lemma_dict[word['id']][0],
+            'main': lemma_dict[word['id']][1],
+        })
 
     with open(os.path.join(CONFIG['bad_path'], "bad_lemma.pkl"), 'rb') as f:
         items = pickle.load(f)
     for word in items:
         word = word[0]
+        if word['id'] not in lemma_dict:
+            continue
+
         if word['id'] not in dict_words:
             dict_words[word['id']] = []
-        dict_words[word['id']].append(dict(id=word['id'], main=word['main_cls'], text=word['x_src']))
 
-        #TODO: неправильный класс для леммы
-        dict_words[word['id']].append(dict(id=word['id'], main=word['main_cls'], text=word['y_src']))
+        lemma, lemma_cls = lemma_dict[word['id']]
+        dict_words[word['id']].append(dict(id=word['id'], main=word['main_cls'], text=word['x_src'], replace_other=True))
+        dict_words[word['id']].append(dict(id=word['id'], main=lemma_cls, text=lemma, replace_other=True))
 
     with open(os.path.join(CONFIG['bad_path'], "bad_inflect.pkl"), 'rb') as f:
         items = pickle.load(f)
     for word in items:
         word = word[0]
+        if word['id'] not in lemma_dict:
+            continue
+
         if word['id'] not in dict_words:
             dict_words[word['id']] = []
-        dict_words[word['id']].append(dict(id=word['id'], main=word['x_cls'], text=word['x_src']))
-
-        # TODO: неправильный класс для леммы
-        dict_words[word['id']].append(dict(id=word['id'], main=word['y_cls'], text=word['y_src']))
-
+        dict_words[word['id']].append(dict(id=word['id'], main=word['x_cls'], text=word['x_src'], replace_other=True))
+        dict_words[word['id']].append(dict(id=word['id'], main=word['y_cls'], text=word['y_src'], replace_other=True))
 
     index, lexeme = create_dictionary(dict_words)
     save_dictionary(index, lexeme, REZ_PATHS, 'dict_correction')
@@ -190,7 +183,7 @@ def release_correction_items():
 
 release_correction_items()
 release_dict_items()
-
+print()
 
 
 #with open(NOT_DICT_WORDS_PATH, 'rb') as f:
