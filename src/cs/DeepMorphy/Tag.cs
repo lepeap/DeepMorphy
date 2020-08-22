@@ -11,11 +11,11 @@ namespace DeepMorphy
     /// </summary>
     public sealed class Tag
     {
-        internal Tag(ReadOnlyDictionary<string, string> gramsDic, float power, string lemma=null, int? tagIndex = null)
+        internal Tag(ReadOnlyDictionary<string, string> gramsDic, float power, int id, string lemma=null)
         {
             GramsDic = gramsDic;
             Power = power;
-            TagIndex = tagIndex;
+            Id = id;
             Lemma = lemma;
         }
 
@@ -38,7 +38,7 @@ namespace DeepMorphy
         /// --------------------
         /// Probability of current combination
         /// </summary>
-        public float Power { get; }
+        public float Power { get; internal set; }
         
         /// <summary>
         /// Лемма для данной комбинации 
@@ -123,7 +123,7 @@ namespace DeepMorphy
             return $"Lemma: {Lemma} Tags: {tags}";
         }
         
-        internal int? TagIndex { get; }
+        internal int Id { get; }
 
 
         private string _getWithMultilangKey(string enKey)

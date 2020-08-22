@@ -35,27 +35,74 @@ namespace DeepMorphy.WordDict
             }
         }
         
-        public IEnumerable<IEnumerable<(string word, int tag)>> Get(string word)
+        public IEnumerable<Word> Parse(string word)
         {
-            var isInDic = _indexDic.TryGetValue(word, out int[] forms);
+            var isInDic = _indexDic.TryGetValue(word, out int[] lexemes);
             if (!isInDic)
             {
                 yield break;
             }
 
-            foreach (var formId in forms)
+            foreach (var id in lexemes)
             {
-                yield return _parseLexeme(formId);
+                var lexemeWords = _parseLexeme(id).ToArray();
+                var lemma = lexemeWords.First(x => TagHelper.IsLemma(x.TagId)).Text;
+                foreach (var dWord in lexemeWords)
+                {
+                    if (dWord.Text != word)
+                    {
+                        continue;
+                    }
+
+                    dWord.Lemma = lemma;
+                }
             }
         }
+        
+        public Word[] Lexeme(string word, int tagId)
+        {
+            var isInDic = _indexDic.TryGetValue(word, out int[] lexemes);
+            if (!isInDic)
+            {
+                return null;
+            }
 
-        private IEnumerable<(string word, int tag)> _parseLexeme(int lexemeId)
+            foreach (var id in lexemes)
+            {
+                var lexeme = _parseLexeme(id).ToArray();
+                if (lexeme.Any(x => x.Text == word && x.TagId == tagId))
+                {
+                    return lexeme;
+                }
+            }
+
+            return null;
+        }
+        
+        private IEnumerable<Word> _parseLexeme(int lexemeId)
         {
             var srcVal = _lexemeDic[lexemeId];
             foreach (var formVal in srcVal.Split(';'))
             {
                 var splMas = formVal.Split(':');
-                yield return (splMas[0], int.Parse(splMas[1]));
+                string cls;
+                string word = splMas[0];
+                foreach (var clsVal in splMas[1].Split(','))
+                {
+                    bool replaceOther;
+                    if (clsVal.EndsWith("!"))
+                    {
+                        cls = clsVal.Substring(0, clsVal.Length - 1);
+                        replaceOther = true;
+                    }
+                    else
+                    {
+                        cls = clsVal;
+                        replaceOther = false;
+                    }
+                
+                    yield return new Word(word, int.Parse(cls), replaceOther);
+                }
             }
         }
     }

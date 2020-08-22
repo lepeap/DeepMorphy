@@ -27,7 +27,7 @@ namespace DeepMorphy.NeuralNet
 
         public char[] AvailableChars => _config.CharToId.Keys.ToArray();
 
-        public IEnumerable<(string srcWord, IEnumerable<Tag> tags, Dictionary<string, GramCategory> gramCats)> Parse(IEnumerable<string> words)
+        public IEnumerable<(string srcWord, IEnumerable<Tag> tags, Dictionary<string, GramCategory> gramDic)> Parse(IEnumerable<string> words)
         {
             foreach (var batch in _batchify(words, _maxBatchSize))
             {
@@ -51,7 +51,7 @@ namespace DeepMorphy.NeuralNet
                                                  lemma: _withLemmatization
                                                      ? _getLemma(srcMas[i], result.Lemmas, i, j, result.ResultIndexes[i, j])
                                                      : null,
-                                                 tagIndex: result.ResultIndexes[i, j]
+                                                 id: result.ResultIndexes[i, j]
                                              )
                                          );
                     var gramDic = result.GramProbs.ToDictionary(
@@ -70,12 +70,13 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag tag)> srcItems)
+        public IEnumerable<((string word, int tagId) task, string rezWord)> Lemmatize(IEnumerable<(string word, int tagId)> srcItems)
         {
-            foreach (var batch in _batchify(srcItems, _maxBatchSize))
+            foreach (var batchSrc in _batchify(srcItems, _maxBatchSize))
             {
+                var batch = batchSrc.ToArray();
                 var words = batch.Select(tpl => tpl.word).ToArray();
-                var classes = batch.Select(tpl => tpl.tag.TagIndex.Value).ToArray();
+                var classes = batch.Select(tpl => tpl.tagId).ToArray();
                 _vectorizeWords(words,
                     out int maxLength,
                     out List<int[]> indexes,
@@ -86,15 +87,19 @@ namespace DeepMorphy.NeuralNet
                 var netRes = _net.Lemmatize(maxLength, words.Length, indexes, values, seqLens, classes);
                 for (int i = 0; i < words.Length; i++)
                 {
-                    yield return _getLemma(words[i], netRes, i, 0, classes[i]);
+                    yield return (
+                        task: batch[i],
+                        rezWord: _getLemma(words[i], netRes, i, 0, classes[i])
+                    );
                 }
             }
         }
 
         public IEnumerable<(int tagId, string word)> Inflect(IEnumerable<(string word, int tag, int resTag)> srcItems)
         {
-            foreach (var batch in _batchify(srcItems, _maxBatchSize))
+            foreach (var batchSrc in _batchify(srcItems, _maxBatchSize))
             {
+                var batch = batchSrc.ToArray();
                 var words = batch.Select(tpl => tpl.word).ToArray();
                 var xClasses = batch.Select(tpl => tpl.tag).ToArray();
                 var yClasses = batch.Select(tpl => tpl.resTag).ToArray();
@@ -113,12 +118,10 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        public Dictionary<Tag, string> Lexeme(string word, int tagId)
+        public IEnumerable<(int tagId, string word)> Lexeme(string word, int tagId)
         {
             var items = _config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
-            var results = Inflect(items);
-            var resDic = results.ToDictionary(x => new Tag(_tagHelper[x.tagId], (float) 1.0, word, tagId), x => x.word);
-            return resDic;
+            return  Inflect(items).Select(x => (x.tagId, word));
         }
 
         private void _vectorizeWords(string[] srcMas,
@@ -140,15 +143,21 @@ namespace DeepMorphy.NeuralNet
                     var curChar = srcMas[i][j];
                     int rezId;
                     if (_config.CharToId.ContainsKey(curChar))
+                    {
                         rezId = _config.CharToId[curChar];
+                    }
                     else
+                    {
                         rezId = _config.UndefinedCharId;
+                    }
 
                     values.Add(rezId);
                 }
 
                 if (maxLength < srcMas[i].Length)
+                {
                     maxLength = srcMas[i].Length;
+                }
 
                 seqLens[i] = srcMas[i].Length;
             }

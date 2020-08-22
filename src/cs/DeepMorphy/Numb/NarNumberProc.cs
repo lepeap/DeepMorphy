@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -9,10 +8,7 @@ namespace DeepMorphy.Numb
     {
         private static readonly Regex NarChislReg = new Regex(@"(\d+)-([а-я]+)", RegexOptions.Compiled);
         private static readonly char[] GlasnChars = {'а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я'};
-
-        private static readonly char[] SoglChars =
-            {'б', 'в', 'г', 'д', 'ж', 'з', 'й', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ'};
-
+        private static readonly char[] SoglChars = {'б', 'в', 'г', 'д', 'ж', 'з', 'й', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ'};
         private static readonly Dictionary<string, string> Templates = new Dictionary<string, string>()
         {
             {"11", "11"},
@@ -62,16 +58,9 @@ namespace DeepMorphy.Numb
             {"0", "0"},
         };
 
-        private readonly bool _useEnTags;
-        private readonly bool _withLemmatization;
-        private readonly Dictionary<int, ReadOnlyDictionary<string, string>> _tagsDic;
+        public string Key => "numb";
 
-        public NarNumberProc(bool useEnTags, bool withLemmatization)
-        {
-            _useEnTags = useEnTags;
-            _tagsDic = useEnTags ? TagHelper.TagsEnDic : TagHelper.TagsRuDic;
-            _withLemmatization = withLemmatization;
-        }
+        public bool IgnoreNetworkResult => false;
 
         public IEnumerable<(int tagId, string lemma)> Parse(string word)
         {
@@ -82,9 +71,23 @@ namespace DeepMorphy.Numb
             }
 
             var numbData = data.NumberData;
-            var lemmaEnd = numbData.NarEnd[NumbInfo.LemmaTagId];
-            var lemma = _withLemmatization ? $"{data.Digit}-{lemmaEnd}" : null;
+            var lemmaEnd = numbData.NarEnd.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
+            var lemma = $"{data.Digit}-{lemmaEnd}";
             return numbData.Ordinal.Where(kp => kp.Value.EndsWith(data.OriginalEnd)).Select(kp => (kp.Key, lemma));
+        }
+
+        public string Lemmatize(string word, int tagId)
+        {
+            var data = _tryParse(word);
+            if (data == null)
+            {
+                return null;
+            }
+            
+            var numbData = data.NumberData;
+            var lemmaEnd = numbData.NarEnd.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
+            var lemma = $"{data.Digit}-{lemmaEnd}";
+            return lemma;
         }
 
         public string Inflect(string word, int wordTag, int resultTag)
@@ -105,9 +108,14 @@ namespace DeepMorphy.Numb
             return result;
         }
 
-        public IEnumerable<(int tag, string text)> Lexeme(string word, int tag)
+        public IEnumerable<(int tagId, string text)> Lexeme(string word, int tag)
         {
             var data = _tryParse(word);
+            if (data == null)
+            {
+                return null;
+            }
+
             var numbData = data?.NumberData;
             return numbData?.NarEnd.Select(kp => (kp.Key, $"{data.Digit}-{kp.Value}"));
         }

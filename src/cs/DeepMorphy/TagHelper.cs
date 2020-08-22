@@ -11,7 +11,6 @@ namespace DeepMorphy
 {
     public class TagHelper
     {
-        private static readonly char[] _commmaSplitter = {','};
         internal static int[] LemmasIds { get; }
         internal static Dictionary<int, ReadOnlyDictionary<string, string>> TagsRuDic  { get; } 
             = new Dictionary<int, ReadOnlyDictionary<string, string>>();
@@ -31,10 +30,10 @@ namespace DeepMorphy
                     {
                         var index = int.Parse(rdr.GetAttribute("i"));
                         var keysStr = rdr.GetAttribute("v");
-                        var keysEn = keysStr.Split(_commmaSplitter);
+                        var keysEn = keysStr.Split(',');
                         var keysRu = keysEn.Select(x => string.IsNullOrWhiteSpace(x) ? x : GramInfo.EnRuDic[x]).ToArray();
                         
-                        var gramDicEn = keysRu.Select((val, i) => (gram: val, index: i))
+                        var gramDicEn = keysEn.Select((val, i) => (gram: val, index: i))
                             .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
                             .ToDictionary(
                                 x => GramInfo.GramCatIndexDic[x.index].KeyEn,
@@ -84,7 +83,7 @@ namespace DeepMorphy
             _nounKey = "noun";
             _numberKey = "numb";
             
-            if (!morph.EnTags)
+            if (!morph.UseEnGramNameNames)
             {
                 var helper = morph.GramHelper;
                 _postKey = helper.TranslateKeyToRu(_postKey);
@@ -97,15 +96,25 @@ namespace DeepMorphy
                 _numberKey = helper.TranslateKeyToRu(_numberKey);
             }
 
-            TagsDic = morph.EnTags ? TagsEnDic : TagsRuDic;
+            TagsDic = morph.UseEnGramNameNames ? TagsEnDic : TagsRuDic;
+        }
+
+        internal static bool IsLemma(int tagId)
+        {
+            return LemmasIds.Contains(tagId);
         }
         
         internal Dictionary<int, ReadOnlyDictionary<string, string>>  TagsDic { get; }
 
+        internal Tag CreateTagFromId(int tagId, float power=1.0f, string lemma=null)
+        {
+            return new Tag(TagsDic[tagId], power, tagId, lemma);
+        }
+        
         public Tag CreateForInfn(string word)
         {
             var keyValuePair = TagsDic.Single(x => x.Value[_postKey] == _infnKey);
-            return new Tag(keyValuePair.Value, 1, word, keyValuePair.Key);
+            return new Tag(keyValuePair.Value, 1, keyValuePair.Key, word);
         }
 
         public Tag CreateForNoun(string word, string number, string gender, string @case, string lemma=null)
@@ -139,7 +148,7 @@ namespace DeepMorphy
                                Func<KeyValuePair<int, ReadOnlyDictionary<string, string>>, bool> filter)
         {
             var keyValuePair = TagsDic.Single(filter);
-            var tag = new Tag(keyValuePair.Value, 1, lemma, keyValuePair.Key);
+            var tag = new Tag(keyValuePair.Value, 1, keyValuePair.Key, lemma);
             
             if (lemma == null)
             {

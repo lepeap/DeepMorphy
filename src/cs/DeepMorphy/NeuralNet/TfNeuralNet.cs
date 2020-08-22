@@ -153,5 +153,13 @@ namespace DeepMorphy.NeuralNet
                 }
             }
         }
+        
+        internal struct ClsResult
+        {
+            public Dictionary<string, float[,]> GramProbs { get; set; }
+            public int[,] ResultIndexes { get; set; }
+            public float[,] ResultProbs { get; set; }
+            public int[,,] Lemmas { get; set; }
+        }
     }
 }

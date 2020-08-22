@@ -27,7 +27,7 @@ namespace DeepMorphy
                 x => TagHelper.TagsEnDic.First(t => t.Value["post"] == x.Item1).Key);
             GroupToClassDic["unkn"] = TagHelper.TagsEnDic.First(t => t.Value["post"] == "unkn").Key;
         }
-
+        
         private readonly char[] _availableChars;
         private readonly int _minAvailablePersent;
         
@@ -36,6 +36,9 @@ namespace DeepMorphy
             _availableChars = availableChars;
             _minAvailablePersent = minAvailablePersent;
         }
+        
+        public string Key => "reg";
+        public bool IgnoreNetworkResult => true;
 
         public IEnumerable<(int tagId, string lemma)> Parse(string word)
         {
@@ -55,14 +58,34 @@ namespace DeepMorphy
             }
         }
 
-        public string Inflect(string word, int wordTag, int resultTag)
+        public string Lemmatize(string word, int tagId)
         {
-            return word;
+            if (Reg.IsMatch(word))
+            {
+                return word;
+            }
+
+            return null;
         }
 
-        public IEnumerable<(int tag, string text)> Lexeme(string word, int tag)
+        public string Inflect(string word, int wordTag, int resultTag)
         {
-            yield return (tag, word);
+            if (Reg.IsMatch(word))
+            {
+                return word;
+            }
+
+            return null;
+        }
+
+        public IEnumerable<(int tagId, string text)> Lexeme(string word, int tag)
+        {
+            if (Reg.IsMatch(word))
+            {
+                return new[]{ (tag, word) };
+            }
+
+            return null;
         }
     }
 }

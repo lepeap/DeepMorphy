@@ -16,13 +16,13 @@ namespace DeepMorphy
         
         internal MorphInfo(
             string text,
-            Tag[] tags,
+            IEnumerable<Tag> tags,
             Dictionary<string, GramCategory> gramCats,
             bool useEnGrams=false
         )
         {
             Text = text;
-            Tags = tags;
+            Tags = tags.ToArray();
             _gramCats = gramCats;
             _useEnGrams = useEnGrams;
         }
@@ -190,17 +190,6 @@ namespace DeepMorphy
             return new MorphInfo(Text, Tags, _useEnGrams);
         }
         
-        internal MorphInfo MakeCopy(string text, Func<string, string> lemmaGen)
-        {
-            var tagCombs = Tags.Select(t => 
-                new Tag(t.GramsDic, 
-                    t.Power, 
-                    lemmaGen?.Invoke(t.Lemma), 
-                    t.TagIndex)
-            ).ToArray();
-            return new MorphInfo(text, tagCombs, _gramCats, _useEnGrams);
-        }
-
         private Dictionary<string, GramCategory> GramsCat
         {
             get

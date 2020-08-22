@@ -14,9 +14,10 @@ namespace DeepMorphy
     public sealed class MorphAnalyzer
     {
         private readonly bool _withTrimAndLower;
-        private readonly IMorphProcessor[] _morphProcessors;
         private readonly NeuralNet.NetworkProc _net;
-
+        private readonly IMorphProcessor[] _morphProcessors;
+        private readonly Dict _correctionDict;
+        
         /// <summary>
         /// Создает морфологический анализатор. В идеале лучше использовать его как синглтон,
         /// при создании объекта какое-то время уходит на загрузку словарей и сети.
@@ -29,7 +30,7 @@ namespace DeepMorphy
         /// --------------------
         /// Perform lemmatization on for each tag in while parsing
         /// </param>
-        /// <param name="useEnGrams">
+        /// <param name="useEnGramNames">
         /// Использовать английские названия граммем и грамматических категорий
         /// --------------------
         /// If true returns english gramme names otherwise russian</param>
@@ -51,7 +52,7 @@ namespace DeepMorphy
         /// </param>
         /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
         public MorphAnalyzer(bool withLemmatization = false,
-            bool useEnGrams = false,
+            bool useEnGramNames = false,
             bool withTrimAndLower = true,
             bool withPreprocessors = true,
             int maxBatchSize = 4096)
@@ -60,10 +61,11 @@ namespace DeepMorphy
             {
                 throw new ArgumentException("Batch size must be greater than 0.");
             }
-            EnTags = useEnGrams;
+            UseEnGramNameNames = useEnGramNames;
             GramHelper = new GramHelper();
             TagHelper = new TagHelper(this);
-            _net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGrams);
+            _net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGramNames);
+            _correctionDict = new Dict("dict_correction");
             _withTrimAndLower = withTrimAndLower;
             
             if (withPreprocessors)
@@ -71,7 +73,8 @@ namespace DeepMorphy
                 _morphProcessors = new IMorphProcessor[]
                 {
                     new NumberProc(),
-                    new DictProc(),
+                    new NarNumberProc(), 
+                    new DictProc("dict"),
                     new RegProc(_net.AvailableChars, 50)
                 };
             }
@@ -81,7 +84,7 @@ namespace DeepMorphy
             }
         }
 
-        public bool EnTags { get; }
+        public bool UseEnGramNameNames { get; }
         
         public TagHelper TagHelper { get; }
         
@@ -105,32 +108,63 @@ namespace DeepMorphy
         public IEnumerable<MorphInfo> Parse(IEnumerable<string> words)
         {
             if (_withTrimAndLower)
-                words = words.Select(x => x.Trim().ToLower());
-                
-            foreach (var netTok in _net.Parse(words))
             {
-                bool ready = false;
+                words = words.Select(x => x.Trim().ToLower());
+            }
+            
+            foreach (var netTpl in _net.Parse(words))
+            {
+                bool ignoreNetworkResult = false;
+                var taglist = new List<Tag>();
                 for (int i = 0; i < _morphProcessors.Length; i++)
                 {
-                    //var preProcResult = _morphProcessors[i].Parse(netTok.Text);
-                    //if (preProcResult != null)
-                    //{
-                    //    yield return preProcResult;
-                    //    ready = true;
-                    //    break;
-                    //}
+                    var curProc = _morphProcessors[i];
+                    var procResults = curProc.Parse(netTpl.srcWord);
+                    if (procResults == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var procRes in procResults)
+                    {
+                        var tDic = TagHelper.TagsDic[procRes.tagId];
+                        taglist.Add(new Tag(tDic, -1, procRes.tagId, procRes.lemma));
+                    }
+
+                    if (curProc.IgnoreNetworkResult)
+                    {
+                        ignoreNetworkResult = true;
+                    }
+
+                    break;
                 }
-                //if (!ready)
-                //    yield return netTok;
+
+                if (!ignoreNetworkResult)
+                {
+                    taglist.AddRange(netTpl.tags);
+                }
+
+                foreach (var corWord in _correctionDict.Parse(netTpl.srcWord))
+                {
+                    if (corWord.ReplaceOther)
+                    {
+                        var tagItem = taglist.FirstOrDefault(x => x.Id == corWord.TagId);
+                        taglist.Remove(tagItem);
+                    }
+
+                    var corTag = TagHelper.CreateTagFromId(corWord.TagId, -1, corWord.Lemma);
+                    taglist.Add(corTag);
+                }
+                
+                _mergeTagsPower(taglist);
+                yield return new MorphInfo(netTpl.srcWord, taglist, netTpl.gramDic, UseEnGramNameNames);
             }
-            yield break;
         }
 
         public IEnumerable<MorphInfo> Parse(params string[] words)
         {
             return Parse((IEnumerable<string>)words);
         }
-        
         
         public string Lemmatize(string word, Tag tag)
         {
@@ -141,9 +175,33 @@ namespace DeepMorphy
             return Lemmatize(req).First();
         }
 
-        public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag wordTag)> words)
+        public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag tag)> words)
         {
-            return _net.Lemmatize(words);
+            throw new NotImplementedException();
+            //foreach (var netRes in _net.Lemmatize(words.Select(x => (x.word, x.tag.Id))))
+            //{
+            //    string result = null;
+            //    foreach (var processor in _morphProcessors)
+            //    {
+            //        result = processor.Lemmatize(netRes.task.word, netRes.task.tagId);
+            //        if (result != null)
+            //        {
+            //            break;
+            //        }
+            //    }
+//
+            //    if (result == null)
+            //    {
+            //        result = _correctionDict.Lemmatize(netRes.task.word, netRes.task.tagId);
+            //    }
+//
+            //    if (result == null)
+            //    {
+            //        result = netRes.rezWord;
+            //    }
+//
+            //    yield return result;
+            //}
         }
 
         public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag)> words, Tag resultTag)
@@ -163,9 +221,52 @@ namespace DeepMorphy
         /// <param name="word">Слово</param>
         /// <param name="tag">Тег слова</param>
         /// <returns>Словарь, тег - слово</returns>
-        public IDictionary<Tag, string> Lexeme(string word, Tag tag)
+        public IEnumerable<(Tag tag, string text)>Lexeme(string word, Tag tag)
         {
-            return _net.Lexeme(word, tag.TagIndex.Value);
+            var procKey = TagHelper.TagProcDic[tag.Id];
+            if (procKey == "nn")
+            {
+                // TODO Добавить коррекцию
+                var netRes = _net.Lexeme(word, tag.Id).Select(x => (TagHelper.CreateTagFromId(x.tagId), word));
+            }
+            
+            foreach (var processor in _morphProcessors)
+            {
+                if (processor.Key != procKey)
+                {
+                    continue;
+                }
+                
+                var result = processor.Lexeme(word, tag.Id);
+                if (result != null)
+                {
+                    return result.Select(x => (TagHelper.CreateTagFromId(x.tagId), word));
+                }
+            }
+
+            return null;
+        }
+
+        private void _mergeTagsPower(List<Tag> tags)
+        {
+            var preProcCount = tags.Count(x => (x.Power + 1) < 0.0001);
+            if (preProcCount == 0)
+            {
+                return;
+            }
+
+            var preProcPower = 1 / (preProcCount + 1);
+            foreach (var tag in tags)
+            {
+                if ((tag.Power + 1) < 0.0001)
+                {
+                    tag.Power = preProcPower;
+                }
+                else
+                {
+                    tag.Power = preProcPower * tag.Power;
+                }
+            }
         }
     }
 }

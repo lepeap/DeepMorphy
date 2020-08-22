@@ -1,22 +1,39 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace DeepMorphy.Numb
 {
     internal class NumberProc : IMorphProcessor
     {
+        public string Key => "numb";
+        public bool IgnoreNetworkResult => false;
+        
         public IEnumerable<(int tagId, string lemma)> Parse(string word)
         {
-            if (!_tryParse(word, out string prefix,
+            if (!_tryParse(word, 
+                out string prefix,
                 out string mainWord,
                 out Dictionary<int, string> curLexemeDic))
             {
                 return null;
             }
 
-            var lemma = curLexemeDic[NumbInfo.LemmaTagId];
+            var lemma = curLexemeDic.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
             return curLexemeDic.Where(x => x.Value == mainWord).Select(kp => (kp.Key, lemma));
+        }
+
+        public string Lemmatize(string word, int tagId)
+        {
+            if (!_tryParse(word, 
+                out string prefix,
+                out string mainWord,
+                out Dictionary<int, string> curLexemeDic))
+            {
+                return null;
+            }
+
+            var lemma = curLexemeDic.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
+            return lemma;
         }
 
         public string Inflect(string word, int wordTag, int resultTag)
@@ -38,7 +55,7 @@ namespace DeepMorphy.Numb
             return $"{prefix}{mainValue}";
         }
 
-        public IEnumerable<(int tag, string text)> Lexeme(string word, int tagId)
+        public IEnumerable<(int tagId, string text)> Lexeme(string word, int tagId)
         {
             if (!_tryParse(word,
                 out string prefix,
@@ -48,7 +65,6 @@ namespace DeepMorphy.Numb
                 return null;
             }
 
-            var lemma = $"{prefix}{curLexemeDic[NumbInfo.LemmaTagId]}";
             return curLexemeDic.Select(kp => (kp.Key, $"{prefix}{kp.Value}"));
         }
 

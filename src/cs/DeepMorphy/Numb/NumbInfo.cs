@@ -45,7 +45,10 @@ namespace DeepMorphy.Numb
                     {
                         var reg = rdr.GetAttribute("reg");
                         NumberRegex = new Regex(reg, RegexOptions.Compiled);
-                        LemmaTagId = int.Parse(rdr.GetAttribute("l"));
+                        LemmaTagId = rdr.GetAttribute("l")
+                                        .Split(',')
+                                        .Select(x => int.Parse(x))
+                                        .ToArray();
                         RegexGroups = NumberRegex.GetGroupNames()
                                                  .Where(x => x.StartsWith("_"))
                                                  .ToDictionary(x => x,x => x.Substring(1, x.Length -1));
@@ -54,7 +57,7 @@ namespace DeepMorphy.Numb
             }
         }
 
-        public static int LemmaTagId { get; }
+        public static int[] LemmaTagId { get; }
 
         public static Regex NumberRegex { get; }
         

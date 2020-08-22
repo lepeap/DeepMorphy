@@ -22,6 +22,9 @@
         <EmbeddedResource Include="grams.xml" />
         <EmbeddedResource Include="Numb\numbers.xml" />
         <EmbeddedResource Include="WordDict\dict.txt.gz" />
+        <EmbeddedResource Include="WordDict\dict_index.txt.gz" />
+        <EmbeddedResource Include="WordDict\dict_correction.txt.gz" />
+        <EmbeddedResource Include="WordDict\dict_correction_index.txt.gz" />
         <EmbeddedResource Include="NeuralNet\frozen_model_small.pb" />
         <EmbeddedResource Include="NeuralNet\release_small.xml" />
     </ItemGroup>

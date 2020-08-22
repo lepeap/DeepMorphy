@@ -9,7 +9,6 @@ namespace DeepMorphy.NeuralNet
 {
     internal class Config
     {
-
         public Config(bool useEnGrams)
         {
             UseEnGrams = useEnGrams;
@@ -28,7 +27,6 @@ namespace DeepMorphy.NeuralNet
         public  Dictionary<string, string>  GramOpDic { get; } = new Dictionary<string, string>();
         public GramInfo this[string gramKey] => GramInfo.GramsDic[gramKey];
         
-        public string[] InflectPosts { get; }
         public string this[string gramKey, long i]
         {
             get
