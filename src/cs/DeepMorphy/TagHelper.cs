@@ -18,6 +18,8 @@ namespace DeepMorphy
             = new Dictionary<int, ReadOnlyDictionary<string, string>>();
         internal static Dictionary<int, string> TagProcDic { get; } = new Dictionary<int, string>();
         
+        internal static Dictionary<int, int> TagOrderDic { get; } = new Dictionary<int, int>();
+        
         static TagHelper()
         {
             var lemmasList = new List<int>();
@@ -54,6 +56,7 @@ namespace DeepMorphy
                         TagsRuDic[index] = new ReadOnlyDictionary<string, string>(gramDicRu);
                         TagsEnDic[index] = new ReadOnlyDictionary<string, string>(gramDicEn);
                         TagProcDic[index] = rdr.GetAttribute("p");
+                        TagOrderDic[index] = int.Parse(rdr.GetAttribute("o"));
                     }
                 }
             }

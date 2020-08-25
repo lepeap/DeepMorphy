@@ -17,15 +17,19 @@ namespace MetricsCalc
         class Test
         {
             public string X { get; set; }
+            
+            public int ClsX { get; set; }
             public string Y { get; set; }
+            
+            public int ClsY { get; set; }
         }
         static void Main(string[] args)
         {
             ShowMemoryInfo();
             TestMainClassification();
             TestLemmatization();
+            TestInflect();
             TestGramClassification();
-
         }
 
         private static long GetMemory()
@@ -85,21 +89,45 @@ namespace MetricsCalc
         private static void TestLemmatization()
         {
             Console.WriteLine("Calculating lemmatization");
-            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: true, withLemmatization: true);
-            var tests = LoadTests("lem").ToArray();
+            var morph = new MorphAnalyzer(useEnGramNames: true, withPreprocessors: true, withLemmatization: true);
+            var tests = LoadTests("lemma").ToArray();
             float totalCount = tests.Length;
             float correctCount = 0;
             int i = 0;
-            foreach (var res in  morph.Parse(tests.Select(x => x.X)))
+            foreach (var res in  morph.Lemmatize(tests.Select(x => (x.X, morph.TagHelper.CreateTagFromId(x.ClsX)))))
             {
                 var test = tests[i];
-                if (res.HasLemma(test.Y))
+                if (res == test.Y)
+                {
                     correctCount++;
-                
+                }
+
                 i++;
             }
             float result = correctCount / totalCount;
             Console.WriteLine($"Lemmatization acc: {result}");
+        }
+        
+        private static void TestInflect()
+        {
+            Console.WriteLine("Calculating inflect");
+            var morph = new MorphAnalyzer(useEnGramNames: true, withPreprocessors: true, withLemmatization: true);
+            var tests = LoadTests("inflect").ToArray();
+            float totalCount = tests.Length;
+            float correctCount = 0;
+            int i = 0;
+            foreach (var res in  morph.Inflect(tests.Select(x => (x.X, morph.TagHelper.CreateTagFromId(x.ClsX), morph.TagHelper.CreateTagFromId(x.ClsX)))))
+            {
+                var test = tests[i];
+                if (res == test.Y)
+                {
+                    correctCount++;
+                }
+
+                i++;
+            }
+            float result = correctCount / totalCount;
+            Console.WriteLine($"Inflect acc: {result}");
         }
         
         private static void TestGramClassification()
@@ -112,7 +140,7 @@ namespace MetricsCalc
             foreach (var gram in grams)
             {
                 Console.WriteLine($"Calculating {gram} classification");
-                var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: true);
+                var morph = new MorphAnalyzer(useEnGramNames: true, withPreprocessors: true);
                 var tests = LoadTests(gram).ToArray();
                 var results = morph.Parse(tests.Select(x => x.X)).ToArray();
                 float testsCount = tests.Length;
@@ -150,14 +178,13 @@ namespace MetricsCalc
                 float clsAcc = correctClassesCount / totalClassesCount;
                 Console.WriteLine($"{gram} classification. Full acc: {testAcc}");
                 Console.WriteLine($"{gram} classification. Classes acc: {clsAcc}");
-                
             }
         }
         
         private static void TestMainClassification()
         {
             Console.WriteLine("Calculating main classification");
-            var morph = new MorphAnalyzer(useEnGrams: true, withPreprocessors: true);
+            var morph = new MorphAnalyzer(useEnGramNames: true, withPreprocessors: true);
             var tests = LoadTests("main").ToArray();
             var results = morph.Parse(tests.Select(x => x.X)).ToArray();
             float testsCount = tests.Length;
@@ -168,17 +195,23 @@ namespace MetricsCalc
             {
                 var test = tests[i];
                 var res = results[i];
-                var testRez = test.Y.Split(';');
-                totalClassesCount += testRez.Length;
+                var etalonRez = test.Y.Split(';').Select(x => int.Parse(x)).ToArray();
+                totalClassesCount += etalonRez.Length;
                 int curCount = 0;
-                foreach (var tag in res.Tags)
+                foreach (var etIndex in etalonRez)
                 {
-                    if (testRez.Contains(tag.ToString()))
+                    if (res.Tags.Any(t => t.Id == etIndex))
+                    {
+                        
                         curCount++;
+                    }
                 }
+                
                 correctClassesCount += curCount;
-                if (curCount == testRez.Length)
+                if (curCount == etalonRez.Length)
+                {
                     correctTests++;
+                }
             }
 
             float testAcc = correctTests / testsCount;
@@ -200,7 +233,9 @@ namespace MetricsCalc
                         yield return new Test()
                         {
                             X = rdr.GetAttribute("x"),
-                            Y = rdr.GetAttribute("y")
+                            ClsX = rdr.GetAttribute("x_c") != null ? int.Parse(rdr.GetAttribute("x_c")) : -1,
+                            Y = rdr.GetAttribute("y"),
+                            ClsY = rdr.GetAttribute("y_c") != null ? int.Parse(rdr.GetAttribute("y_c")) : -1
                         };
                     }
                 }

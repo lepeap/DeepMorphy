@@ -39,19 +39,22 @@ namespace DeepMorphy
         /// --------------------
         /// If true analyzer trims and makes words lowercase before processing
         /// </param>
-        /// <param name="withPreprocessors">
-        /// Использовать ли препроцессоры перед нейронной сетью (по умолчанию - true).
-        /// По идее, всегда должно быть true, false ставится только для тестов
-        /// --------------------
-        /// Use additional preprocessors before nn
-        /// </param>
         /// <param name="maxBatchSize">
         /// Максимальный батч, который скармливается нейронной сети
         /// --------------------
         /// Max batch size for neural network
         /// </param>
         /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
-        public MorphAnalyzer(bool withLemmatization = false,
+        public MorphAnalyzer(bool withLemmatization = false, bool useEnGramNames = false, bool withTrimAndLower = true, int maxBatchSize = 4096) 
+            : this(withLemmatization: withLemmatization, 
+                   useEnGramNames: useEnGramNames, 
+                   withTrimAndLower:withTrimAndLower, 
+                   withPreprocessors: true,
+                   maxBatchSize: maxBatchSize)
+        {
+        }
+        
+        internal MorphAnalyzer(bool withLemmatization = false,
             bool useEnGramNames = false,
             bool withTrimAndLower = true,
             bool withPreprocessors = true,

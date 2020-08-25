@@ -46,7 +46,7 @@ namespace DeepMorphy.WordDict
             foreach (var id in lexemes)
             {
                 var lexemeWords = _parseLexeme(id).ToArray();
-                var lemma = lexemeWords.First(x => TagHelper.IsLemma(x.TagId)).Text;
+                string lemma = null;// lexemeWords.First(x => TagHelper.IsLemma(x.TagId)).Text;
                 foreach (var dWord in lexemeWords)
                 {
                     if (dWord.Text != word)
