@@ -7,12 +7,12 @@ from utils import CONFIG, decode_word, load_datasets
 
 
 class Tester:
-    def __init__(self, rnn=None):
+    def __init__(self):
         self.config = CONFIG
         self.config['graph_part_configs']['lemm']['use_cls_placeholder'] = True
-        self.rnn = rnn if rnn else RNN(True)
+        self.rnn = RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
-        self.batch_size = 16384
+        self.batch_size = 65536
         self.show_bad_items = False
 
     def test(self):
@@ -57,17 +57,17 @@ class Tester:
             with open(os.path.join(self.config['bad_path'], "bad_main.pkl"), 'wb+') as f:
                 pickle.dump(main_bad, f)
 
-            print("Building bad lemma")
-            _, lemm_bad = self.__test_lemmas__(sess, 'test', 'train', 'valid')
-            print(f"Lemma bad count: {len(lemm_bad)}")
-            with open(os.path.join(self.config['bad_path'], "bad_lemma.pkl"), 'wb+') as f:
-                pickle.dump(lemm_bad, f)
-
-            print("Building bad inflect")
-            _, inflect_bad = self.__test_inflect__(sess, 'test', 'train', 'valid')
-            print(f"Inflect bad count: {len(inflect_bad)}")
-            with open(os.path.join(self.config['bad_path'], "bad_inflect.pkl"), 'wb+') as f:
-                pickle.dump(inflect_bad, f)
+            #print("Building bad lemma")
+            #_, lemm_bad = self.__test_lemmas__(sess, 'test', 'train', 'valid')
+            #print(f"Lemma bad count: {len(lemm_bad)}")
+            #with open(os.path.join(self.config['bad_path'], "bad_lemma.pkl"), 'wb+') as f:
+            #    pickle.dump(lemm_bad, f)
+#
+            #print("Building bad inflect")
+            #_, inflect_bad = self.__test_inflect__(sess, 'test', 'train', 'valid')
+            #print(f"Inflect bad count: {len(inflect_bad)}")
+            #with open(os.path.join(self.config['bad_path'], "bad_inflect.pkl"), 'wb+') as f:
+            #    pickle.dump(inflect_bad, f)
 
     def __get_classification_items__(self, sess, items, graph_part):
         wi = 0

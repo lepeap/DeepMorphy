@@ -2,8 +2,8 @@ import logging
 import os
 import pickle
 from shutil import copyfile
-from xml.etree.ElementTree import ElementTree
 
+from xml.etree.ElementTree import ElementTree
 from lxml import etree
 
 from model import RNN
@@ -19,7 +19,7 @@ class Releaser:
         self.chars = self.config['chars']
         self.gram_types = self.config['grammemes_types']
         self.rnn = RNN(True)
-        self.tester = Tester(self.rnn)
+        self.tester = Tester()
         self.pd_publish_paths = [
             os.path.join(path, f"frozen_model_{self.model_key}.pb")
             for path in self.config['publish_net_paths']
@@ -65,9 +65,9 @@ class Releaser:
             self.numb_data = pickle.load(f)
 
     def release_model(self):
-        #pd_release_path, gram_ops, out_ops = self.rnn.release()
-        #for path in self.pd_publish_paths:
-        #    copyfile(pd_release_path, path)
+        pd_release_path, gram_ops, out_ops = self.rnn.release()
+        for path in self.pd_publish_paths:
+            copyfile(pd_release_path, path)
 
         self.__release_test_metrics__()
         self.__release_numbers_xml__()
@@ -75,7 +75,7 @@ class Releaser:
         self.__release_grams_xml__()
         self.__release_tags_xml__()
         self.__release_dataset_info__()
-        #self.__release_model_xml__(out_ops, gram_ops)
+        self.__release_model_xml__(out_ops, gram_ops)
 
     def __release_test_metrics__(self):
         results = self.tester.test()
@@ -209,6 +209,8 @@ class Releaser:
             cls_el.set('i', str(val['i']))
             cls_el.set('v', ",".join([key if key is not None else '' for key in tag]))
             cls_el.set('p', val['p'])
+            cls_el.set('o', str(val['o']))
+
             if val['l']:
                 cls_el.set('l', '1')
             root.append(cls_el)

@@ -8,4 +8,4 @@ mood. full_cls_acc: 0.9986893840104849; part_cls_acc: 0.9987577639751553
 voic. full_cls_acc: 1.0; part_cls_acc: 1.0
 main. full_cls_acc: 0.9551451187335093; part_cls_acc: 0.9647049460825275
 lemma_acc: 0.9955360766171577
-inflect_acc: 0.9919260230487889
+inflect_acc: 0.9919720286154625

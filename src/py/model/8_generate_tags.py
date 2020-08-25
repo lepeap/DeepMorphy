@@ -1,7 +1,33 @@
 import pickle
 from utils import CONFIG, create_cls_tuple
 
-gram_types = CONFIG['grammemes_types']
+
+def set_order(items):
+    index = 0
+    order_dict = {}
+    for post in CONFIG['dict_post_types']:
+        order_dict[post] = index
+        index += 1
+
+    for post in CONFIG['other_post_types']:
+        order_dict[post] = index
+        index += 1
+
+    for gram_cat in GRAM_TYPES:
+        for gram in GRAM_TYPES[gram_cat]['classes']:
+            order_dict[gram] = index
+            index += 1
+
+    order_items = []
+    for tpl in items:
+        order_key = tuple([order_dict[gram] if gram is not None else 1024 for gram in list(tpl)])
+        order_items.append((tpl, order_key))
+
+    for index, tpl in enumerate(sorted(order_items, key=lambda x: x[1])):
+        items[tpl[0]]['o'] = index
+
+
+GRAM_TYPES = CONFIG['grammemes_types']
 with open(CONFIG['numb_classes_path'], 'rb') as f:
     numb_classes_dic = pickle.load(f)
 with open(CONFIG['numb_data_path'], 'rb') as f:
@@ -30,7 +56,7 @@ for tpl in numb_classes_dic:
 
 max_cls_id = max([numb_classes_dic[key] for key in numb_classes_dic])
 max_cls_id += 1
-post_index = gram_types['post']['index']
+post_index = GRAM_TYPES['post']['index']
 for key in CONFIG['other_post_types']:
     tpl = [None for item in CONFIG['grammemes_types']]
     tpl[post_index] = key
@@ -70,7 +96,7 @@ for dic_item in dic_words:
 with open(CONFIG['dict_words_path'], 'wb+') as f:
     pickle.dump(dic_words, f)
 
+set_order(items)
 
-npos = [item for item in items if 'npro' in item]
 with open(CONFIG['tags_path'], 'wb+') as f:
     pickle.dump(items, f)

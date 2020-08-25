@@ -10,6 +10,7 @@ from utils import CONFIG, get_dict_path, load_datasets
 
 NAR_REG = re.compile("\d+-.*")
 RANDOM_SEED = 1917
+VECT_PATH = CONFIG['vect_words_path']
 DATASET_PATH = CONFIG['dataset_path']
 REZ_PATHS = CONFIG['publish_dictionary_paths']
 DICT_WORDS_PATH = CONFIG['dict_words_path']
@@ -17,6 +18,7 @@ NOT_DICT_WORDS_PATH = CONFIG['dataset_words_path']
 MAX_WORD_SIZE = CONFIG['max_word_size']
 DICT_POST_TYPES = CONFIG['dict_post_types']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
+IGNORE_AD_TAGS = CONFIG['dict_ignore_tags']
 
 REPLACE_WORD_DICT_ID = 1
 
@@ -50,6 +52,24 @@ lemma_dict = {}
 for item in load_datasets('inflect', 'test', 'train', 'valid'):
     if item['id'] not in lemma_dict:
         lemma_dict[item['id']] = (item['x_src'], item['x_cls'])
+
+ad_tags_dict = {}
+with open(VECT_PATH, 'rb') as f:
+    vec_words = pickle.load(f)
+    for word in vec_words:
+        item = vec_words[word]
+        for form in item['forms']:
+            lexeme_id_key = 'inflect_id' if 'inflect_id' in form else 'id'
+            lexeme_id = form[lexeme_id_key]
+            cls_id = tpl_cls_dict[form['main']]
+            if 'ad_tags' not in form:
+                continue
+
+            ad_tags = form['ad_tags']
+            if lexeme_id not in ad_tags_dict:
+                ad_tags_dict[lexeme_id] = set()
+
+            ad_tags_dict[lexeme_id].add(form['ad_tags'])
 
 
 def build_index(words_dics):
@@ -138,44 +158,67 @@ def release_correction_items():
     with open(get_dict_path('lemma'), 'rb') as f:
         items = pickle.load(f)
     for word in items:
-        if word['id'] not in lemma_dict:
+        lexeme_id = word['id']
+        if lexeme_id not in lemma_dict \
+            or (lexeme_id in ad_tags_dict and any([key in ad_tags_dict[lexeme_id] for key in IGNORE_AD_TAGS])):
             continue
 
-        if word['id'] not in dict_words:
-            dict_words[word['id']] = []
+        if lexeme_id not in dict_words:
+            dict_words[lexeme_id] = []
 
-        dict_words[word['id']].append(word)
-        dict_words[word['id']].append({
-            'id': word['id'],
-            'text': lemma_dict[word['id']][0],
-            'main': lemma_dict[word['id']][1],
+        dict_words[lexeme_id].append(word)
+        dict_words[lexeme_id].append({
+            'id': lexeme_id,
+            'text': lemma_dict[lexeme_id][0],
+            'main': lemma_dict[lexeme_id][1],
         })
 
     with open(os.path.join(CONFIG['bad_path'], "bad_lemma.pkl"), 'rb') as f:
         items = pickle.load(f)
     for word in items:
         word = word[0]
-        if word['id'] not in lemma_dict:
+        lexeme_id = word['id']
+        if lexeme_id not in lemma_dict \
+            or (lexeme_id in ad_tags_dict and any([key in ad_tags_dict[lexeme_id] for key in IGNORE_AD_TAGS])):
             continue
 
-        if word['id'] not in dict_words:
-            dict_words[word['id']] = []
+        if lexeme_id not in dict_words:
+            dict_words[lexeme_id] = []
 
-        lemma, lemma_cls = lemma_dict[word['id']]
-        dict_words[word['id']].append(dict(id=word['id'], main=word['main_cls'], text=word['x_src'], replace_other=True))
-        dict_words[word['id']].append(dict(id=word['id'], main=lemma_cls, text=lemma, replace_other=True))
+        lemma, lemma_cls = lemma_dict[lexeme_id]
+        dict_words[lexeme_id].append(dict(id=lexeme_id, main=word['main_cls'], text=word['x_src'], replace_other=True))
+        dict_words[lexeme_id].append(dict(id=lexeme_id, main=lemma_cls, text=lemma, replace_other=True))
 
     with open(os.path.join(CONFIG['bad_path'], "bad_inflect.pkl"), 'rb') as f:
         items = pickle.load(f)
     for word in items:
         word = word[0]
-        if word['id'] not in lemma_dict:
+        lexeme_id = word['id']
+        if lexeme_id not in lemma_dict \
+            or (lexeme_id in ad_tags_dict and any([key in ad_tags_dict[lexeme_id] for key in IGNORE_AD_TAGS])):
             continue
 
-        if word['id'] not in dict_words:
-            dict_words[word['id']] = []
-        dict_words[word['id']].append(dict(id=word['id'], main=word['x_cls'], text=word['x_src'], replace_other=True))
-        dict_words[word['id']].append(dict(id=word['id'], main=word['y_cls'], text=word['y_src'], replace_other=True))
+        if lexeme_id not in dict_words:
+            dict_words[lexeme_id] = []
+        dict_words[lexeme_id].append(dict(id=lexeme_id, main=word['x_cls'], text=word['x_src'], replace_other=True))
+        dict_words[lexeme_id].append(dict(id=lexeme_id, main=word['y_cls'], text=word['y_src'], replace_other=True))
+
+    #with open(os.path.join(CONFIG['bad_path'], "bad_main.pkl"), 'rb') as f:
+    #    items = pickle.load(f)
+    #for bad_item in items:
+    #    text = bad_item[0]['src']
+    #    for word in vec_words[text]['forms']:
+    #        lexeme_id = word['id']
+    #        if lexeme_id not in lemma_dict \
+    #            or (lexeme_id in ad_tags_dict and any([key in ad_tags_dict[lexeme_id] for key in IGNORE_AD_TAGS])):
+    #            continue
+    #
+    #        if lexeme_id not in dict_words:
+    #            dict_words[lexeme_id] = []
+    #
+    #        cls_id = tpl_cls_dict[word['main']]
+    #        dict_words[lexeme_id].append(dict(id=lexeme_id, main=cls_id, text=text, replace_other=True))
+    #        dict_words[lexeme_id].append(dict(id=lexeme_id, main=lemma_dict[lexeme_id][1], text=lemma_dict[lexeme_id][0], replace_other=True))
 
     index, lexeme = create_dictionary(dict_words)
     save_dictionary(index, lexeme, REZ_PATHS, 'dict_correction')

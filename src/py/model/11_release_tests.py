@@ -1,33 +1,19 @@
-
+import os
+import pickle
 import numpy as np
+from utils import CONFIG, load_datasets
 
-from tester import Tester
-
-
-def __release_test_results__(self, tester):
-    results = tester.test()
-    for path in self.test_result_paths:
-        with open(path, 'w+') as f:
-            f.write(results)
+from lxml import etree
+from xml.etree.ElementTree import ElementTree
 
 
-def __release_test_files__(self):
-    for gram in self.gram_types:
-        cls = self.gram_types[gram]['classes']
-        dic = {cls[g_key]['index']: g_key for g_key in cls}
-        self.__release_cls_tests__(gram, dic)
-
-    self.__release_cls_tests__('main', self.rev_classes_dic)
-    self.__release_lemma_tests__()
+GRAM_TYPES = CONFIG['grammemes_types']
+TEST_RESULT_PATHS = CONFIG['publish_test_paths']
 
 
-def __release_cls_tests__(self, key, cls_dic):
-    path = os.path.join(self.config['dataset_path'], f"{key}_test_dataset.pkl")
-    with open(path, 'rb') as f:
-        words = pickle.load(f)
-
+def release_gram_tests(items, key, cls_dic):
     root = etree.Element('Tests')
-    for word in words:
+    for word in items:
         y = np.argwhere(word['y'] == 1).ravel()
         y = ';'.join([cls_dic[index] for index in y])
         test = etree.Element("T")
@@ -35,32 +21,74 @@ def __release_cls_tests__(self, key, cls_dic):
         test.set('y', y)
         root.append(test)
 
-    for dir_path in self.tests_results_paths:
+    for dir_path in TEST_RESULT_PATHS:
         rez_path = os.path.join(dir_path, f'{key}.xml')
         tree = ElementTree(root)
         with open(rez_path, 'wb+') as f:
             tree.write(f, xml_declaration=True, encoding='utf-8')
 
 
-def __release_lemma_tests__(self):
-    path = os.path.join(self.config['dataset_path'], "lemma_test_dataset.pkl")
-    with open(path, 'rb') as f:
-        words = pickle.load(f)
-
+def release_main_tests():
+    items = load_datasets('main', 'test')
     root = etree.Element('Tests')
-    for word in words:
+    for word in items:
+        y = np.argwhere(word['y'] == 1).ravel()
+        y = ';'.join([str(index) for index in y])
         test = etree.Element("T")
-        test.set('x', word['x_src'])
-        test.set('y', word['y_src'])
+        test.set('x', word['src'])
+        test.set('y', y)
         root.append(test)
 
-    for dir_path in self.tests_results_paths:
-        rez_path = os.path.join(dir_path, 'lem.xml')
+    for dir_path in TEST_RESULT_PATHS:
+        rez_path = os.path.join(dir_path, f'main.xml')
         tree = ElementTree(root)
         with open(rez_path, 'wb+') as f:
             tree.write(f, xml_declaration=True, encoding='utf-8')
 
 
-testr = Tester()
-self.__release_test_results__(testr)
-self.__build_bad_words__(testr)
+def release_lemma_tests():
+    items = load_datasets('lemma', 'test')
+
+    root = etree.Element('Tests')
+    for word in items:
+        test = etree.Element("T")
+        test.set('x', word['x_src'])
+        test.set('x_c', str(word['main_cls']))
+        test.set('y', word['y_src'])
+        root.append(test)
+
+    for dir_path in TEST_RESULT_PATHS:
+        rez_path = os.path.join(dir_path, 'lemma.xml')
+        tree = ElementTree(root)
+        with open(rez_path, 'wb+') as f:
+            tree.write(f, xml_declaration=True, encoding='utf-8')
+
+
+def release_inflect_tests():
+    items = load_datasets('inflect', 'test')
+
+    root = etree.Element('Tests')
+    for word in items:
+        test = etree.Element("T")
+        test.set('x', word['x_src'])
+        test.set('x_c', str(word['x_cls']))
+        test.set('y', word['y_src'])
+        test.set('y_c', str(word['y_cls']))
+        root.append(test)
+
+    for dir_path in TEST_RESULT_PATHS:
+        rez_path = os.path.join(dir_path, 'inflect.xml')
+        tree = ElementTree(root)
+        with open(rez_path, 'wb+') as f:
+            tree.write(f, xml_declaration=True, encoding='utf-8')
+
+
+for gram in GRAM_TYPES:
+    items = load_datasets(gram, 'test')
+    cls = GRAM_TYPES[gram]['classes']
+    dic = {cls[g_key]['index']: g_key for g_key in cls}
+    release_gram_tests(items, gram, dic)
+
+release_main_tests()
+release_lemma_tests()
+release_inflect_tests()

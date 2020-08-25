@@ -660,8 +660,6 @@ grammemes_types:
         keys:
           - pssv
 
-
-
 ad_tags:
   - incl
   - excl
@@ -671,7 +669,15 @@ ad_tags:
   - orgn
   - trad
   - cmp2
+  - geox
 
 inflect_ignore_tags:
   - incl
   - cmp2
+
+dict_ignore_tags:
+  - patr
+  - orgn
+  - surn
+  - abbr
+
