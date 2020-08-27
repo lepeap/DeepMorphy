@@ -8,7 +8,7 @@ from xml.etree.ElementTree import ElementTree
 
 
 GRAM_TYPES = CONFIG['grammemes_types']
-TEST_RESULT_PATHS = CONFIG['publish_test_paths']
+TEST_RESULT_PATHS = CONFIG['only_nn_test_paths']
 
 
 def release_gram_tests(items, key, cls_dic):

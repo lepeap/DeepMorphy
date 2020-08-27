@@ -11,8 +11,8 @@ namespace DeepMorphy.Tests
         [SetUp]
         public void Setup()
         {
-            MorphRu = new MorphAnalyzer();
-            MorphEn = new MorphAnalyzer(useEnGrams: true);
+            //MorphRu = new MorphAnalyzer();
+            //MorphEn = new MorphAnalyzer(useEnGramNames: true);
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace DeepMorphy.Tests
             string pers=null,
             string adMessageText="")
         {
-            if (!morph.EnTags)
+            if (!morph.UseEnGramNameNames)
             {
                 post = morph.GramHelper.TranslateKeyToRu(post);
                 gndr = gndr != null ? morph.GramHelper.TranslateKeyToRu(gndr) : null;

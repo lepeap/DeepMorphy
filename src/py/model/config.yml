@@ -48,8 +48,8 @@ publish_dictionary_paths:
 publish_dataset_info_paths:
   - latest_release
 
-publish_test_paths:
-  - ../../cs/MetricsCalc/
+only_nn_test_paths:
+  - ../../cs/NnTests/
 
 public_inflect_templates_paths:
   - latest_release

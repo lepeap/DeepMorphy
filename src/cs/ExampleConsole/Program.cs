@@ -8,14 +8,16 @@ namespace ExampleConsole
     {
         private static string[] Words = new string[]
         {
-            "tafsdfdfasd",
-            "xii",
-            "123",
-            ".345",
-            "43,34",
-            "..!",
-            "1-ый",
-            "бутявка",
+            //"tafsdfdfasd",
+            //"xii",
+            //"123",
+            //".345",
+            //"43,34",
+            //"..!",
+            //"1-ый",
+            //"бутявка",
+            "пальто",
+            "плакса",
             "в",
             "действуя",
             "королёвские",
@@ -32,9 +34,6 @@ namespace ExampleConsole
         };
         static void Main(string[] args)
         {
-            GetAllForms();
-            
-            
             SimpleExample();
             
             AnalisysFullExample1();
@@ -219,9 +218,18 @@ namespace ExampleConsole
 
         static void GetAllForms()
         {
-            var m = new MorphAnalyzer(withLemmatization: false);
-            var results = m.Parse(new []{ "стоять" }).ToArray();
-            var resDic = m.GetAllForms(results[0].Text, results[0].BestTag);
+            var m = new MorphAnalyzer(withLemmatization: true);
+            //var res = m.Parse("двухтысячный").ToArray();
+            //var results = m.Parse(new []{ "трахать" }).ToArray();
+            //var results = m.Parse(new []{ "ебать" }).ToArray();
+
+            //var resDic = m.GetAllForms(results[0].Text, results[0].BestTag);
+            
+            
+            var results = m.Parse(new []{ "кофе" }).ToArray();
+            //var results = m.Parse(new []{ "ебать" }).ToArray();
+
+            var resDic = m.Lexeme(results[0].Text, results[0].BestTag);
             
         }
 

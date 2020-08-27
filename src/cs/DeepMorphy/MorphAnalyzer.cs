@@ -49,7 +49,7 @@ namespace DeepMorphy
             : this(withLemmatization: withLemmatization, 
                    useEnGramNames: useEnGramNames, 
                    withTrimAndLower:withTrimAndLower, 
-                   withPreprocessors: true,
+                   onlyNetwork: false,
                    maxBatchSize: maxBatchSize)
         {
         }
@@ -57,7 +57,7 @@ namespace DeepMorphy
         internal MorphAnalyzer(bool withLemmatization = false,
             bool useEnGramNames = false,
             bool withTrimAndLower = true,
-            bool withPreprocessors = true,
+            bool onlyNetwork = true,
             int maxBatchSize = 4096)
         {
             if (maxBatchSize <= 0)
@@ -68,11 +68,17 @@ namespace DeepMorphy
             GramHelper = new GramHelper();
             TagHelper = new TagHelper(this);
             _net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGramNames);
-            _correctionDict = new Dict("dict_correction");
+
             _withTrimAndLower = withTrimAndLower;
             
-            if (withPreprocessors)
+            if (onlyNetwork)
             {
+                _correctionDict = new Dict();
+                _morphProcessors = new IMorphProcessor[0];
+            }
+            else
+            {
+                _correctionDict = new Dict("dict_correction");
                 _morphProcessors = new IMorphProcessor[]
                 {
                     new NumberProc(),
@@ -80,10 +86,6 @@ namespace DeepMorphy
                     new DictProc("dict"),
                     new RegProc(_net.AvailableChars, 50)
                 };
-            }
-            else
-            {
-                _morphProcessors = new IMorphProcessor[0];
             }
         }
 
@@ -180,31 +182,32 @@ namespace DeepMorphy
 
         public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag tag)> words)
         {
-            throw new NotImplementedException();
-            //foreach (var netRes in _net.Lemmatize(words.Select(x => (x.word, x.tag.Id))))
-            //{
-            //    string result = null;
-            //    foreach (var processor in _morphProcessors)
-            //    {
-            //        result = processor.Lemmatize(netRes.task.word, netRes.task.tagId);
-            //        if (result != null)
-            //        {
-            //            break;
-            //        }
-            //    }
-//
-            //    if (result == null)
-            //    {
-            //        result = _correctionDict.Lemmatize(netRes.task.word, netRes.task.tagId);
-            //    }
-//
-            //    if (result == null)
-            //    {
-            //        result = netRes.rezWord;
-            //    }
-//
-            //    yield return result;
-            //}
+            var tasks = words.Select(x => (x.word, x.tag.Id));
+            foreach (var netRes in _net.Lemmatize(tasks))
+            {
+                string result = null;
+                foreach (var processor in _morphProcessors)
+                {
+                    result = processor.Lemmatize(netRes.task.word, netRes.task.tagId);
+                    if (result != null)
+                    {
+                        break;
+                    }
+                }
+            
+                if (result == null)
+                {
+                    var lexeme = _correctionDict.Lexeme(netRes.task.word, netRes.task.tagId);
+                    result = lexeme?.FirstOrDefault(w => TagHelper.IsLemma(w.TagId))?.Text;
+                }
+            
+                if (result == null)
+                {
+                    result = netRes.rezWord;
+                }
+            
+                yield return result;
+            }
         }
 
         public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag)> words, Tag resultTag)
@@ -215,7 +218,32 @@ namespace DeepMorphy
         
         public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> words)
         {
-            yield break;
+            var tasks = words.Select(x => (x.word, x.wordTag.Id, x.resultTag.Id));
+            foreach (var netRes in _net.Inflect(tasks))
+            {
+                string result = null;
+                foreach (var processor in _morphProcessors)
+                {
+                    result = processor.Inflect(netRes.srcWord, netRes.srcTagId, netRes.resTagId);
+                    if (result != null)
+                    {
+                        break;
+                    }
+                }
+            
+                if (result == null)
+                {
+                    var lexeme = _correctionDict.Lexeme(netRes.srcWord, netRes.srcTagId);
+                    result = lexeme?.FirstOrDefault(w => w.TagId == netRes.resTagId)?.Text;
+                }
+            
+                if (result == null)
+                {
+                    result = netRes.resWord;
+                }
+            
+                yield return result;
+            }
         }
         
         /// <summary>
@@ -229,7 +257,6 @@ namespace DeepMorphy
             var procKey = TagHelper.TagProcDic[tag.Id];
             if (procKey == "nn")
             {
-                // TODO Добавить коррекцию
                 var netRes = _net.Lexeme(word, tag.Id).Select(x => (TagHelper.CreateTagFromId(x.tagId), word));
             }
             

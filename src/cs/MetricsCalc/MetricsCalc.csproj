@@ -10,45 +10,42 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DeepMorphy\DeepMorphy.csproj"/>
+        <ProjectReference Include="..\DeepMorphy\DeepMorphy.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="tens.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\case.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="post.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\gndr.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="pers.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\inflect.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="nmbr.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\lemma.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="gndr.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\main.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="case.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\mood.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="voic.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\nmbr.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="mood.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\pers.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-
-        <Content Include="main.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\post.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-
-        <Content Include="lemma.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\tens.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-
-        <Content Include="inflect.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="NnTests\voic.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
 
     </ItemGroup>

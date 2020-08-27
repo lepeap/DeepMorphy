@@ -95,7 +95,7 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        public IEnumerable<(int tagId, string word)> Inflect(IEnumerable<(string word, int tag, int resTag)> srcItems)
+        public IEnumerable<(int srcTagId, string srcWord, int resTagId, string resWord)> Inflect(IEnumerable<(string word, int tag, int resTag)> srcItems)
         {
             foreach (var batchSrc in _batchify(srcItems, _maxBatchSize))
             {
@@ -113,7 +113,7 @@ namespace DeepMorphy.NeuralNet
                 var netRes = _net.Inflect(maxLength, words.Length, indexes, values, seqLens, xClasses, yClasses);
                 for (int i = 0; i < words.Length; i++)
                 {
-                    yield return (yClasses[i], _decodeWord(netRes, i));
+                    yield return (xClasses[i], words[i], yClasses[i], _decodeWord(netRes, i));
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace DeepMorphy.NeuralNet
         public IEnumerable<(int tagId, string word)> Lexeme(string word, int tagId)
         {
             var items = _config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
-            return  Inflect(items).Select(x => (x.tagId, word));
+            return  Inflect(items).Select(x => (x.resTagId, word));
         }
 
         private void _vectorizeWords(string[] srcMas,

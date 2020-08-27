@@ -10,6 +10,11 @@ namespace DeepMorphy.WordDict
         private readonly Dictionary<string, int[]> _indexDic = new Dictionary<string, int[]>();
         private readonly Dictionary<int, string> _lexemeDic = new Dictionary<int, string>();
 
+        public Dict()
+        {
+            
+        }
+        
         public Dict(string dictKey)
         {
             using (var reader = new StreamReader(Utils.GetCompressedResourceStream($"DeepMorphy.WordDict.{dictKey}_index.txt.gz"), Encoding.UTF8))
