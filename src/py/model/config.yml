@@ -56,6 +56,7 @@ public_inflect_templates_paths:
   - ../../cs/DeepMorphy/
 
 publish_gram_doc_path: ../../../gram.md
+publish_inflect_doc_path: ../../../inflect.md
 
 train_devices:
 #  - /cpu:0

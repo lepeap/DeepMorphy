@@ -52,7 +52,6 @@ class Releaser:
             os.path.join(path, "inflect_templates.xml")
             for path in self.config['public_inflect_templates_paths']
         ]
-        self.tests_results_paths = self.config['publish_test_paths']
         self.classes_dic = self.config['main_classes']
         self.rev_classes_dic = {
             self.classes_dic[key]: ",".join([key for key in list(key) if key is not None])
@@ -64,6 +63,9 @@ class Releaser:
         with open(CONFIG['numb_data_path'], 'rb') as f:
             self.numb_data = pickle.load(f)
 
+        with open(self.config['inflect_templates_path'], 'rb') as f:
+            self.inflect_templates = pickle.load(f)
+
     def release_model(self):
         pd_release_path, gram_ops, out_ops = self.rnn.release()
         for path in self.pd_publish_paths:
@@ -72,6 +74,7 @@ class Releaser:
         self.__release_test_metrics__()
         self.__release_numbers_xml__()
         self.__release_gramm_docs__()
+        self.__release_inflect_docs__()
         self.__release_grams_xml__()
         self.__release_tags_xml__()
         self.__release_dataset_info__()
@@ -106,15 +109,12 @@ class Releaser:
             grams_el.append(gram_el)
         root.append(grams_el)
 
-        with open(self.config['inflect_templates_path'], 'rb') as f:
-            inflect_templates = pickle.load(f)
-
         inflect_el = etree.Element("Inflect")
-        for main_key in inflect_templates:
+        for main_key in self.inflect_templates:
             temp_el = etree.Element("Im")
             temp_el.set('i', str(self.classes_dic[main_key]))
             inflect_el.append(temp_el)
-            for form in inflect_templates[main_key]:
+            for form in self.inflect_templates[main_key]:
                 form_el = etree.Element("I")
                 form_el.set('i', str(self.classes_dic[form]))
                 temp_el.append(form_el)
@@ -254,6 +254,54 @@ class Releaser:
 
         mds = "\n".join(mds)
         with open(self.config['publish_gram_doc_path'], 'w+') as f:
+            f.write(mds)
+
+    def __release_inflect_docs__(self):
+        mds = [
+            "# Inflect header",
+            "inflect text"
+        ]
+
+        post_index = self.gram_types['post']['index']
+        gndr_index = self.gram_types['gndr']['index']
+
+        en_ru_dict = {}
+        for gram_cat in self.gram_types:
+            for cls in self.gram_types[gram_cat]['classes']:
+                cls_data = self.gram_types[gram_cat]['classes'][cls]
+                en_ru_dict[cls] = cls_data['key_ru']
+
+        def create_tag_text(tag):
+            tag_text = [en_ru_dict[key] for key in list(tag) if key is not None]
+            tag_text = ",".join(tag_text)
+            return f"    - {tag_text}"
+
+        for main_tpl in sorted(self.inflect_templates):
+            post = main_tpl[post_index]
+            gndr = main_tpl[gndr_index]
+            if post == "infn":
+                header_text = "Глаголы и глагольные формы"
+            elif post == "adjf":
+                header_text = "Прилагательные"
+            elif post == "noun" and gndr == 'masc':
+                header_text = "Существительные мужского рода"
+            elif post == "noun" and gndr == 'femn':
+                header_text = "Существительные женского рода"
+            elif post == "noun" and gndr == 'neut':
+                header_text = "Существительные среднего рода"
+            elif post == "noun" and gndr == 'msf':
+                header_text = "Существительные общего рода"
+            else:
+                raise NotImplemented()
+
+            mds.append(f"- **{header_text}**:")
+            mds.append(create_tag_text(main_tpl))
+            tags = sorted([(item, self.tags[item]['o']) for item in self.inflect_templates[main_tpl]], key=lambda x: x[1], reverse=True)
+            for tag in tags:
+                mds.append(create_tag_text(tag[0]))
+
+        mds = "\n".join(mds)
+        with open(self.config['publish_inflect_doc_path'], 'w+') as f:
             f.write(mds)
 
     @staticmethod

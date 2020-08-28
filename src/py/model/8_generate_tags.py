@@ -20,10 +20,10 @@ def set_order(items):
 
     order_items = []
     for tpl in items:
-        order_key = tuple([order_dict[gram] if gram is not None else 1024 for gram in list(tpl)])
+        order_key = tuple([order_dict[gram] if gram is not None else -1 for gram in list(tpl)])
         order_items.append((tpl, order_key))
 
-    for index, tpl in enumerate(sorted(order_items, key=lambda x: x[1])):
+    for index, tpl in enumerate(sorted(order_items, key=lambda x: x[1], reverse=False)):
         items[tpl[0]]['o'] = index
 
 
