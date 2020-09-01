@@ -121,7 +121,7 @@ namespace DeepMorphy.NeuralNet
         public IEnumerable<(int tagId, string word)> Lexeme(string word, int tagId)
         {
             var items = _config.InflectTemplatesDic[tagId].Select(rTag => (word, tagId, rTag));
-            return  Inflect(items).Select(x => (x.resTagId, word));
+            return  Inflect(items).Select(x => (x.resTagId, x.resWord)).Append((tagId, word));
         }
 
         private void _vectorizeWords(string[] srcMas,

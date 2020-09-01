@@ -67,11 +67,11 @@ class Releaser:
             self.inflect_templates = pickle.load(f)
 
     def release_model(self):
-        pd_release_path, gram_ops, out_ops = self.rnn.release()
-        for path in self.pd_publish_paths:
-            copyfile(pd_release_path, path)
-
-        self.__release_test_metrics__()
+        #pd_release_path, gram_ops, out_ops = self.rnn.release()
+        #for path in self.pd_publish_paths:
+        #    copyfile(pd_release_path, path)
+#
+        #self.__release_test_metrics__()
         self.__release_numbers_xml__()
         self.__release_gramm_docs__()
         self.__release_inflect_docs__()
@@ -174,18 +174,16 @@ class Releaser:
         for val in self.numb_data['numbers']:
             n_el = etree.Element("N")
             n_el.set('v', str(val))
-            for tpl in self.numb_data['numbers'][val]['p']:
-                w_el = etree.Element("W")
-                w_el.set('t', tpl[0])
-                w_el.set('i', str(tpl[1]))
-                w_el.set('p', '1')
-                n_el.append(w_el)
+            for tp in self.numb_data['numbers'][val]:
+                if tp == 'nar_end' or tp == 'lemma':
+                    continue
 
-            for tpl in self.numb_data['numbers'][val]['o']:
-                w_el = etree.Element("W")
-                w_el.set('t', tpl[0])
-                w_el.set('i', str(tpl[1]))
-                n_el.append(w_el)
+                for tpl in self.numb_data['numbers'][val][tp]:
+                    w_el = etree.Element("W")
+                    w_el.set('t', tpl[0])
+                    w_el.set('i', str(tpl[1]))
+                    w_el.set('k', tp)
+                    n_el.append(w_el)
 
             nar_ends = self.numb_data['numbers'][val]['nar_end']
             for cls in nar_ends:

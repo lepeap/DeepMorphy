@@ -6,7 +6,7 @@ from utils import CONFIG, create_cls_tuple
 VECT_PATH = CONFIG['vect_words_path']
 CLS_CLASSES_PATH = CONFIG['cls_classes_path']
 NMB_CLASSES_PATH = CONFIG['numb_classes_path']
-NMB_DATA_PATH =  CONFIG['numb_data_path']
+NMB_DATA_PATH = CONFIG['numb_data_path']
 SOGL_CHARS = ['б', 'в', 'г', 'д', 'ж', 'з', 'й', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ']
 GLASN_CHARS = ['а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я']
 
@@ -31,8 +31,6 @@ res_dict = {}
 numb_cls_dict = {}
 for n_key in numbr_src_dic:
     n_key_data = {
-        'p': [],
-        'o': [],
         'nar_end': {}
     }
     res_dict[n_key] = n_key_data
@@ -54,11 +52,10 @@ for n_key in numbr_src_dic:
             if index == 0 and cls_tpl not in lemma_cls_ids:
                 lemma_cls_ids.add(cur_class)
 
-            if t == 'p':
-                items = n_key_data['p']
-            else:
-                items = n_key_data['o']
+            if t not in n_key_data:
+                n_key_data[t] = []
 
+            items = n_key_data[t]
             items.append((item['text'], cur_class))
             if t == 'p':
                 end = get_nar_end(item['text'])
@@ -67,11 +64,12 @@ for n_key in numbr_src_dic:
 regex = []
 for val in res_dict:
     cur_group = []
-    for tpl in res_dict[val]['p']:
-        cur_group.append(tpl[0])
+    for key in res_dict[val]:
+        if key == 'nar_end':
+            continue
 
-    for tpl in res_dict[val]['o']:
-        cur_group.append(tpl[0])
+        for tpl in res_dict[val][key]:
+            cur_group.append(tpl[0])
 
     cur_group = '|'.join(cur_group)
     cur_group = f'(?<_{val}>{cur_group})'

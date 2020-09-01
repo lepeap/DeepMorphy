@@ -1,25 +1,27 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using DeepMorphy.NeuralNet;
+using DeepMorphy.Exception;
 
 namespace DeepMorphy
 {
     public class TagHelper
     {
         internal static int[] LemmasIds { get; }
-        internal static Dictionary<int, ReadOnlyDictionary<string, string>> TagsRuDic  { get; } 
+
+        internal static Dictionary<int, ReadOnlyDictionary<string, string>> TagsRuDic { get; }
             = new Dictionary<int, ReadOnlyDictionary<string, string>>();
-        internal static Dictionary<int, ReadOnlyDictionary<string, string>> TagsEnDic  { get; } 
+
+        internal static Dictionary<int, ReadOnlyDictionary<string, string>> TagsEnDic { get; }
             = new Dictionary<int, ReadOnlyDictionary<string, string>>();
+
         internal static Dictionary<int, string> TagProcDic { get; } = new Dictionary<int, string>();
-        
+
         internal static Dictionary<int, int> TagOrderDic { get; } = new Dictionary<int, int>();
-        
+
         static TagHelper()
         {
             var lemmasList = new List<int>();
@@ -33,8 +35,9 @@ namespace DeepMorphy
                         var index = int.Parse(rdr.GetAttribute("i"));
                         var keysStr = rdr.GetAttribute("v");
                         var keysEn = keysStr.Split(',');
-                        var keysRu = keysEn.Select(x => string.IsNullOrWhiteSpace(x) ? x : GramInfo.EnRuDic[x]).ToArray();
-                        
+                        var keysRu = keysEn.Select(x => string.IsNullOrWhiteSpace(x) ? x : GramInfo.EnRuDic[x])
+                            .ToArray();
+
                         var gramDicEn = keysEn.Select((val, i) => (gram: val, index: i))
                             .Where(tpl => !string.IsNullOrEmpty(tpl.gram))
                             .ToDictionary(
@@ -47,12 +50,12 @@ namespace DeepMorphy
                                 x => GramInfo.GramCatIndexDic[x.index].KeyRu,
                                 x => x.gram
                             );
-                        
+
                         if (rdr.GetAttribute("l") != null)
                         {
                             lemmasList.Add(index);
                         }
-                        
+
                         TagsRuDic[index] = new ReadOnlyDictionary<string, string>(gramDicRu);
                         TagsEnDic[index] = new ReadOnlyDictionary<string, string>(gramDicEn);
                         TagProcDic[index] = rdr.GetAttribute("p");
@@ -64,100 +67,133 @@ namespace DeepMorphy
             LemmasIds = lemmasList.ToArray();
         }
         
-        private readonly MorphAnalyzer _morph;
-        private readonly string _postKey;
-        private readonly string _nmbrKey;
-        private readonly string _genderKey;
-        private readonly string _caseKey;
-        private readonly string _infnKey;
-        
-        private readonly string _nounKey;
-        private readonly string _numberKey;
-        
-        internal TagHelper(MorphAnalyzer morph)
+        private readonly bool _useEn;
+        private readonly string _postKey = "post";
+        private readonly string _nmbrKey = "nmbr";
+        private readonly string _gndrKey = "gndr";
+        private readonly string _caseKey = "case";
+        private readonly string _persKey = "pers";
+        private readonly string _tensKey = "tens";
+        private readonly string _moodKey = "mood";
+        private readonly string _voicKey = "voic";
+
+
+        internal TagHelper(bool useEn, GramHelper gramHelper)
         {
-            _morph = morph;
-            _postKey = "post";
-            _nmbrKey = "nmbr";
-            _genderKey = "gndr";
-            _caseKey = "case";
-            _infnKey = "infn";
-            
-            _nounKey = "noun";
-            _numberKey = "numb";
-            
-            if (!morph.UseEnGramNameNames)
+            _useEn = useEn;
+            if (!useEn)
             {
-                var helper = morph.GramHelper;
-                _postKey = helper.TranslateKeyToRu(_postKey);
-                _nmbrKey = helper.TranslateKeyToRu(_nmbrKey);
-                _genderKey = helper.TranslateKeyToRu(_genderKey);
-                _caseKey = helper.TranslateKeyToRu(_caseKey);
-                
-                _infnKey = helper.TranslateKeyToRu(_infnKey);
-                _nounKey = helper.TranslateKeyToRu(_nounKey);
-                _numberKey = helper.TranslateKeyToRu(_numberKey);
+                _postKey = gramHelper.TranslateKeyToRu(_postKey);
+                _nmbrKey = gramHelper.TranslateKeyToRu(_nmbrKey);
+                _gndrKey = gramHelper.TranslateKeyToRu(_gndrKey);
+                _caseKey = gramHelper.TranslateKeyToRu(_caseKey);
+                _persKey = gramHelper.TranslateKeyToRu(_persKey);
+                _tensKey = gramHelper.TranslateKeyToRu(_tensKey);
+                _moodKey = gramHelper.TranslateKeyToRu(_moodKey);
+                _voicKey = gramHelper.TranslateKeyToRu(_voicKey);
             }
 
-            TagsDic = morph.UseEnGramNameNames ? TagsEnDic : TagsRuDic;
+            TagsDic = useEn ? TagsEnDic : TagsRuDic;
         }
 
         internal static bool IsLemma(int tagId)
         {
             return LemmasIds.Contains(tagId);
         }
-        
-        internal Dictionary<int, ReadOnlyDictionary<string, string>>  TagsDic { get; }
 
-        internal Tag CreateTagFromId(int tagId, float power=1.0f, string lemma=null)
+        internal Dictionary<int, ReadOnlyDictionary<string, string>> TagsDic { get; }
+
+        internal Tag CreateTagFromId(int tagId, float power = 1.0f, string lemma = null)
         {
             return new Tag(TagsDic[tagId], power, tagId, lemma);
         }
-        
-        public Tag CreateForInfn(string word)
-        {
-            var keyValuePair = TagsDic.Single(x => x.Value[_postKey] == _infnKey);
-            return new Tag(keyValuePair.Value, 1, keyValuePair.Key, word);
-        }
 
-        public Tag CreateForNoun(string word, string number, string gender, string @case, string lemma=null)
-        {
-            return _createTag(word,
-                lemma,
-                x => x.Value[_postKey] == _nounKey
-                     && x.Value.ContainsKey(_nmbrKey)
-                     && x.Value[_nmbrKey] == number
-                     && x.Value.ContainsKey(_genderKey)
-                     && x.Value[_genderKey] == gender
-                     && x.Value.ContainsKey(_caseKey)
-                     && x.Value[_caseKey] == @case
-            );
-        }
 
-        public Tag CreateForNumb(string word, string gender, string @case, string lemma = null)
+        public Tag CreateTag(string post,
+                            string gndr = null,
+                            string nmbr = null,
+                            string @case = null,
+                            string pers = null,
+                            string tens = null,
+                            string mood = null,
+                            string voic = null,
+                            string lemma = null)
         {
-            return _createTag(word,
-                lemma,
-                x => x.Value[_postKey] == _nounKey
-                           && x.Value.ContainsKey(_nmbrKey)
-                           && x.Value[_genderKey] == gender
-                           && x.Value.ContainsKey(_caseKey)
-                           && x.Value[_caseKey] == @case
-            );
-        }
-
-        private Tag _createTag(string word, 
-                               string lemma,
-                               Func<KeyValuePair<int, ReadOnlyDictionary<string, string>>, bool> filter)
-        {
-            var keyValuePair = TagsDic.Single(filter);
-            var tag = new Tag(keyValuePair.Value, 1, keyValuePair.Key, lemma);
-            
-            if (lemma == null)
+            var foundTags = TagsDic.Where(t =>
             {
-                tag.Lemma = _morph.Lemmatize(word, tag);
+                if (t.Value[_postKey] != post)
+                {
+                    return false;
+                }
+
+                var tGndr = t.Value.ContainsKey(_gndrKey) ? t.Value[_gndrKey] : null;
+                if (tGndr != gndr)
+                {
+                    return false;
+                }
+
+                var tNmbr = t.Value.ContainsKey(_nmbrKey) ? t.Value[_nmbrKey] : null;
+                if (tNmbr != nmbr)
+                {
+                    return false;
+                }
+
+                var tCase = t.Value.ContainsKey(_caseKey) ? t.Value[_caseKey] : null;
+                if (tCase != @case)
+                {
+                    return false;
+                }
+
+                var tPers = t.Value.ContainsKey(_persKey) ? t.Value[_persKey] : null;
+                if (tPers != pers)
+                {
+                    return false;
+                }
+
+                var tTens = t.Value.ContainsKey(_tensKey) ? t.Value[_tensKey] : null;
+                if (tTens != tens)
+                {
+                    return false;
+                }
+
+                var tMood = t.Value.ContainsKey(_moodKey) ? t.Value[_moodKey] : null;
+                if (tMood != mood)
+                {
+                    return false;
+                }
+
+                var tVoid = t.Value.ContainsKey(_voicKey) ? t.Value[_voicKey] : null;
+                if (tVoid != voic)
+                {
+                    return false;
+                }
+
+                return true;
+            }).ToArray();
+
+            if (foundTags.Length > 1)
+            {
+                var tagsText = string.Join("; ", foundTags.Select(d =>
+                {
+                    var tText = string.Join(",", d.Value);
+                    return $"<{tText}>";
+                }));
+                var message = _useEn
+                    ? $"Ambigious gram values. Found several possible tags: {tagsText}"
+                    : $"Неоднозначные значения граммем. Найдено несколько допустимых тагов: {tagsText}";
+                
+                throw new AmbigGramsForTagException(message);
             }
 
+            if (foundTags.Length == 0)
+            {
+                var message = _useEn
+                    ? "Tag not found"
+                    : "Тег не найден";
+                throw new TagNotSupportedException(message);
+            }
+
+            var tag = new Tag(foundTags[0].Value, 1, foundTags[0].Key, lemma);
             return tag;
         }
 

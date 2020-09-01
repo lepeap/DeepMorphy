@@ -54,21 +54,6 @@ namespace DeepMorphy
         /// </summary>
         public bool HasLemma => Lemma != null;
         
-        //TODO: Написать комменты
-        public string Post => _getWithMultilangKey("post");
-
-        public string Gender => _getWithMultilangKey("gndr");
-        
-        public string Number => _getWithMultilangKey("nmbr");
-        
-        public string Case => _getWithMultilangKey("case");
-        
-        public string Tens => _getWithMultilangKey("tens");
-
-        public string Mood => _getWithMultilangKey("mood");
-        
-        public string Pers => _getWithMultilangKey("pers");
-
         /// <summary>
         /// Проверяет, есть ли граммемы в данном теге
         /// --------------------

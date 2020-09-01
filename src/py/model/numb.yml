@@ -27,7 +27,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: нулевой}
   - {case: loct, gndr: neut, nmbr: sing, text: нулевом}
   - {case: loct, nmbr: plur, text: нулевых}
-  s:
+  o:
   - {case: nomn, gndr: masc, nmbr: sing, text: ноль}
   - {case: nomn, gndr: masc, nmbr: plur, text: ноли}
   - {case: gent, gndr: masc, nmbr: sing, text: ноля}
@@ -40,6 +40,19 @@
   - {case: ablt, gndr: masc, nmbr: plur, text: нолями}
   - {case: loct, gndr: masc, nmbr: sing, text: ноле}
   - {case: loct, gndr: masc, nmbr: plur, text: нолях}
+  o1:
+  - {case: nomn, gndr: masc, nmbr: sing, text: нуль}
+  - {case: nomn, gndr: masc, nmbr: plur, text: нули}
+  - {case: gent, gndr: masc, nmbr: sing, text: нуля}
+  - {case: gent, gndr: masc, nmbr: plur, text: нулей}
+  - {case: datv, gndr: masc, nmbr: sing, text: нулю}
+  - {case: datv, gndr: masc, nmbr: plur, text: нулям}
+  - {case: accs, gndr: masc, nmbr: sing, text: нуль}
+  - {case: accs, gndr: masc, nmbr: plur, text: нули}
+  - {case: ablt, gndr: masc, nmbr: sing, text: нулём}
+  - {case: ablt, gndr: masc, nmbr: plur, text: нулями}
+  - {case: loct, gndr: masc, nmbr: sing, text: нуле}
+  - {case: loct, gndr: masc, nmbr: plur, text: нулях}
 1:
   p:
   - {case: nomn, gndr: masc, nmbr: sing, text: первый}
@@ -68,7 +81,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: первой}
   - {case: loct, gndr: neut, nmbr: sing, text: первом}
   - {case: loct, nmbr: plur, text: первых}
-  s:
+  o:
   - {case: nomn, gndr: masc, nmbr: sing, text: один}
   - {case: nomn, gndr: femn, nmbr: sing, text: одна}
   - {case: nomn, gndr: neut, nmbr: sing, text: одно}
@@ -149,7 +162,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: второй}
   - {case: loct, gndr: neut, nmbr: sing, text: втором}
   - {case: loct, nmbr: plur, text: вторых}
-  s:
+  o:
   - {case: nomn, gndr: masc, text: два}
   - {case: nomn, gndr: femn, text: две}
   - {case: nomn, gndr: neut, text: два}
@@ -199,7 +212,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: третьей}
   - {case: loct, gndr: neut, nmbr: sing, text: третьем}
   - {case: loct, nmbr: plur, text: третьих}
-  s:
+  o:
   - {case: nomn, text: три}
   - {case: gent, text: трех}
   - {case: datv, text: трем}
@@ -235,7 +248,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: четвёртой}
   - {case: loct, gndr: neut, nmbr: sing, text: четвёртом}
   - {case: loct, nmbr: plur, text: четвёртых}
-  s:
+  o:
   - {case: nomn, text: четыре}
   - {case: gent, text: четырех}
   - {case: datv, text: четырем}
@@ -271,7 +284,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: пятой}
   - {case: loct, gndr: neut, nmbr: sing, text: пятом}
   - {case: loct, nmbr: plur, text: пятых}
-  s:
+  o:
   - {case: nomn, text: пять}
   - {case: gent, text: пяти}
   - {case: datv, text: пяти}
@@ -306,7 +319,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: шестой}
   - {case: loct, gndr: neut, nmbr: sing, text: шестом}
   - {case: loct, nmbr: plur, text: шестых}
-  s:
+  o:
   - {case: nomn, text: шесть}
   - {case: gent, text: шести}
   - {case: datv, text: шести}
@@ -341,7 +354,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: седьмой}
   - {case: loct, gndr: neut, nmbr: sing, text: седьмом}
   - {case: loct, nmbr: plur, text: седьмых}
-  s:
+  o:
   - {case: nomn, text: семь}
   - {case: gent, text: семи}
   - {case: datv, text: семи}
@@ -376,7 +389,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: восьмой}
   - {case: loct, gndr: neut, nmbr: sing, text: восьмом}
   - {case: loct, nmbr: plur, text: восьмых}
-  s:
+  o:
   - {case: nomn, text: восемь}
   - {case: gent, text: восьми}
   - {case: datv, text: восьми}
@@ -412,7 +425,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: девятой}
   - {case: loct, gndr: neut, nmbr: sing, text: девятом}
   - {case: loct, nmbr: plur, text: девятых}
-  s:
+  o:
   - {case: nomn, text: девять}
   - {case: gent, text: девяти}
   - {case: datv, text: девяти}
@@ -447,7 +460,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: десятой}
   - {case: loct, gndr: neut, nmbr: sing, text: десятом}
   - {case: loct, nmbr: plur, text: десятых}
-  s:
+  o:
   - {case: nomn, text: десять}
   - {case: gent, text: десяти}
   - {case: datv, text: десяти}
@@ -482,7 +495,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: одиннадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: одиннадцатом}
   - {case: loct, nmbr: plur, text: одиннадцатых}
-  s:
+  o:
   - {case: nomn, text: одиннадцать}
   - {case: gent, text: одиннадцати}
   - {case: datv, text: одиннадцати}
@@ -531,7 +544,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: двенадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: двенадцатом}
   - {case: loct, nmbr: plur, text: двенадцатых}
-  s:
+  o:
   - {case: nomn, text: двенадцать}
   - {case: gent, text: двенадцати}
   - {case: datv, text: двенадцати}
@@ -566,7 +579,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: тринадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: тринадцатом}
   - {case: loct, nmbr: plur, text: тринадцатых}
-  s:
+  o:
   - {case: nomn, text: тринадцать}
   - {case: gent, text: тринадцати}
   - {case: datv, text: тринадцати}
@@ -601,7 +614,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: четырнадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: четырнадцатом}
   - {case: loct, nmbr: plur, text: четырнадцатых}
-  s:
+  o:
   - {case: nomn, text: четырнадцать}
   - {case: gent, text: четырнадцати}
   - {case: datv, text: четырнадцати}
@@ -636,7 +649,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: пятнадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: пятнадцатом}
   - {case: loct, nmbr: plur, text: пятнадцатых}
-  s:
+  o:
   - {case: nomn, text: пятнадцать}
   - {case: gent, text: пятнадцати}
   - {case: datv, text: пятнадцати}
@@ -671,7 +684,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: шестнадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: шестнадцатом}
   - {case: loct, nmbr: plur, text: шестнадцатых}
-  s:
+  o:
   - {case: nomn, text: шестнадцать}
   - {case: gent, text: шестнадцати}
   - {case: datv, text: шестнадцати}
@@ -706,7 +719,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: семнадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: семнадцатом}
   - {case: loct, nmbr: plur, text: семнадцатых}
-  s:
+  o:
   - {case: nomn, text: семнадцать}
   - {case: gent, text: семнадцати}
   - {case: datv, text: семнадцати}
@@ -741,7 +754,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: восемнадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: восемнадцатом}
   - {case: loct, nmbr: plur, text: восемнадцатых}
-  s:
+  o:
   - {case: nomn, text: восемнадцать}
   - {case: gent, text: восемнадцати}
   - {case: datv, text: восемнадцати}
@@ -776,7 +789,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: девятнадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: девятнадцатом}
   - {case: loct, nmbr: plur, text: девятнадцатых}
-  s:
+  o:
   - {case: nomn, text: девятнадцать}
   - {case: gent, text: девятнадцати}
   - {case: datv, text: девятнадцати}
@@ -811,7 +824,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: двадцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: двадцатом}
   - {case: loct, nmbr: plur, text: двадцатых}
-  s:
+  o:
   - {case: nomn, text: двадцать}
   - {case: gent, text: двадцати}
   - {case: datv, text: двадцати}
@@ -846,7 +859,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: тридцатой}
   - {case: loct, gndr: neut, nmbr: sing, text: тридцатом}
   - {case: loct, nmbr: plur, text: тридцатых}
-  s:
+  o:
   - {case: nomn, text: тридцать}
   - {case: gent, text: тридцати}
   - {case: datv, text: тридцати}
@@ -881,7 +894,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: сороковой}
   - {case: loct, gndr: neut, nmbr: sing, text: сороковом}
   - {case: loct, nmbr: plur, text: сороковых}
-  s:
+  o:
   - {case: nomn, text: сорок}
   - {case: gent, text: сорока}
   - {case: datv, text: сорока}
@@ -919,7 +932,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: пятидесятой}
   - {case: loct, gndr: neut, nmbr: sing, text: пятидесятом}
   - {case: loct, nmbr: plur, text: пятидесятых}
-  s:
+  o:
   - {case: nomn, text: пятьдесят}
   - {case: gent, text: пятидесяти}
   - {case: datv, text: пятидесяти}
@@ -954,7 +967,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: шестидесятой}
   - {case: loct, gndr: neut, nmbr: sing, text: шестидесятом}
   - {case: loct, nmbr: plur, text: шестидесятых}
-  s:
+  o:
   - {case: nomn, text: шестьдесят}
   - {case: gent, text: шестидесяти}
   - {case: datv, text: шестидесяти}
@@ -989,7 +1002,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: семидесятой}
   - {case: loct, gndr: neut, nmbr: sing, text: семидесятом}
   - {case: loct, nmbr: plur, text: семидесятых}
-  s:
+  o:
   - {case: nomn, text: семьдесят}
   - {case: gent, text: семидесяти}
   - {case: datv, text: семидесяти}
@@ -1024,7 +1037,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: восьмидесятой}
   - {case: loct, gndr: neut, nmbr: sing, text: восьмидесятом}
   - {case: loct, nmbr: plur, text: восьмидесятых}
-  s:
+  o:
   - {case: nomn, text: восемьдесят}
   - {case: gent, text: восьмидесяти}
   - {case: datv, text: восьмидесяти}
@@ -1060,7 +1073,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: девяностой}
   - {case: loct, gndr: neut, nmbr: sing, text: девяностом}
   - {case: loct, nmbr: plur, text: девяностых}
-  s: []
+  o: []
 100:
   ad:
   - {case: nomn, gndr: femn, nmbr: sing, text: сотня}
@@ -1104,7 +1117,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: сотой}
   - {case: loct, gndr: neut, nmbr: sing, text: сотом}
   - {case: loct, nmbr: plur, text: сотых}
-  s:
+  o:
   - {case: nomn, text: сто}
   - {case: gent, text: ста}
   - {case: datv, text: ста}
@@ -1139,7 +1152,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: двухсотой}
   - {case: loct, gndr: neut, nmbr: sing, text: двухсотом}
   - {case: loct, nmbr: plur, text: двухсотых}
-  s:
+  o:
   - {case: nomn, text: двести}
   - {case: gent, text: двухсот}
   - {case: datv, text: двумстам}
@@ -1200,7 +1213,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: трёхсотой}
   - {case: loct, gndr: neut, nmbr: sing, text: трёхсотом}
   - {case: loct, nmbr: plur, text: трёхсотых}
-  s:
+  o:
   - {case: nomn, text: триста}
   - {case: gent, text: трехсот}
   - {case: datv, text: тремстам}
@@ -1261,7 +1274,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: четырёхсотой}
   - {case: loct, gndr: neut, nmbr: sing, text: четырёхсотом}
   - {case: loct, nmbr: plur, text: четырёхсотых}
-  s:
+  o:
   - {case: nomn, text: четыреста}
   - {case: gent, text: четырехсот}
   - {case: datv, text: четыремстам}
@@ -1296,7 +1309,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: пятисотой}
   - {case: loct, gndr: neut, nmbr: sing, text: пятисотом}
   - {case: loct, nmbr: plur, text: пятисотых}
-  s:
+  o:
   - {case: nomn, text: пятьсот}
   - {case: gent, text: пятисот}
   - {case: datv, text: пятистам}
@@ -1331,7 +1344,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: шестисотой}
   - {case: loct, gndr: neut, nmbr: sing, text: шестисотом}
   - {case: loct, nmbr: plur, text: шестисотых}
-  s:
+  o:
   - {case: nomn, text: шестьсот}
   - {case: gent, text: шестисот}
   - {case: datv, text: шестистам}
@@ -1366,7 +1379,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: семисотой}
   - {case: loct, gndr: neut, nmbr: sing, text: семисотом}
   - {case: loct, nmbr: plur, text: семисотых}
-  s:
+  o:
   - {case: nomn, text: семьсот}
   - {case: gent, text: семисот}
   - {case: datv, text: семистам}
@@ -1401,7 +1414,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: восьмисотой}
   - {case: loct, gndr: neut, nmbr: sing, text: восьмисотом}
   - {case: loct, nmbr: plur, text: восьмисотых}
-  s:
+  o:
   - {case: nomn, text: восемьсот}
   - {case: gent, text: восьмисот}
   - {case: datv, text: восьмистам}
@@ -1436,7 +1449,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: девятисотой}
   - {case: loct, gndr: neut, nmbr: sing, text: девятисотом}
   - {case: loct, nmbr: plur, text: девятисотых}
-  s:
+  o:
   - {case: nomn, text: девятьсот}
   - {case: gent, text: девятисот}
   - {case: datv, text: девятистам}
@@ -1472,7 +1485,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: тысячной}
   - {case: loct, gndr: neut, nmbr: sing, text: тысячном}
   - {case: loct, nmbr: plur, text: тысячных}
-  s:
+  o:
   - {case: nomn, text: тысяча}
   - {case: nomn, text: тысячи}
   - {case: gent, text: тысяч}
@@ -1515,7 +1528,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: миллионной}
   - {case: loct, gndr: neut, nmbr: sing, text: миллионном}
   - {case: loct, nmbr: plur, text: миллионных}
-  s:
+  o:
   - {case: nomn, text: миллион}
   - {case: gent, text: миллиона}
   - {case: gent, text: миллионов}
@@ -1556,7 +1569,7 @@
   - {case: loct, gndr: femn, nmbr: sing, text: миллиардной}
   - {case: loct, gndr: neut, nmbr: sing, text: миллиардном}
   - {case: loct, nmbr: plur, text: миллиардных}
-  s:
+  o:
   - {case: nomn, text: миллиард}
   - {case: nomn, text: миллиарды}
   - {case: gent, text: миллиарда}

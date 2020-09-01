@@ -19,7 +19,6 @@ MAX_WORD_SIZE = CONFIG['max_word_size']
 DICT_POST_TYPES = CONFIG['dict_post_types']
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
 IGNORE_AD_TAGS = CONFIG['dict_ignore_tags']
-
 REPLACE_WORD_DICT_ID = 1
 
 CLASSES_INDEX_DICT = {

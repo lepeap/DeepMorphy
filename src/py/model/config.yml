@@ -48,13 +48,11 @@ publish_dictionary_paths:
 publish_dataset_info_paths:
   - latest_release
 
-only_nn_test_paths:
-  - ../../cs/NnTests/
-
 public_inflect_templates_paths:
   - latest_release
   - ../../cs/DeepMorphy/
 
+publish_tests_path: ../../cs/Tester/
 publish_gram_doc_path: ../../../gram.md
 publish_inflect_doc_path: ../../../inflect.md
 

@@ -4,100 +4,79 @@ namespace DeepMorphy.Tests
 {
     public class TagHelperTest
     {
-        public MorphAnalyzer MorphRu { get; set; }
-
-        public MorphAnalyzer MorphEn { get; set; }
-
-        [SetUp]
-        public void Setup()
+        [Test]
+        public void TestExistingEnTagCreation()
         {
-            //MorphRu = new MorphAnalyzer();
-            //MorphEn = new MorphAnalyzer(useEnGramNames: true);
+            _testExistingTagCreation(new MorphAnalyzer(onlyNetwork: false, useEnGramNames: true));
         }
 
         [Test]
-        public void InfnTag()
+        public void TestExistingRuTagCreation()
         {
-            var word = "тестить";
-            var enTag = MorphEn.TagHelper.CreateForInfn(word);
-            var ruTag = MorphRu.TagHelper.CreateForInfn(word);
-            //CheckTag(MorphEn, enTag, post: "infn", word);
-            //CheckTag(MorphRu, ruTag, post: "infn", word);
+            _testExistingTagCreation(new MorphAnalyzer(onlyNetwork: false, useEnGramNames: false));
         }
-        
-        [Test]
-        public void NounTag1()
+
+        private void _testExistingTagCreation(MorphAnalyzer morph)
         {
-            var word = "стол";
-            var post = "noun";
-            var gndr = "masc";
-            var nmbr = "sing";
-            var @case = "nomn";
-
-            var enTag = MorphEn.TagHelper.CreateForNoun(word,
-                number: nmbr,
-                gender: gndr,
-                @case: @case);
-            
-            var ruTag = MorphRu.TagHelper.CreateForNoun(word,
-                number: _t(nmbr),
-                gender: _t(gndr),
-                @case: _t(@case));
-
-            CheckTag(
-                MorphEn,
-                enTag,
-                post: post, 
-                gndr: gndr,
-                nmbr: nmbr,
-                @case: @case,
-                lemma: word,
-                adMessageText: "(вызов без заданной леммы)");
-            CheckTag(
-                MorphRu,
-                ruTag,
-                post: post, 
-                gndr: gndr,
-                nmbr: nmbr,
-                @case: @case,
-                lemma: word,
-                adMessageText: "(вызов без заданной леммы)");
-        }
-        
-
-        private void CheckTag(MorphAnalyzer morph,
-            Tag tag,
-            string post,
-            string lemma=null,
-            string gndr=null,
-            string nmbr=null,
-            string @case=null,
-            string tens=null,
-            string pers=null,
-            string adMessageText="")
-        {
+            string postKey = "post";
+            string nmbrKey = "nmbr";
+            string gndrKey = "gndr";
+            string caseKey = "case";
+            string persKey = "pers";
+            string tensKey = "tens";
+            string moodKey = "mood";
+            string voicKey = "voic";
             if (!morph.UseEnGramNameNames)
             {
-                post = morph.GramHelper.TranslateKeyToRu(post);
-                gndr = gndr != null ? morph.GramHelper.TranslateKeyToRu(gndr) : null;
-                nmbr = nmbr != null ? morph.GramHelper.TranslateKeyToRu(nmbr) : null;
-                @case = @case != null ? morph.GramHelper.TranslateKeyToRu(@case) : null;
-                tens = tens != null ? morph.GramHelper.TranslateKeyToRu(tens) : null;
-                pers = pers != null ? morph.GramHelper.TranslateKeyToRu(pers) : null;
+                postKey = morph.GramHelper.TranslateKeyToRu(postKey);
+                nmbrKey = morph.GramHelper.TranslateKeyToRu(nmbrKey);
+                gndrKey = morph.GramHelper.TranslateKeyToRu(gndrKey);
+                caseKey = morph.GramHelper.TranslateKeyToRu(caseKey);
+                persKey = morph.GramHelper.TranslateKeyToRu(persKey);
+                tensKey = morph.GramHelper.TranslateKeyToRu(tensKey);
+                moodKey = morph.GramHelper.TranslateKeyToRu(moodKey);
+                voicKey = morph.GramHelper.TranslateKeyToRu(voicKey);
             }
 
-            Assert.AreEqual(post, tag.Post, $"Неправильная часть речи {adMessageText}");
-            Assert.AreEqual(gndr, tag.Gender, $"Неправильный род {adMessageText}");
-            Assert.AreEqual(nmbr, tag.Number, $"Неправильное число {adMessageText}");
-            Assert.AreEqual(@case, tag.Case, $"Неправильный часть речи {adMessageText}");
-            Assert.AreEqual(tens, tag.Tens, $"Неправильное время {adMessageText}");
-            Assert.AreEqual(pers, tag.Pers, $"Неправильное лицо {adMessageText}");
-            Assert.AreEqual(lemma, tag.Lemma, $"Неправильная лемма {adMessageText}");
-        }
+            foreach (var kp in morph.TagHelper.TagsDic)
+            {
+                var index = kp.Key;
+                var gDic = kp.Value;
+                var post = gDic[postKey];
+                var nmbr = gDic.ContainsKey(nmbrKey) ? gDic[nmbrKey] : null;
+                var gndr = gDic.ContainsKey(gndrKey) ? gDic[gndrKey] : null;
+                var @case = gDic.ContainsKey(caseKey) ? gDic[caseKey] : null;
+                var pers = gDic.ContainsKey(persKey) ? gDic[persKey] : null;
+                var tens = gDic.ContainsKey(tensKey) ? gDic[tensKey] : null;
+                var mood = gDic.ContainsKey(moodKey) ? gDic[moodKey] : null;
+                var voic = gDic.ContainsKey(voicKey) ? gDic[voicKey] : null;
 
-        private string _t(string key)
-        {
-            return MorphRu.GramHelper.TranslateKeyToRu(key);
+                var tagWithoutLemma = morph.TagHelper.CreateTag(
+                    post,
+                    gndr = gndr,
+                    nmbr = nmbr,
+                    @case = @case,
+                    pers = pers,
+                    tens = tens,
+                    mood = mood,
+                    voic = voic);
+
+                var tagWithLemma = morph.TagHelper.CreateTag(
+                    post,
+                    gndr = gndr,
+                    nmbr = nmbr,
+                    @case = @case,
+                    pers = pers,
+                    tens = tens,
+                    mood = mood,
+                    voic = voic,
+                    lemma: "111");
+
+                Assert.AreEqual(index, tagWithoutLemma.Id, "Неправильный айди при создании без леммы");
+                Assert.AreEqual(index, tagWithoutLemma.Id, "Неправильный айди при создании c леммой");
+                Assert.IsNull(tagWithoutLemma.Lemma, "Лемма заполнена (должна быть пустой)");
+                Assert.AreEqual("111", tagWithLemma.Lemma, "Неправильная лемма");
+            }
         }
     }
 }

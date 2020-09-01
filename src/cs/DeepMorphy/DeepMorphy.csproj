@@ -34,7 +34,7 @@
             <_Parameter1>DeepMorphy.Tests</_Parameter1>
         </AssemblyAttribute>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>MetricsCalc</_Parameter1>
+            <_Parameter1>Tester</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Schema;
 using DeepMorphy.Numb;
 using DeepMorphy.WordDict;
 
@@ -17,7 +18,7 @@ namespace DeepMorphy
         private readonly NeuralNet.NetworkProc _net;
         private readonly IMorphProcessor[] _morphProcessors;
         private readonly Dict _correctionDict;
-        
+
         /// <summary>
         /// Создает морфологический анализатор. В идеале лучше использовать его как синглтон,
         /// при создании объекта какое-то время уходит на загрузку словарей и сети.
@@ -45,15 +46,16 @@ namespace DeepMorphy
         /// Max batch size for neural network
         /// </param>
         /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
-        public MorphAnalyzer(bool withLemmatization = false, bool useEnGramNames = false, bool withTrimAndLower = true, int maxBatchSize = 4096) 
-            : this(withLemmatization: withLemmatization, 
-                   useEnGramNames: useEnGramNames, 
-                   withTrimAndLower:withTrimAndLower, 
-                   onlyNetwork: false,
-                   maxBatchSize: maxBatchSize)
+        public MorphAnalyzer(bool withLemmatization = false, bool useEnGramNames = false, bool withTrimAndLower = true,
+            int maxBatchSize = 4096)
+            : this(withLemmatization: withLemmatization,
+                useEnGramNames: useEnGramNames,
+                withTrimAndLower: withTrimAndLower,
+                onlyNetwork: false,
+                maxBatchSize: maxBatchSize)
         {
         }
-        
+
         internal MorphAnalyzer(bool withLemmatization = false,
             bool useEnGramNames = false,
             bool withTrimAndLower = true,
@@ -64,13 +66,13 @@ namespace DeepMorphy
             {
                 throw new ArgumentException("Batch size must be greater than 0.");
             }
+
             UseEnGramNameNames = useEnGramNames;
             GramHelper = new GramHelper();
-            TagHelper = new TagHelper(this);
+            TagHelper = new TagHelper(useEnGramNames, GramHelper);
             _net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGramNames);
-
             _withTrimAndLower = withTrimAndLower;
-            
+
             if (onlyNetwork)
             {
                 _correctionDict = new Dict();
@@ -82,7 +84,7 @@ namespace DeepMorphy
                 _morphProcessors = new IMorphProcessor[]
                 {
                     new NumberProc(),
-                    new NarNumberProc(), 
+                    new NarNumberProc(),
                     new DictProc("dict"),
                     new RegProc(_net.AvailableChars, 50)
                 };
@@ -90,11 +92,11 @@ namespace DeepMorphy
         }
 
         public bool UseEnGramNameNames { get; }
-        
+
         public TagHelper TagHelper { get; }
-        
+
         public GramHelper GramHelper { get; }
-        
+
         /// <summary>
         /// Производит морфологический разбор слов
         /// --------------------
@@ -116,7 +118,7 @@ namespace DeepMorphy
             {
                 words = words.Select(x => x.Trim().ToLower());
             }
-            
+
             foreach (var netTpl in _net.Parse(words))
             {
                 bool ignoreNetworkResult = false;
@@ -160,7 +162,7 @@ namespace DeepMorphy
                     var corTag = TagHelper.CreateTagFromId(corWord.TagId, -1, corWord.Lemma);
                     taglist.Add(corTag);
                 }
-                
+
                 _mergeTagsPower(taglist);
                 yield return new MorphInfo(netTpl.srcWord, taglist, netTpl.gramDic, UseEnGramNameNames);
             }
@@ -168,12 +170,12 @@ namespace DeepMorphy
 
         public IEnumerable<MorphInfo> Parse(params string[] words)
         {
-            return Parse((IEnumerable<string>)words);
+            return Parse((IEnumerable<string>) words);
         }
-        
+
         public string Lemmatize(string word, Tag tag)
         {
-            var req = new []
+            var req = new[]
             {
                 (word: word, tag: tag)
             };
@@ -194,18 +196,18 @@ namespace DeepMorphy
                         break;
                     }
                 }
-            
+
                 if (result == null)
                 {
                     var lexeme = _correctionDict.Lexeme(netRes.task.word, netRes.task.tagId);
                     result = lexeme?.FirstOrDefault(w => TagHelper.IsLemma(w.TagId))?.Text;
                 }
-            
+
                 if (result == null)
                 {
                     result = netRes.rezWord;
                 }
-            
+
                 yield return result;
             }
         }
@@ -215,7 +217,7 @@ namespace DeepMorphy
             var request = words.Select(x => (x.word, x.wordTag, resultTag));
             return Inflect(request);
         }
-        
+
         public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> words)
         {
             var tasks = words.Select(x => (x.word, x.wordTag.Id, x.resultTag.Id));
@@ -230,47 +232,56 @@ namespace DeepMorphy
                         break;
                     }
                 }
-            
+
                 if (result == null)
                 {
                     var lexeme = _correctionDict.Lexeme(netRes.srcWord, netRes.srcTagId);
                     result = lexeme?.FirstOrDefault(w => w.TagId == netRes.resTagId)?.Text;
                 }
-            
+
                 if (result == null)
                 {
                     result = netRes.resWord;
                 }
-            
+
                 yield return result;
             }
         }
-        
+
         /// <summary>
         /// Возвращает все формы данного слова
         /// </summary>
         /// <param name="word">Слово</param>
         /// <param name="tag">Тег слова</param>
         /// <returns>Словарь, тег - слово</returns>
-        public IEnumerable<(Tag tag, string text)>Lexeme(string word, Tag tag)
+        public IEnumerable<(Tag tag, string text)> Lexeme(string word, Tag tag)
         {
             var procKey = TagHelper.TagProcDic[tag.Id];
             if (procKey == "nn")
             {
-                var netRes = _net.Lexeme(word, tag.Id).Select(x => (TagHelper.CreateTagFromId(x.tagId), word));
+                var netRes = _net.Lexeme(word, tag.Id);
+                var lexeme = _correctionDict.Lexeme(word, tag.Id);
+
+                netRes = lexeme != null
+                    ? netRes.Where(nw => !lexeme.Any(dw => dw.TagId == nw.tagId && dw.ReplaceOther))
+                            .Concat(lexeme.Select(dw => (dw.TagId, dw.Text)))
+                    : netRes;
+                
+                return netRes.OrderByDescending(x => TagHelper.TagOrderDic[x.tagId])
+                    .Select(x => (TagHelper.CreateTagFromId(x.tagId), x.word));
             }
-            
+
             foreach (var processor in _morphProcessors)
             {
                 if (processor.Key != procKey)
                 {
                     continue;
                 }
-                
+
                 var result = processor.Lexeme(word, tag.Id);
                 if (result != null)
                 {
-                    return result.Select(x => (TagHelper.CreateTagFromId(x.tagId), word));
+                    return result.Select(x => (TagHelper.CreateTagFromId(x.tagId), x.text));
                 }
             }
 

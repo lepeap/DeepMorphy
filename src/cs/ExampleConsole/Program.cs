@@ -34,7 +34,11 @@ namespace ExampleConsole
         };
         static void Main(string[] args)
         {
+            Lexeme();
+            Lexeme1();
+            
             SimpleExample();
+            
             
             AnalisysFullExample1();
             AnalisysFullExample2();
@@ -56,28 +60,34 @@ namespace ExampleConsole
             var results = m.Parse(Words).ToArray();
 
             foreach (var morphInfo in results)
+            {
                 Console.WriteLine(morphInfo.ToString());
+            }
         }
         
         static void AnalisysFullExample1()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Лучший тег");
+            WriteHeader("Лучший тег");
             foreach (var morphInfo in results)
+            {
                 Console.WriteLine($"{morphInfo.Text} - {morphInfo.BestTag}");
+            }
         }
         
         static void AnalisysFullExample2()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Все топ теги");
+            WriteHeader("Все топ теги");
             foreach (var morphInfo in results)
             {
                 Console.WriteLine($"{morphInfo.Text}:");
                 foreach (var tag in morphInfo.Tags)
+                {
                     Console.WriteLine($"    {tag} : {tag.Power}");
+                }
             }
         }
         
@@ -85,12 +95,16 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Теги с прилагательным и единственным числом");
+            WriteHeader("Теги с прилагательным и единственным числом");
             foreach (var morphInfo in results)
             {
                 foreach (var tag in morphInfo.Tags)
+                {
                     if (tag.Has("прил", "ед"))
+                    {
                         Console.WriteLine($"{morphInfo.Text} {tag} : {tag.Power}");
+                    }
+                }
             }
         }
         
@@ -98,12 +112,14 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Вывод только части речи и числа");
+            WriteHeader("Вывод только части речи и числа");
             foreach (var morphInfo in results)
             {
                 Console.WriteLine($"{morphInfo.Text}:");
                 foreach (var tag in morphInfo.Tags)
+                {
                     Console.WriteLine($"    {tag["чр"]} {tag["число"]}");
+                }
             }
         }
         
@@ -111,11 +127,13 @@ namespace ExampleConsole
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
-            Console.WriteLine("Слова, которые вероятно являются глаголами прошедшего времени");
+            WriteHeader("Слова, которые вероятно являются глаголами прошедшего времени");
             foreach (var morphInfo in results)
             {
                 if (morphInfo.HasCombination("гл", "прош"))
+                {
                     Console.WriteLine($"{morphInfo.Text}");
+                }
             }
         }
                 
@@ -125,8 +143,12 @@ namespace ExampleConsole
             var results = m.Parse(Words).ToArray();
             WriteHeader("Только прилагательные");
             foreach (var morphInfo in results)
-                if (morphInfo["чр"].BestGramKey=="прил")
+            {
+                if (morphInfo["чр"].BestGramKey == "прил")
+                {
                     Console.WriteLine(morphInfo.ToString());
+                }
+            }
         }
 
         static void AnalisysPartExample2()
@@ -182,8 +204,10 @@ namespace ExampleConsole
             var mainWord = results[0];
             foreach (var morphInfo in results)
             {
-                if (mainWord.CanBeSameLexeme(morphInfo))    
+                if (mainWord.CanBeSameLexeme(morphInfo))
+                {
                     Console.WriteLine(morphInfo.Text);
+                }
             }
         }
 
@@ -216,22 +240,44 @@ namespace ExampleConsole
             }
         }
 
-        static void GetAllForms()
+        static void Lexeme()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
-            //var res = m.Parse("двухтысячный").ToArray();
-            //var results = m.Parse(new []{ "трахать" }).ToArray();
-            //var results = m.Parse(new []{ "ебать" }).ToArray();
-
-            //var resDic = m.GetAllForms(results[0].Text, results[0].BestTag);
+            var word = "дебажить";
+            var tag = m.TagHelper.CreateTag("инф_гл");
+            var results = m.Lexeme(word, tag).ToArray();
             
+            WriteHeader($"Лексема для слова {word}[{tag}]");
+            foreach (var tpl in results)
+            {
+                Console.WriteLine($"{tpl.tag} - {tpl.text}");
+            }
+            Console.WriteLine();
             
-            var results = m.Parse(new []{ "кофе" }).ToArray();
-            //var results = m.Parse(new []{ "ебать" }).ToArray();
-
-            var resDic = m.Lexeme(results[0].Text, results[0].BestTag);
-            
+            WriteHeader($"Только деепричастия из лексемы {word}[{tag}]");
+            foreach (var tpl in results.Where(x => x.tag.Has("деепр")))
+            {
+                Console.WriteLine($"{tpl.tag} - {tpl.text}");
+            }
         }
+        
+        
+        static void Lexeme1()
+        {
+            var m = new MorphAnalyzer(withLemmatization: true);
+            
+            var word = "я";
+            var res = m.Parse("я").ToArray();
+            var tag = res[0].BestTag;
+            var results = m.Lexeme(word,tag ).ToArray();
+            WriteHeader($"Лексема для слова {word}[{tag}]");
+            foreach (var tpl in results)
+            {
+                Console.WriteLine($"{tpl.tag} - {tpl.text}");
+            }
+            Console.WriteLine();
+        }
+        
 
         static void WriteHeader(string message)
         {
@@ -239,7 +285,6 @@ namespace ExampleConsole
             Console.WriteLine("####################################################");
             Console.WriteLine("####################################################");
             Console.WriteLine($"{message}:");
-            
         }
     }
 }
