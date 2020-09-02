@@ -70,7 +70,7 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        public IEnumerable<((string word, int tagId) task, string rezWord)> Lemmatize(IEnumerable<(string word, int tagId)> srcItems)
+        public IEnumerable<((string word, int tagId) task, string resWord)> Lemmatize(IEnumerable<(string word, int tagId)> srcItems)
         {
             foreach (var batchSrc in _batchify(srcItems, _maxBatchSize))
             {

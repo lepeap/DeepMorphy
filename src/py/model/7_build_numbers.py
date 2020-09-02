@@ -46,9 +46,6 @@ for n_key in numbr_src_dic:
                 cur_classes_count += 1
 
             cur_class = numb_cls_dict[cls_tpl]
-            if index == 0:
-                n_key_data['lemma'] = item['text']
-
             if index == 0 and cls_tpl not in lemma_cls_ids:
                 lemma_cls_ids.add(cur_class)
 
@@ -65,15 +62,16 @@ regex = []
 for val in res_dict:
     cur_group = []
     for key in res_dict[val]:
-        if key == 'nar_end':
+        if key == 'nar_end' or key == 'lemma':
             continue
 
         for tpl in res_dict[val][key]:
             cur_group.append(tpl[0])
 
+    cur_group = list(set(cur_group))
     cur_group = '|'.join(cur_group)
     cur_group = f'(?<_{val}>{cur_group})'
-    regex.append(cur_group)
+    regex.insert(0, cur_group)
 
 regex = '|'.join(regex)
 regex = f"^({regex})+$"

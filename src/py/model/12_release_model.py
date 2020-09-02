@@ -73,12 +73,12 @@ class Releaser:
 #
         #self.__release_test_metrics__()
         self.__release_numbers_xml__()
-        self.__release_gramm_docs__()
-        self.__release_inflect_docs__()
-        self.__release_grams_xml__()
-        self.__release_tags_xml__()
-        self.__release_dataset_info__()
-        self.__release_model_xml__(out_ops, gram_ops)
+        #self.__release_gramm_docs__()
+        #self.__release_inflect_docs__()
+        #self.__release_grams_xml__()
+        #self.__release_tags_xml__()
+        #self.__release_dataset_info__()
+        #self.__release_model_xml__(out_ops, gram_ops)
 
     def __release_test_metrics__(self):
         results = self.tester.test()

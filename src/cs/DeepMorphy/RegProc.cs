@@ -46,21 +46,20 @@ namespace DeepMorphy
             if (match.Success)
             {
                 var gr = Groups.Single(x => match.Groups[x].Success);
-                yield return (GroupToClassDic[gr], word);
-                yield break;
+                return (GroupToClassDic[gr], word).Yield();
+            }
+            
+            if (_isUnknown(word))
+            {
+                return (GroupToClassDic["unkn"], word).Yield();
             }
 
-            var availableCount = word.Count(x => _availableChars.Contains(x));
-            var availablePers = 100 * availableCount / word.Length;
-            if (availablePers < _minAvailablePersent)
-            {
-                yield return (GroupToClassDic["unkn"], word);
-            }
+            return null;
         }
 
         public string Lemmatize(string word, int tagId)
         {
-            if (Reg.IsMatch(word))
+            if (Reg.IsMatch(word) || _isUnknown(word))
             {
                 return word;
             }
@@ -70,7 +69,7 @@ namespace DeepMorphy
 
         public string Inflect(string word, int wordTag, int resultTag)
         {
-            if (Reg.IsMatch(word))
+            if (Reg.IsMatch(word) || _isUnknown(word))
             {
                 return word;
             }
@@ -80,12 +79,19 @@ namespace DeepMorphy
 
         public IEnumerable<(int tagId, string text)> Lexeme(string word, int tag)
         {
-            if (Reg.IsMatch(word))
+            if (Reg.IsMatch(word) || _isUnknown(word))
             {
                 return new[]{ (tag, word) };
             }
 
             return null;
+        }
+
+        private bool _isUnknown(string word)
+        {
+            var availableCount = word.Count(x => _availableChars.Contains(x));
+            var availablePers = 100 * availableCount / word.Length;
+            return availablePers < _minAvailablePersent;
         }
     }
 }

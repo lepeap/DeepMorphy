@@ -23,17 +23,16 @@ namespace DeepMorphy.Numb
                         currentVal = new NumberData();
                         NumberDictionary[val] = currentVal;
                     }
-                    else if (rdr.Name == "W" && rdr.NodeType == XmlNodeType.Element && rdr.GetAttribute("p") != null)
-                    {
-                        var clsId = int.Parse(rdr.GetAttribute("i"));
-                        var text = rdr.GetAttribute("t");
-                        currentVal.Ordinal[clsId] = text;
-                    }
                     else if (rdr.Name == "W" && rdr.NodeType == XmlNodeType.Element)
                     {
-                        var clsId = int.Parse(rdr.GetAttribute("i"));
+                        var tagId = int.Parse(rdr.GetAttribute("i"));
                         var text = rdr.GetAttribute("t");
-                        currentVal.Quantitative[clsId] = text;
+                        var id = rdr.GetAttribute("k");
+                        if (!currentVal.Lexemes.ContainsKey(id))
+                        {
+                            currentVal.Lexemes[id] = new List<(int tagId, string text)>();
+                        }
+                        currentVal.Lexemes[id].Add((tagId, text));
                     }
                     else if (rdr.Name == "E" && rdr.NodeType == XmlNodeType.Element)
                     {
@@ -67,10 +66,8 @@ namespace DeepMorphy.Numb
 
         internal class NumberData
         {
-            public Dictionary<int, string> Ordinal = new Dictionary<int, string>();
-
-            public Dictionary<int, string> Quantitative = new Dictionary<int, string>();
-
+            public Dictionary<string, List<(int tagId, string text)>> Lexemes = new Dictionary<string, List<(int tagId, string text)>>();
+            
             public Dictionary<int, string> NarEnd = new Dictionary<int, string>();
         }
     }

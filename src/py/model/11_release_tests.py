@@ -20,7 +20,6 @@ with open(CONFIG['tags_path'], 'rb') as f:
     is_lemma_dict = {tags[key]['i']: tags[key]['l'] for key in tags}
     tag_index_order = {tags[tag]['i']: tags[tag]['o'] for tag in tags}
 
-
 def release_gram_tests(items, key, cls_dic, result_path):
     root = etree.Element('Tests')
     for word in items:
@@ -168,12 +167,12 @@ def release_numb_tests():
     for val in numb_data['numbers']:
         n_el = etree.Element("N")
         n_el.set('v', str(val))
-        lemma = numb_data['numbers'][val]['lemma']
         for tp in numb_data['numbers'][val]:
             if tp == 'nar_end' or tp == 'lemma':
                 continue
 
             items = numb_data['numbers'][val][tp]
+            lemma, _ = items[0]
             for text, index in items:
                 main.append(dict(src=text, y=index))
                 lemmas.append(dict(
@@ -181,6 +180,16 @@ def release_numb_tests():
                     main_cls=index,
                     y_src=lemma
                 ))
+
+            un_cls_ids = []
+            rez_items = []
+            for item in items:
+                if item[1] in un_cls_ids:
+                    continue
+
+                un_cls_ids.append(item[1])
+                rez_items.append(item)
+            items = rez_items
 
             for i in range(0, len(items) - 2):
                 main_text, main_index = items[i]
@@ -208,8 +217,9 @@ def release_nar_numb_tests():
     for val in numb_data['numbers']:
         n_el = etree.Element("N")
         n_el.set('v', str(val))
-        lemma = numb_data['numbers'][val]['lemma']
         items = numb_data['numbers'][val]['nar_end']
+        lemma_id = numb_data['numbers'][val]['p'][0][1]
+        lemma = f"{val}-{items[lemma_id]}"
         for index in items:
             text = f"{val}-{items[index]}"
             main.append(dict(src=text, y=index))
@@ -260,12 +270,13 @@ def release_reg_tests():
             punct_tag = tags[tag]['i']
 
     main = []
-    for p in string.punctuation:
+    puncts = ['.', ',', '?', '!', '_', '"', '(', ')', ':', ';', '-']
+    for p in puncts:
         main.append(dict(src=p, y=punct_tag))
 
         text = [p]
         for _ in range(1, RANDOM.randint(2, 5)):
-            text.append(string.punctuation[RANDOM.randint(0, len(string.punctuation)-1)])
+            text.append(puncts[RANDOM.randint(0, len(puncts)-1)])
 
         text = ''.join(text)
         main.append(dict(src=text, y=punct_tag))

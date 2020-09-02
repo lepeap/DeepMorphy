@@ -73,7 +73,7 @@ namespace DeepMorphy.Numb
             var numbData = data.NumberData;
             var lemmaEnd = numbData.NarEnd.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
             var lemma = $"{data.Digit}-{lemmaEnd}";
-            return numbData.Ordinal.Where(kp => kp.Value.EndsWith(data.OriginalEnd)).Select(kp => (kp.Key, lemma));
+            return numbData.Lexemes["p"].Where(tpl => tpl.text.EndsWith(data.OriginalEnd)).Select(tpl => (tpl.tagId, lemma));
         }
 
         public string Lemmatize(string word, int tagId)

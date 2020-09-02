@@ -16,15 +16,26 @@ namespace MetricsCalc
     {
         static void Main(string[] args)
         {
-            //ShowMemoryInfo();
-            var morph = new MorphAnalyzer(useEnGramNames: true, onlyNetwork: true, withLemmatization: true);
-            //new TestsCalc(morph,  "NnTests", "Only network").Test();
-            morph = new MorphAnalyzer(useEnGramNames: true, onlyNetwork: false, withLemmatization: true);
-            //new TestsCalc(morph, "NnTests", "Full").Test();
-            new TestsCalc(morph, "Reg", "Reg").Test();
-            new TestsCalc(morph, "Numb", "Numb").Test();
-            new TestsCalc(morph, "NarNumb", "NarNumb").Test();
-            new TestsCalc(morph, "Dict", "Dict").Test();
+            using (var filestream = new FileStream("log.txt", FileMode.Create))
+            {
+                using (var streamwriter = new StreamWriter(filestream))
+                {
+                    streamwriter.AutoFlush = true;
+                    Console.SetOut(streamwriter);
+                    Console.SetError(streamwriter);
+                    
+                    //ShowMemoryInfo();
+                    var morph = new MorphAnalyzer(useEnGramNames: true, onlyNetwork: true, withLemmatization: true);
+                    //new TestsCalc(morph,  "NnTests", "Only network").Test();
+                    morph = new MorphAnalyzer(useEnGramNames: true, onlyNetwork: false, withLemmatization: true);
+                    //new TestsCalc(morph, "NnTests", "Full").Test();
+                    //new TestsCalc(morph, "Reg", "Reg").Test();
+                    //new TestsCalc(morph, "Numb", "Numb").Test();
+                    new TestsCalc(morph, "NarNumb", "NarNumb").Test();
+                    //new TestsCalc(morph, "Dict", "Dict").Test();
+
+                }
+            }
         }
 
         private static long GetMemory()

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -15,6 +16,11 @@ namespace DeepMorphy
         public static Stream GetCompressedResourceStream(string name)
         {
             return new GZipStream(GetResourceStream(name), CompressionMode.Decompress);
-        }      
+        }
+        
+        public static IEnumerable<T> Yield<T>(this T item)
+        {
+            yield return item;
+        }
     }
 }

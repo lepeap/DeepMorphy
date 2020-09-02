@@ -13,13 +13,13 @@ namespace DeepMorphy.Numb
             if (!_tryParse(word, 
                 out string prefix,
                 out string mainWord,
-                out Dictionary<int, string> curLexemeDic))
+                out List<(int tagId, string text)> curLexeme))
             {
                 return null;
             }
 
-            var lemma = curLexemeDic.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
-            return curLexemeDic.Where(x => x.Value == mainWord).Select(kp => (kp.Key, lemma));
+            var lemma = curLexeme.First(x => NumbInfo.LemmaTagId.Contains(x.tagId)).text;
+            return curLexeme.Where(x => x.text == mainWord).Select(kp => (kp.tagId, lemma));
         }
 
         public string Lemmatize(string word, int tagId)
@@ -27,12 +27,13 @@ namespace DeepMorphy.Numb
             if (!_tryParse(word, 
                 out string prefix,
                 out string mainWord,
-                out Dictionary<int, string> curLexemeDic))
+                out List<(int tagId, string text)> curLexeme))
             {
                 return null;
             }
+            
 
-            var lemma = curLexemeDic.First(x => NumbInfo.LemmaTagId.Contains(x.Key)).Value;
+            var lemma = curLexeme.First(x => NumbInfo.LemmaTagId.Contains(x.tagId)).text;
             return lemma;
         }
 
@@ -41,17 +42,17 @@ namespace DeepMorphy.Numb
             if (!_tryParse(word, 
                 out string prefix,
                 out string mainWord,
-                out Dictionary<int, string> curLexemeDic))
+                out List<(int tagId, string text)> curLexeme))
             {
                 return null;
             }
 
-            if (!curLexemeDic.ContainsKey(resultTag))
+            if (curLexeme.All(x => x.tagId != resultTag))
             {
                 return null;
             }
 
-            var mainValue = curLexemeDic.FirstOrDefault(x => x.Key == resultTag).Value;
+            var mainValue = curLexeme.First(x => x.tagId == resultTag).text;
             return $"{prefix}{mainValue}";
         }
 
@@ -60,23 +61,23 @@ namespace DeepMorphy.Numb
             if (!_tryParse(word,
                 out string prefix,
                 out string mainWord,
-                out Dictionary<int, string> curLexemeDic))
+                out List<(int tagId, string text)> curLexeme))
             {
                 return null;
             }
 
-            return curLexemeDic.Select(kp => (kp.Key, $"{prefix}{kp.Value}"));
+            return curLexeme.Select(tpl => (tpl.tagId, $"{prefix}{tpl.text}"));
         }
 
         private bool _tryParse(string word,
             out string prefix,
             out string mainWord,
-            out Dictionary<int, string> curLexemeDic)
+            out List<(int tagId, string text)> curLexeme)
         {
             prefix = null;
             mainWord = null;
             string mWord = null;
-            curLexemeDic = null;
+            curLexeme = null;
             NumbInfo.NumberData numbData = null;
             var match = NumbInfo.NumberRegex.Match(word);
             if (!match.Success)
@@ -102,18 +103,15 @@ namespace DeepMorphy.Numb
             }
 
             mainWord = mWord;
-            if (numbData.Ordinal.Where(x => x.Value == mWord).Any())
+            foreach (var lexemeKp in numbData.Lexemes)
             {
-                curLexemeDic = numbData.Ordinal;
-                return true;
+                if (lexemeKp.Value.Any(x => x.text == mWord))
+                {
+                    curLexeme = lexemeKp.Value;
+                    return true;
+                }
             }
-
-            if (numbData.Quantitative.Where(x => x.Value == mWord).Any())
-            {
-                curLexemeDic = numbData.Quantitative;
-                return true;
-            }
-
+            
             return false;
         }
     }

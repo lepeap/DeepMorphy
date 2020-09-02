@@ -36,13 +36,17 @@ namespace MetricsCalc
             float correctCount = 0;
             int i = 0;
             var tasks = tests.Select(x => (x.X, GetTag(x.ClsX)));
-
-            foreach (var res in _morph.Lemmatize(tasks))
+            var results = _morph.Lemmatize(tasks).ToArray();
+            foreach (var res in results)
             {
                 var test = tests[i];
                 if (res == test.Y)
                 {
                     correctCount++;
+                }
+                else
+                {
+                    Console.WriteLine($"{_testName} lemmatization. Error: {test.Y} != {res}");
                 }
 
                 i++;
@@ -50,6 +54,7 @@ namespace MetricsCalc
 
             float result = correctCount / totalCount;
             Console.WriteLine($"{_testName} lemmatization acc: {result}");
+            Console.WriteLine($"{_testName} lemmatization errors count: {totalCount - correctCount}");
         }
 
         private void TestInflect()
@@ -67,12 +72,17 @@ namespace MetricsCalc
                 {
                     correctCount++;
                 }
-
+                else
+                {
+                    var tagText = string.Join(",", TagHelper.TagsRuDic[test.ClsY].Select(kp => kp.Value));
+                    Console.WriteLine($"{_testName} inflect. Error: {test.Y} != {res}. Result tag: {tagText}");
+                }
                 i++;
             }
 
             float result = correctCount / totalCount;
             Console.WriteLine($"{_testName} inflect acc: {result}");
+            Console.WriteLine($"{_testName} inflect errors count: {totalCount - correctCount}");
         }
 
         private void TestGramClassification()
@@ -104,7 +114,9 @@ namespace MetricsCalc
                     for (int j = 0; j < etRez.Length; j++)
                     {
                         if (etRez.Contains(rez[j].Key))
+                        {
                             correctClassesCount++;
+                        }
                         else
                         {
                             correct = false;
@@ -140,12 +152,22 @@ namespace MetricsCalc
                 var etalonRez = test.Y.Split(';').Select(x => int.Parse(x)).ToArray();
                 totalClassesCount += etalonRez.Length;
                 int curCount = 0;
+                bool error = false;
                 foreach (var etIndex in etalonRez)
                 {
                     if (res.Tags.Any(t => t.Id == etIndex))
                     {
                         curCount++;
                     }
+                    else
+                    {
+                        error = true;
+                    }
+                }
+
+                if (error)
+                {
+                    Console.WriteLine($"{_testName} main. Error: {test.X}");
                 }
 
                 correctClassesCount += curCount;
@@ -159,6 +181,7 @@ namespace MetricsCalc
             float clsAcc = correctClassesCount / totalClassesCount;
             Console.WriteLine($"{_testName} main classification. Full acc: {testAcc}");
             Console.WriteLine($"{_testName} main classification. Classes acc: {clsAcc}");
+            Console.WriteLine($"{_testName} main errors count: {totalClassesCount - correctClassesCount}");
         }
 
         private IEnumerable<Test> LoadTests(string name)

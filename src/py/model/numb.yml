@@ -7,14 +7,14 @@
   - {case: gent, gndr: masc, nmbr: sing, text: нулевого}
   - {case: gent, gndr: femn, nmbr: sing, text: нулевой}
   - {case: gent, gndr: neut, nmbr: sing, text: нулевого}
-  - {case: gent, nmbr: plur, text: нулевых, lemma: нулевой}
+  - {case: gent, nmbr: plur, text: нулевых}
   - {case: datv, gndr: masc, nmbr: sing, text: нулевому}
   - {case: datv, gndr: femn, nmbr: sing, text: нулевой}
   - {case: datv, gndr: neut, nmbr: sing, text: нулевому}
   - {case: datv, nmbr: plur, text: нулевым}
   - {case: accs, gndr: masc, nmbr: sing, text: нулевого}
-  - {case: accs, gndr: femn, nmbr: sing, text: нулевой}
-  - {case: accs, gndr: femn, nmbr: sing, text: нулевую}
+  - {case: accs, gndr: masc, nmbr: sing, text: нулевой}
+  - {case: accs, gndr: femn, nmbr: sing, text: нулевjю}
   - {case: accs, gndr: neut, nmbr: sing, text: нулевое}
   - {case: accs, nmbr: plur, text: нулевых}
   - {case: accs, nmbr: plur, text: нулевые}
