@@ -54,7 +54,7 @@ for n_key in numbr_src_dic:
 
             items = n_key_data[t]
             items.append((item['text'], cur_class))
-            if t == 'p':
+            if t == 'p' and cur_class not in n_key_data['nar_end']:
                 end = get_nar_end(item['text'])
                 n_key_data['nar_end'][cur_class] = end
 

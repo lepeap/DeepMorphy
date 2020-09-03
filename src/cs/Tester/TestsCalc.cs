@@ -23,6 +23,14 @@ namespace MetricsCalc
 
         internal void Test()
         {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("####################################################");
+            Console.WriteLine("####################################################");
+            Console.WriteLine($"{_testName}:");
+            Console.WriteLine("####################################################");
+            Console.WriteLine("####################################################");
+            Console.WriteLine();
             TestGramClassification();
             TestMainClassification();
             TestLemmatization();
@@ -75,7 +83,7 @@ namespace MetricsCalc
                 else
                 {
                     var tagText = string.Join(",", TagHelper.TagsRuDic[test.ClsY].Select(kp => kp.Value));
-                    Console.WriteLine($"{_testName} inflect. Error: {test.Y} != {res}. Result tag: {tagText}");
+                    Console.WriteLine($"{_testName} inflect. Error: {test.Y} != {res}. Result tag[{test.ClsY}]: {tagText}");
                 }
                 i++;
             }

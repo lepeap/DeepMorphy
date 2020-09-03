@@ -14,7 +14,7 @@
   - {case: datv, nmbr: plur, text: нулевым}
   - {case: accs, gndr: masc, nmbr: sing, text: нулевого}
   - {case: accs, gndr: masc, nmbr: sing, text: нулевой}
-  - {case: accs, gndr: femn, nmbr: sing, text: нулевjю}
+  - {case: accs, gndr: femn, nmbr: sing, text: нулевую}
   - {case: accs, gndr: neut, nmbr: sing, text: нулевое}
   - {case: accs, nmbr: plur, text: нулевых}
   - {case: accs, nmbr: plur, text: нулевые}
@@ -67,8 +67,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: первой}
   - {case: datv, gndr: neut, nmbr: sing, text: первому}
   - {case: datv, nmbr: plur, text: первым}
-  - {case: accs, gndr: masc, nmbr: sing, text: первый}
   - {case: accs, gndr: masc, nmbr: sing, text: первого}
+  - {case: accs, gndr: masc, nmbr: sing, text: первый}
   - {case: accs, gndr: femn, nmbr: sing, text: первую}
   - {case: accs, gndr: neut, nmbr: sing, text: первое}
   - {case: accs, nmbr: plur, text: первые}
@@ -94,8 +94,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: одной}
   - {case: datv, gndr: neut, nmbr: sing, text: одному}
   - {case: datv, nmbr: plur, text: одним}
-  - {case: accs, gndr: masc, nmbr: sing, text: один}
   - {case: accs, gndr: femn, nmbr: sing, text: одного}
+  - {case: accs, gndr: masc, nmbr: sing, text: один}
   - {case: accs, gndr: femn, nmbr: sing, text: одну}
   - {case: accs, gndr: neut, nmbr: sing, text: одно}
   - {case: accs, nmbr: plur, text: одни}
@@ -148,8 +148,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: второй}
   - {case: datv, gndr: neut, nmbr: sing, text: второму}
   - {case: datv, nmbr: plur, text: вторым}
-  - {case: accs, gndr: masc, nmbr: sing, text: второй}
   - {case: accs, gndr: femn, nmbr: sing, text: второго}
+  - {case: accs, gndr: masc, nmbr: sing, text: второй}
   - {case: accs, gndr: femn, nmbr: sing, text: вторую}
   - {case: accs, gndr: neut, nmbr: sing, text: второе}
   - {case: accs, nmbr: plur, text: вторые}
@@ -197,8 +197,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: третьей}
   - {case: datv, gndr: neut, nmbr: sing, text: третьему}
   - {case: datv, nmbr: plur, text: третьим}
-  - {case: accs, gndr: masc, nmbr: sing, text: третий}
   - {case: accs, gndr: masc, nmbr: sing, text: третьего}
+  - {case: accs, gndr: masc, nmbr: sing, text: третий}
   - {case: accs, gndr: femn, nmbr: sing, text: третью}
   - {case: accs, gndr: neut, nmbr: sing, text: третье}
   - {case: accs, nmbr: plur, text: третьи}
@@ -234,8 +234,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: четвёртой}
   - {case: datv, gndr: neut, nmbr: sing, text: четвёртому}
   - {case: datv, nmbr: plur, text: четвёртым}
-  - {case: accs, gndr: masc, nmbr: sing, text: четвёртый}
   - {case: accs, gndr: masc, nmbr: sing, text: четвёртого}
+  - {case: accs, gndr: masc, nmbr: sing, text: четвёртый}
   - {case: accs, gndr: femn, nmbr: sing, text: четвёртую}
   - {case: accs, gndr: neut, nmbr: sing, text: четвёртое}
   - {case: accs, nmbr: plur, text: четвёртые}
@@ -270,8 +270,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: пятой}
   - {case: datv, gndr: neut, nmbr: sing, text: пятому}
   - {case: datv, nmbr: plur, text: пятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: пятый}
   - {case: accs, gndr: femn, nmbr: sing, text: пятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятый}
   - {case: accs, gndr: femn, nmbr: sing, text: пятую}
   - {case: accs, gndr: neut, nmbr: sing, text: пятое}
   - {case: accs, nmbr: plur, text: пятые}
@@ -305,8 +305,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: шестой}
   - {case: datv, gndr: neut, nmbr: sing, text: шестому}
   - {case: datv, nmbr: plur, text: шестым}
-  - {case: accs, gndr: masc, nmbr: sing, text: шестой}
   - {case: accs, gndr: masc, nmbr: sing, text: шестого}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестой}
   - {case: accs, gndr: femn, nmbr: sing, text: шестую}
   - {case: accs, gndr: neut, nmbr: sing, text: шестое}
   - {case: accs, nmbr: plur, text: шестые}
@@ -340,8 +340,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: седьмой}
   - {case: datv, gndr: neut, nmbr: sing, text: седьмому}
   - {case: datv, nmbr: plur, text: седьмым}
-  - {case: accs, gndr: masc, nmbr: sing, text: седьмой}
   - {case: accs, gndr: masc, nmbr: sing, text: седьмого}
+  - {case: accs, gndr: masc, nmbr: sing, text: седьмой}
   - {case: accs, gndr: femn, nmbr: sing, text: седьмую}
   - {case: accs, gndr: neut, nmbr: sing, text: седьмое}
   - {case: accs, nmbr: plur, text: седьмые}
@@ -375,8 +375,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: восьмой}
   - {case: datv, gndr: neut, nmbr: sing, text: восьмому}
   - {case: datv, nmbr: plur, text: восьмым}
-  - {case: accs, gndr: masc, nmbr: sing, text: восьмой}
   - {case: accs, gndr: masc, nmbr: sing, text: восьмого}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмой}
   - {case: accs, gndr: femn, nmbr: sing, text: восьмую}
   - {case: accs, gndr: neut, nmbr: sing, text: восьмое}
   - {case: accs, nmbr: plur, text: восьмые}
@@ -411,8 +411,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: девятой}
   - {case: datv, gndr: neut, nmbr: sing, text: девятому}
   - {case: datv, nmbr: plur, text: девятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: девятый}
   - {case: accs, gndr: masc, nmbr: sing, text: девятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятый}
   - {case: accs, gndr: femn, nmbr: sing, text: девятую}
   - {case: accs, gndr: neut, nmbr: sing, text: девятое}
   - {case: accs, nmbr: plur, text: девятые}
@@ -446,8 +446,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: десятой}
   - {case: datv, gndr: neut, nmbr: sing, text: десятому}
   - {case: datv, nmbr: plur, text: десятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: десятый}
   - {case: accs, gndr: masc, nmbr: sing, text: десятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: десятый}
   - {case: accs, gndr: femn, nmbr: sing, text: десятую}
   - {case: accs, gndr: neut, nmbr: sing, text: десятое}
   - {case: accs, nmbr: plur, text: десятые}
@@ -481,8 +481,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: одиннадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: одиннадцатому}
   - {case: datv, nmbr: plur, text: одиннадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: одиннадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: одиннадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: одиннадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: одиннадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: одиннадцатое}
   - {case: accs, nmbr: plur, text: одиннадцатые}
@@ -530,8 +530,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: двенадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: двенадцатому}
   - {case: datv, nmbr: plur, text: двенадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: двенадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: двенадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: двенадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: двенадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: двенадцатое}
   - {case: accs, nmbr: plur, text: двенадцатые}
@@ -565,8 +565,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: тринадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: тринадцатому}
   - {case: datv, nmbr: plur, text: тринадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: тринадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: тринадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: тринадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: тринадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: тринадцатое}
   - {case: accs, nmbr: plur, text: тринадцатые}
@@ -600,8 +600,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: четырнадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: четырнадцатому}
   - {case: datv, nmbr: plur, text: четырнадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: четырнадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: четырнадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: четырнадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: четырнадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: четырнадцатое}
   - {case: accs, nmbr: plur, text: четырнадцатые}
@@ -635,8 +635,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: пятнадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: пятнадцатому}
   - {case: datv, nmbr: plur, text: пятнадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: пятнадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: пятнадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятнадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: пятнадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: пятнадцатое}
   - {case: accs, nmbr: plur, text: пятнадцатые}
@@ -670,8 +670,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: шестнадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: шестнадцатому}
   - {case: datv, nmbr: plur, text: шестнадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: шестнадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: шестнадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестнадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: шестнадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: шестнадцатое}
   - {case: accs, nmbr: plur, text: шестнадцатые}
@@ -705,8 +705,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: семнадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: семнадцатому}
   - {case: datv, nmbr: plur, text: семнадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: семнадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: семнадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: семнадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: семнадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: семнадцатое}
   - {case: accs, nmbr: plur, text: семнадцатые}
@@ -740,8 +740,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: восемнадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: восемнадцатому}
   - {case: datv, nmbr: plur, text: восемнадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: восемнадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: восемнадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: восемнадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: восемнадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: восемнадцатое}
   - {case: accs, nmbr: plur, text: восемнадцатые}
@@ -775,8 +775,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: девятнадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: девятнадцатому}
   - {case: datv, nmbr: plur, text: девятнадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: девятнадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: девятнадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятнадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: девятнадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: девятнадцатое}
   - {case: accs, nmbr: plur, text: девятнадцатые}
@@ -810,8 +810,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: двадцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: двадцатому}
   - {case: datv, nmbr: plur, text: двадцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: двадцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: двадцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: двадцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: двадцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: двадцатое}
   - {case: accs, nmbr: plur, text: двадцатые}
@@ -845,8 +845,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: тридцатой}
   - {case: datv, gndr: neut, nmbr: sing, text: тридцатому}
   - {case: datv, nmbr: plur, text: тридцатым}
-  - {case: accs, gndr: masc, nmbr: sing, text: тридцатый}
   - {case: accs, gndr: masc, nmbr: sing, text: тридцатого}
+  - {case: accs, gndr: masc, nmbr: sing, text: тридцатый}
   - {case: accs, gndr: femn, nmbr: sing, text: тридцатую}
   - {case: accs, gndr: neut, nmbr: sing, text: тридцатое}
   - {case: accs, nmbr: plur, text: тридцатые}
@@ -880,8 +880,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: сороковой}
   - {case: datv, gndr: neut, nmbr: sing, text: сороковому}
   - {case: datv, nmbr: plur, text: сороковым}
-  - {case: accs, gndr: masc, nmbr: sing, text: сороковой}
   - {case: accs, gndr: masc, nmbr: sing, text: сорокового}
+  - {case: accs, gndr: masc, nmbr: sing, text: сороковой}
   - {case: accs, gndr: femn, nmbr: sing, text: сороковую}
   - {case: accs, gndr: neut, nmbr: sing, text: сороковое}
   - {case: accs, nmbr: plur, text: сороковые}
@@ -918,8 +918,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: пятидесятой}
   - {case: datv, gndr: neut, nmbr: sing, text: пятидесятому}
   - {case: datv, nmbr: plur, text: пятидесятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: пятидесятый}
   - {case: accs, gndr: masc, nmbr: sing, text: пятидесятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятидесятый}
   - {case: accs, gndr: femn, nmbr: sing, text: пятидесятую}
   - {case: accs, gndr: neut, nmbr: sing, text: пятидесятое}
   - {case: accs, nmbr: plur, text: пятидесятые}
@@ -953,8 +953,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: шестидесятой}
   - {case: datv, gndr: neut, nmbr: sing, text: шестидесятому}
   - {case: datv, nmbr: plur, text: шестидесятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: шестидесятый}
   - {case: accs, gndr: masc, nmbr: sing, text: шестидесятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестидесятый}
   - {case: accs, gndr: femn, nmbr: sing, text: шестидесятую}
   - {case: accs, gndr: neut, nmbr: sing, text: шестидесятое}
   - {case: accs, nmbr: plur, text: шестидесятые}
@@ -988,8 +988,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: семидесятой}
   - {case: datv, gndr: neut, nmbr: sing, text: семидесятому}
   - {case: datv, nmbr: plur, text: семидесятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: семидесятый}
   - {case: accs, gndr: masc, nmbr: sing, text: семидесятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: семидесятый}
   - {case: accs, gndr: femn, nmbr: sing, text: семидесятую}
   - {case: accs, gndr: neut, nmbr: sing, text: семидесятое}
   - {case: accs, nmbr: plur, text: семидесятые}
@@ -1023,8 +1023,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: восьмидесятой}
   - {case: datv, gndr: neut, nmbr: sing, text: восьмидесятому}
   - {case: datv, nmbr: plur, text: восьмидесятым}
-  - {case: accs, gndr: masc, nmbr: sing, text: восьмидесятый}
   - {case: accs, gndr: masc, nmbr: sing, text: восьмидесятого}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмидесятый}
   - {case: accs, gndr: femn, nmbr: sing, text: восьмидесятую}
   - {case: accs, gndr: neut, nmbr: sing, text: восьмидесятое}
   - {case: accs, nmbr: plur, text: восьмидесятые}
@@ -1059,8 +1059,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: девяностой}
   - {case: datv, gndr: neut, nmbr: sing, text: девяностому}
   - {case: datv, nmbr: plur, text: девяностым}
-  - {case: accs, gndr: masc, nmbr: sing, text: девяностый}
   - {case: accs, gndr: masc, nmbr: sing, text: девяностого}
+  - {case: accs, gndr: masc, nmbr: sing, text: девяностый}
   - {case: accs, gndr: femn, nmbr: sing, text: девяностую}
   - {case: accs, gndr: neut, nmbr: sing, text: девяностое}
   - {case: accs, nmbr: plur, text: девяностые}
@@ -1103,8 +1103,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: сотой}
   - {case: datv, gndr: neut, nmbr: sing, text: сотому}
   - {case: datv, nmbr: plur, text: сотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: сотый}
   - {case: accs, gndr: masc, nmbr: sing, text: сотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: сотый}
   - {case: accs, gndr: femn, nmbr: sing, text: сотую}
   - {case: accs, gndr: neut, nmbr: sing, text: сотое}
   - {case: accs, nmbr: plur, text: сотые}
@@ -1138,8 +1138,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: двухсотой}
   - {case: datv, gndr: neut, nmbr: sing, text: двухсотому}
   - {case: datv, nmbr: plur, text: двухсотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: двухсотый}
   - {case: accs, gndr: masc, nmbr: sing, text: двухсотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: двухсотый}
   - {case: accs, gndr: femn, nmbr: sing, text: двухсотую}
   - {case: accs, gndr: neut, nmbr: sing, text: двухсотое}
   - {case: accs, nmbr: plur, text: двухсотые}
@@ -1173,34 +1173,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: трёхсотой}
   - {case: datv, gndr: neut, nmbr: sing, text: трёхсотому}
   - {case: datv, nmbr: plur, text: трёхсотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: трёхсотый}
   - {case: accs, gndr: masc, nmbr: sing, text: трёхсотого}
-  - {case: accs, gndr: femn, nmbr: sing, text: трёхсотую}
-  - {case: accs, gndr: neut, nmbr: sing, text: трёхсотое}
-  - {case: accs, nmbr: plur, text: трёхсотые}
-  - {case: accs, nmbr: plur, text: трёхсотых}
-  - {case: ablt, gndr: masc, nmbr: sing, text: трёхсотым}
-  - {case: ablt, gndr: femn, nmbr: sing, text: трёхсотой}
-  - {case: ablt, gndr: neut, nmbr: sing, text: трёхсотым}
-  - {case: ablt, nmbr: plur, text: трёхсотыми}
-  - {case: loct, gndr: masc, nmbr: sing, text: трёхсотом}
-  - {case: loct, gndr: femn, nmbr: sing, text: трёхсотой}
-  - {case: loct, gndr: neut, nmbr: sing, text: трёхсотом}
-  - {case: loct, nmbr: plur, text: трёхсотых}
-  - {case: nomn, gndr: masc, nmbr: sing, text: трёхсотый}
-  - {case: nomn, gndr: femn, nmbr: sing, text: трёхсотая}
-  - {case: nomn, gndr: neut, nmbr: sing, text: трёхсотое}
-  - {case: nomn, nmbr: plur, text: трёхсотые}
-  - {case: gent, gndr: masc, nmbr: sing, text: трёхсотого}
-  - {case: gent, gndr: femn, nmbr: sing, text: трёхсотой}
-  - {case: gent, gndr: neut, nmbr: sing, text: трёхсотого}
-  - {case: gent, nmbr: plur, text: трёхсотых}
-  - {case: datv, gndr: masc, nmbr: sing, text: трёхсотому}
-  - {case: datv, gndr: femn, nmbr: sing, text: трёхсотой}
-  - {case: datv, gndr: neut, nmbr: sing, text: трёхсотому}
-  - {case: datv, nmbr: plur, text: трёхсотым}
   - {case: accs, gndr: masc, nmbr: sing, text: трёхсотый}
-  - {case: accs, gndr: masc, nmbr: sing, text: трёхсотого}
   - {case: accs, gndr: femn, nmbr: sing, text: трёхсотую}
   - {case: accs, gndr: neut, nmbr: sing, text: трёхсотое}
   - {case: accs, nmbr: plur, text: трёхсотые}
@@ -1234,34 +1208,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: четырёхсотой}
   - {case: datv, gndr: neut, nmbr: sing, text: четырёхсотому}
   - {case: datv, nmbr: plur, text: четырёхсотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотый}
   - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотого}
-  - {case: accs, gndr: femn, nmbr: sing, text: четырёхсотую}
-  - {case: accs, gndr: neut, nmbr: sing, text: четырёхсотое}
-  - {case: accs, nmbr: plur, text: четырёхсотые}
-  - {case: accs, nmbr: plur, text: четырёхсотых}
-  - {case: ablt, gndr: masc, nmbr: sing, text: четырёхсотым}
-  - {case: ablt, gndr: femn, nmbr: sing, text: четырёхсотой}
-  - {case: ablt, gndr: neut, nmbr: sing, text: четырёхсотым}
-  - {case: ablt, nmbr: plur, text: четырёхсотыми}
-  - {case: loct, gndr: masc, nmbr: sing, text: четырёхсотом}
-  - {case: loct, gndr: femn, nmbr: sing, text: четырёхсотой}
-  - {case: loct, gndr: neut, nmbr: sing, text: четырёхсотом}
-  - {case: loct, nmbr: plur, text: четырёхсотых}
-  - {case: nomn, gndr: masc, nmbr: sing, text: четырёхсотый}
-  - {case: nomn, gndr: femn, nmbr: sing, text: четырёхсотая}
-  - {case: nomn, gndr: neut, nmbr: sing, text: четырёхсотое}
-  - {case: nomn, nmbr: plur, text: четырёхсотые}
-  - {case: gent, gndr: masc, nmbr: sing, text: четырёхсотого}
-  - {case: gent, gndr: femn, nmbr: sing, text: четырёхсотой}
-  - {case: gent, gndr: neut, nmbr: sing, text: четырёхсотого}
-  - {case: gent, nmbr: plur, text: четырёхсотых}
-  - {case: datv, gndr: masc, nmbr: sing, text: четырёхсотому}
-  - {case: datv, gndr: femn, nmbr: sing, text: четырёхсотой}
-  - {case: datv, gndr: neut, nmbr: sing, text: четырёхсотому}
-  - {case: datv, nmbr: plur, text: четырёхсотым}
   - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотый}
-  - {case: accs, gndr: masc, nmbr: sing, text: четырёхсотого}
   - {case: accs, gndr: femn, nmbr: sing, text: четырёхсотую}
   - {case: accs, gndr: neut, nmbr: sing, text: четырёхсотое}
   - {case: accs, nmbr: plur, text: четырёхсотые}
@@ -1295,8 +1243,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: пятисотой}
   - {case: datv, gndr: neut, nmbr: sing, text: пятисотому}
   - {case: datv, nmbr: plur, text: пятисотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: пятисотый}
   - {case: accs, gndr: masc, nmbr: sing, text: пятисотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: пятисотый}
   - {case: accs, gndr: femn, nmbr: sing, text: пятисотую}
   - {case: accs, gndr: neut, nmbr: sing, text: пятисотое}
   - {case: accs, nmbr: plur, text: пятисотые}
@@ -1330,8 +1278,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: шестисотой}
   - {case: datv, gndr: neut, nmbr: sing, text: шестисотому}
   - {case: datv, nmbr: plur, text: шестисотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: шестисотый}
   - {case: accs, gndr: masc, nmbr: sing, text: шестисотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: шестисотый}
   - {case: accs, gndr: femn, nmbr: sing, text: шестисотую}
   - {case: accs, gndr: neut, nmbr: sing, text: шестисотое}
   - {case: accs, nmbr: plur, text: шестисотые}
@@ -1365,8 +1313,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: семисотой}
   - {case: datv, gndr: neut, nmbr: sing, text: семисотому}
   - {case: datv, nmbr: plur, text: семисотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: семисотый}
   - {case: accs, gndr: masc, nmbr: sing, text: семисотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: семисотый}
   - {case: accs, gndr: femn, nmbr: sing, text: семисотую}
   - {case: accs, gndr: neut, nmbr: sing, text: семисотое}
   - {case: accs, nmbr: plur, text: семисотые}
@@ -1400,8 +1348,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: восьмисотой}
   - {case: datv, gndr: neut, nmbr: sing, text: восьмисотому}
   - {case: datv, nmbr: plur, text: восьмисотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: восьмисотый}
   - {case: accs, gndr: masc, nmbr: sing, text: восьмисотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: восьмисотый}
   - {case: accs, gndr: femn, nmbr: sing, text: восьмисотую}
   - {case: accs, gndr: neut, nmbr: sing, text: восьмисотое}
   - {case: accs, nmbr: plur, text: восьмисотые}
@@ -1435,8 +1383,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: девятисотой}
   - {case: datv, gndr: neut, nmbr: sing, text: девятисотому}
   - {case: datv, nmbr: plur, text: девятисотым}
-  - {case: accs, gndr: masc, nmbr: sing, text: девятисотый}
   - {case: accs, gndr: masc, nmbr: sing, text: девятисотого}
+  - {case: accs, gndr: masc, nmbr: sing, text: девятисотый}
   - {case: accs, gndr: femn, nmbr: sing, text: девятисотую}
   - {case: accs, gndr: neut, nmbr: sing, text: девятисотое}
   - {case: accs, nmbr: plur, text: девятисотые}
@@ -1470,8 +1418,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: тысячной}
   - {case: datv, gndr: neut, nmbr: sing, text: тысячному}
   - {case: datv, nmbr: plur, text: тысячным}
-  - {case: accs, gndr: masc, nmbr: sing, text: тысячный}
   - {case: accs, gndr: masc, nmbr: sing, text: тысячного}
+  - {case: accs, gndr: masc, nmbr: sing, text: тысячный}
   - {case: accs, gndr: femn, nmbr: sing, text: тысячную}
   - {case: accs, gndr: neut, nmbr: sing, text: тысячное}
   - {case: accs, nmbr: plur, text: тысячные}
@@ -1513,8 +1461,8 @@
   - {case: datv, gndr: femn, nmbr: sing, text: миллионной}
   - {case: datv, gndr: neut, nmbr: sing, text: миллионному}
   - {case: datv, nmbr: plur, text: миллионным}
-  - {case: accs, gndr: masc, nmbr: sing, text: миллионный}
   - {case: accs, gndr: masc, nmbr: sing, text: миллионного}
+  - {case: accs, gndr: masc, nmbr: sing, text: миллионный}
   - {case: accs, gndr: femn, nmbr: sing, text: миллионную}
   - {case: accs, gndr: neut, nmbr: sing, text: миллионное}
   - {case: accs, nmbr: plur, text: миллионные}
@@ -1554,8 +1502,8 @@
   - {case: datv, gndr: masc, nmbr: sing, text: миллиардному}
   - {case: datv, gndr: femn, nmbr: sing, text: миллиардной}
   - {case: datv, gndr: neut, nmbr: sing, text: миллиардному}
-  - {case: accs, gndr: femn, nmbr: sing, text: миллиардный}
   - {case: accs, gndr: masc, nmbr: sing, text: миллиардного}
+  - {case: accs, gndr: femn, nmbr: sing, text: миллиардный}
   - {case: accs, gndr: femn, nmbr: sing, text: миллиардную}
   - {case: accs, gndr: neut, nmbr: sing, text: миллиардное}
   - {case: accs, nmbr: plur, text: миллиардные}

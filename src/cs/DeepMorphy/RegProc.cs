@@ -31,9 +31,9 @@ namespace DeepMorphy
         private readonly char[] _availableChars;
         private readonly int _minAvailablePersent;
         
-        public RegProc(char[] availableChars, int minAvailablePersent)
+        public RegProc(char[] netChars, int minAvailablePersent)
         {
-            _availableChars = availableChars;
+            _availableChars = netChars.Concat(new[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}).ToArray();
             _minAvailablePersent = minAvailablePersent;
         }
         
