@@ -32,7 +32,7 @@ namespace MetricsCalc
             Console.WriteLine("####################################################");
             Console.WriteLine();
             TestGramClassification();
-            TestMainClassification();
+            //TestMainClassification();
             TestLemmatization();
             TestInflect();
         }
@@ -54,7 +54,7 @@ namespace MetricsCalc
                 }
                 else
                 {
-                    Console.WriteLine($"{_testName} lemmatization. Error: {test.Y} != {res}");
+                    Console.WriteLine($"{_testName} lemmatization. Error for {test.X}: {test.Y} != {res}");
                 }
 
                 i++;
@@ -83,7 +83,7 @@ namespace MetricsCalc
                 else
                 {
                     var tagText = string.Join(",", TagHelper.TagsRuDic[test.ClsY].Select(kp => kp.Value));
-                    Console.WriteLine($"{_testName} inflect. Error: {test.Y} != {res}. Result tag[{test.ClsY}]: {tagText}");
+                    Console.WriteLine($"{_testName} inflect. Error: {test.X} -> {test.Y} != {res}. Result tag[{test.ClsY}]: {tagText}");
                 }
                 i++;
             }

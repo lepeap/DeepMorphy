@@ -22,6 +22,16 @@ namespace DeepMorphy.Split
 
         public string[] Process()
         {
+            int j = 0;
+            foreach (var input in Input)
+            {
+                if (input.wordTag.Id == input.resultTag.Id)
+                {
+                    Result[j] = input.word;
+                }
+                j++;
+            }
+            
             foreach (var procKey in GetProcessorKeys())
             {
                 foreach (var proc in Processors.Where(p => p.Key == procKey))
@@ -49,9 +59,16 @@ namespace DeepMorphy.Split
                 var netItems = netTask.Select(tpl => (tpl.input.word, tpl.input.wordTag.Id, tpl.input.resultTag.Id));
                 foreach (var netRes in Net.Inflect(netItems))
                 {
+                    if (Result[netTask[i].index] != null)
+                    {
+                        i++;
+                        continue;
+                    }
+                    
                     var lexeme = CorrectionDict.Lexeme(netRes.srcWord, netRes.srcTagId);
                     var corResult = lexeme?.FirstOrDefault(w => w.TagId == netRes.resTagId)?.Text;
                     Result[netTask[i].index] = corResult ?? netRes.resWord;
+                    i++;
                 }
             }
             

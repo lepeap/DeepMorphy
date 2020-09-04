@@ -89,11 +89,4 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="NarNumb" />
-      <Folder Include="Numb" />
-      <Folder Include="Reg" />
-    </ItemGroup>
-
 </Project>

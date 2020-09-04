@@ -20,10 +20,15 @@ namespace DeepMorphy.WordDict
             using (var reader = new StreamReader(Utils.GetCompressedResourceStream($"DeepMorphy.WordDict.{dictKey}_index.txt.gz"), Encoding.UTF8))
             {
                 var line = reader.ReadLine();
-                while (!reader.EndOfStream && !string.IsNullOrWhiteSpace(line))
+                while(true)
                 {
                     var spltRez = line.Split(':');
                     _indexDic[spltRez[0]] = spltRez[1].Split(',').Select(x => int.Parse(x)).ToArray();
+                    if (reader.EndOfStream)
+                    {
+                        break;
+                    }
+                    
                     line = reader.ReadLine();
                 }
             }
@@ -31,10 +36,16 @@ namespace DeepMorphy.WordDict
             using (var reader = new StreamReader(Utils.GetCompressedResourceStream($"DeepMorphy.WordDict.{dictKey}.txt.gz"), Encoding.UTF8))
             {
                 var line = reader.ReadLine();
-                while (!reader.EndOfStream && !string.IsNullOrWhiteSpace(line))
+                while(true)
                 {
                     var spltRez = line.Split('\t');
-                    _lexemeDic[int.Parse(spltRez[0])] = spltRez[1];
+                    int lexemeId = int.Parse(spltRez[0]);
+                    _lexemeDic[lexemeId] = spltRez[1];
+                    if (reader.EndOfStream)
+                    {
+                        break;
+                    }
+                    
                     line = reader.ReadLine();
                 }
             }
@@ -51,7 +62,12 @@ namespace DeepMorphy.WordDict
             foreach (var id in lexemes)
             {
                 var lexemeWords = _parseLexeme(id).ToArray();
-                string lemma = lexemeWords.First(x => TagHelper.IsLemma(x.TagId)).Text;
+                string lemma = lexemeWords.FirstOrDefault(x => TagHelper.IsLemma(x.TagId))?.Text;
+                if (lemma == null)
+                {
+                    lemma = lexemeWords[0].Text;
+                }
+                
                 foreach (var dWord in lexemeWords)
                 {
                     if (dWord.Text != word)
@@ -91,10 +107,12 @@ namespace DeepMorphy.WordDict
             foreach (var formVal in srcVal.Split(';'))
             {
                 var splMas = formVal.Split(':');
-                string cls;
+                
                 string word = splMas[0];
-                foreach (var clsVal in splMas[1].Split(','))
+                var splRez = splMas[1].Split(',');
+                foreach (var clsVal in splRez)
                 {
+                    string cls;
                     bool replaceOther;
                     if (clsVal.EndsWith("!"))
                     {

@@ -175,7 +175,7 @@ namespace DeepMorphy.NeuralNet
 
         private string _getLemma(string sourceWord, int[,,] nnRes, int wordIndex, int kIndex, int mainCls)
         {
-            if (TagHelper.LemmasIds.Contains(mainCls))
+            if (TagHelper.IsLemma(mainCls))
             {
                 return sourceWord;
             }

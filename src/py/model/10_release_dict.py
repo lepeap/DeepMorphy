@@ -98,19 +98,22 @@ def create_dictionary(words_dics):
     for id in words_dics:
         cur_lexeme = [id, '\t']
 
+        order = []
         cur_forms_dict = {}
         for item in words_dics[id]:
             if item['text'] not in cur_forms_dict:
                 cur_forms_dict[item['text']] = []
-            reaplace_other = item['reaplace_other'] if 'reaplace_other' in item else False
-            cur_forms_dict[item['text']].append((item['main'], reaplace_other))
+            replace_other = item['replace_other'] if 'replace_other' in item else False
+            cur_forms_dict[item['text']].append((item['main'], replace_other))
+            if item['text'] not in order:
+                order.append(item['text'])
 
-        for text in cur_forms_dict:
+        for text in order:
             cur_lexeme.append(text)
             cur_lexeme.append(':')
-            for cls, reaplace_other in cur_forms_dict[text]:
+            for cls, replace_other in cur_forms_dict[text]:
                 cur_lexeme.append(str(cls))
-                if reaplace_other is not None:
+                if replace_other:
                     cur_lexeme.append('!')
 
                 cur_lexeme.append(",")
@@ -147,6 +150,17 @@ def release_dict_items():
         if word['id'] not in dict_words:
             dict_words[word['id']] = []
         dict_words[word['id']].append(word)
+
+    for id in dict_words:
+        un_id_dict = {}
+        rez_list = []
+        for word in sorted(dict_words[id], key=lambda x: x['index']):
+            if word['main'] not in un_id_dict:
+                un_id_dict[word['main']] = word
+            else:
+                un_id_dict[word['main']]['replace_other'] = True
+            rez_list.append(word)
+        dict_words[id] = rez_list
 
     index, lexeme = create_dictionary(dict_words)
     save_dictionary(index, lexeme, REZ_PATHS, 'dict')
@@ -223,7 +237,7 @@ def release_correction_items():
     save_dictionary(index, lexeme, REZ_PATHS, 'dict_correction')
 
 
-release_correction_items()
+#release_correction_items()
 release_dict_items()
 print()
 

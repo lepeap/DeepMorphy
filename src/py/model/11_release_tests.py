@@ -20,6 +20,7 @@ with open(CONFIG['tags_path'], 'rb') as f:
     is_lemma_dict = {tags[key]['i']: tags[key]['l'] for key in tags}
     tag_index_order = {tags[tag]['i']: tags[tag]['o'] for tag in tags}
 
+
 def release_gram_tests(items, key, cls_dic, result_path):
     root = etree.Element('Tests')
     for word in items:
@@ -121,6 +122,9 @@ def release_dictionary_tests():
 
     lexeme_dict = {}
     for word in words:
+        if word['post'] == 'numb':
+            continue
+
         if word['id'] not in lexeme_dict:
             lexeme_dict[word['id']] = []
 
@@ -134,10 +138,34 @@ def release_dictionary_tests():
         for item in lexeme_words:
             main.append(dict(src=item['text'], y=item['main']))
 
+        for word in lexeme_words:
+            lemma = word['lemma'] if 'lemma' in word else word['text']
+            if is_lemma_dict[word['main']]:
+                lemma = word['text']
+
+            lemmas.append(dict(
+                x_src=word['text'],
+                main_cls=word['main'],
+                y_src=lemma
+            ))
+
+        un_cls_ids = []
+        rez_items = []
+        for item in sorted(lexeme_words, key=lambda x: x['index']):
+            if item['main'] in un_cls_ids:
+                continue
+
+            un_cls_ids.append(item['main'])
+            rez_items.append(item)
+        lexeme_words = rez_items
+
         for i in range(0, len(lexeme_words) - 2):
             main_word = lexeme_words[i]
             for j in range(i, len(lexeme_words) - 1):
                 to_word = lexeme_words[j]
+                if to_word['main'] == main_word['main']:
+                    continue
+
                 inflect.append(dict(
                     x_src=main_word['text'],
                     x_cls=main_word['main'],
@@ -146,12 +174,6 @@ def release_dictionary_tests():
                     id=word_id
                 ))
 
-        for word in lexeme_words:
-            lemmas.append(dict(
-                x_src=word['text'],
-                main_cls=word['main'],
-                y_src=word['lemma'] if 'lemma' in word else word['text']
-            ))
 
     main = merge_same_main(main)
     release_main_tests(main, res_path)

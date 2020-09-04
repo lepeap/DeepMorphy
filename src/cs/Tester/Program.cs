@@ -24,6 +24,8 @@ namespace MetricsCalc
                     Console.SetOut(streamwriter);
                     Console.SetError(streamwriter);
                     
+                    
+                    Console.WriteLine(DateTime.Now);
                     //ShowMemoryInfo();
                     var morph = new MorphAnalyzer(useEnGramNames: true, onlyNetwork: true, withLemmatization: true);
                     //new TestsCalc(morph,  "NnTests", "Only network").Test();
@@ -32,7 +34,7 @@ namespace MetricsCalc
                     new TestsCalc(morph, "Reg", "Reg").Test();
                     new TestsCalc(morph, "Numb", "Numb").Test();
                     new TestsCalc(morph, "NarNumb", "NarNumb").Test();
-                    //new TestsCalc(morph, "Dict", "Dict").Test();
+                    new TestsCalc(morph, "Dict", "Dict").Test();
 
                 }
             }
