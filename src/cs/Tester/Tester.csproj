@@ -15,37 +15,37 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="OnlyNn\case.xml">
+        <Content Include="Network\case.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\gndr.xml">
+        <Content Include="Network\gndr.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\inflect.xml">
+        <Content Include="Network\inflect.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\lemma.xml">
+        <Content Include="Network\lemma.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\main.xml">
+        <Content Include="Network\main.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\mood.xml">
+        <Content Include="Network\mood.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\nmbr.xml">
+        <Content Include="Network\nmbr.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\pers.xml">
+        <Content Include="Network\pers.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\post.xml">
+        <Content Include="Network\post.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\tens.xml">
+        <Content Include="Network\tens.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-        <Content Include="OnlyNn\voic.xml">
+        <Content Include="Network\voic.xml">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
 

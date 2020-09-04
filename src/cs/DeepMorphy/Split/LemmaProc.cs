@@ -50,7 +50,7 @@ namespace DeepMorphy.Split
                 {
                     var lexeme = CorrectionDict.Lexeme(netRes.task.word, netRes.task.tagId);
                     var corResult = lexeme?.FirstOrDefault(w => TagHelper.IsLemma(w.TagId))?.Text;
-                    Result[netTask[i].index] = corResult ?? netRes.resWord;
+                    Result[netTask[i++].index] = corResult ?? netRes.resWord;
                 }
             }
             

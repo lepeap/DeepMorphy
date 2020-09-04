@@ -1,49 +1,150 @@
-9/4/20 3:15:57 AM
+9/4/20 7:41:49 PM
 
 
 ####################################################
 ####################################################
-Reg:
+Full:
 ####################################################
 ####################################################
 
-Reg lemmatization acc: 1
-Reg lemmatization errors count: 0
-Reg inflect acc: 1
-Reg inflect errors count: 0
-
-
-####################################################
-####################################################
-Numb:
-####################################################
-####################################################
-
-Numb lemmatization acc: 1
-Numb lemmatization errors count: 0
-Numb inflect acc: 1
-Numb inflect errors count: 0
-
-
-####################################################
-####################################################
-NarNumb:
-####################################################
-####################################################
-
-NarNumb lemmatization acc: 1
-NarNumb lemmatization errors count: 0
-NarNumb inflect acc: 1
-NarNumb inflect errors count: 0
-
-
-####################################################
-####################################################
-Dict:
-####################################################
-####################################################
-
-Dict lemmatization acc: 1
-Dict lemmatization errors count: 0
-Dict inflect acc: 1
-Dict inflect errors count: 0
+Full voic classification. Full acc: 1
+Full voic classification. Classes acc: 1
+Full nmbr classification. Full acc: 0.9931398
+Full nmbr classification. Classes acc: 0.9935647
+Full case classification. Full acc: 0.980693
+Full case classification. Classes acc: 0.9857899
+Full post classification. Full acc: 0.9876785
+Full post classification. Classes acc: 0.9877545
+Full pers classification. Full acc: 1
+Full pers classification. Classes acc: 1
+Full gndr classification. Full acc: 0.9604921
+Full gndr classification. Classes acc: 0.9670466
+Full tens classification. Full acc: 1
+Full tens classification. Classes acc: 1
+Full mood classification. Full acc: 0.9986894
+Full mood classification. Classes acc: 0.9987578
+Full lemmatization. Error for куркулии: куркулия != куркулий
+Full lemmatization. Error for каифе: каифа != каифе
+Full lemmatization. Error for абибе: абиба != абибе
+Full lemmatization. Error for гетр: гетры != гетра
+Full lemmatization. Error for юриевен: юриевна != юрьевна
+Full lemmatization. Error for ксений: ксения != ксенья
+Full lemmatization. Error for юне: юна != юня
+Full lemmatization. Error for марике: марика != марике
+Full lemmatization. Error for весиле: весила != весиля
+Full lemmatization. Error for амиле: амиля != амила
+Full lemmatization. Error for армене: армена != армене
+Full lemmatization. Error for бажене: бажена != баженя
+Full lemmatization. Error for данире: данира != даниря
+Full lemmatization. Error for ванты: ванты != ванта
+Full lemmatization. Error for адий: адия != адья
+Full lemmatization. Error for урёмы: урёма != урема
+Full lemmatization. Error for верховому: верховый != верховой
+Full lemmatization. Error for дрянному: дрянный != дрянной
+Full lemmatization. Error for ценовому: ценовый != ценовой
+Full lemmatization. Error for 500-ому: 500-й != 
+Full lemmatization. Error for 200-ого: 200-й != 
+Full lemmatization. Error for пластового: пластовой != пластовый
+Full lemmatization. Error for подвижного: подвижной != подвижный
+Full lemmatization. Error for переносного: переносный != переносной
+Full lemmatization. Error for алкидного: алкидный != алкидной
+Full lemmatization. Error for рискового: рисковой != рисковый
+Full lemmatization. Error for отварного: отварной != отварный
+Full lemmatization. Error for 700-ого: 700-й != 
+Full lemmatization. Error for гнездового: гнездовый != гнездовой
+Full lemmatization. Error for 70-ый: 70-й != 
+Full lemmatization. Error for 1990-ый: 1990-й != 
+Full lemmatization. Error for 1920-го: 1920-й != 
+Full lemmatization. Error for дышловою: дышловый != дышловой
+Full lemmatization. Error for занятой: занятый != занятой
+Full lemmatization. Error for 700-й: 700-й != 
+Full lemmatization. Error for эоловою: эоловый != эолов
+Full lemmatization. Error for временной: временный != временной
+Full lemmatization. Error for ворсовою: ворсовой != ворсовый
+Full lemmatization. Error for ея: ея != ейя
+Full lemmatization. Error for ферзевым: ферзевой != ферзевый
+Full lemmatization. Error for 15-м: 15-й != 
+Full lemmatization. Error for нажимным: нажимный != нажимной
+Full lemmatization. Error for сурьмяным: сурьмяной != сурьмяный
+Full lemmatization. Error for малообжитым: малообжитый != малообжитой
+Full lemmatization. Error for охряным: охряный != охряной
+Full lemmatization. Error for отводным: отводный != отводной
+Full lemmatization. Error for контрольно-финансовым: контрольно-финансовый != контрольно-финансовой
+Full lemmatization. Error for 10-ым: 10-й != 
+Full lemmatization. Error for тканевым: тканевый != тканевой
+Full lemmatization. Error for печным: печной != печный
+Full lemmatization. Error for мостовым: мостовой != мостовый
+Full lemmatization. Error for 4-ым: 4-й != 
+Full lemmatization. Error for спиновым: спиновый != спиновой
+Full lemmatization. Error for образным: образной != образный
+Full lemmatization. Error for отзывным: отзывной != отзывный
+Full lemmatization. Error for псковское: псковской != псковский
+Full lemmatization. Error for разрывное: разрывный != разрывной
+Full lemmatization. Error for обходное: обходной != обходный
+Full lemmatization. Error for допризывное: допризывный != допризывной
+Full lemmatization. Error for терцев: терец != терц
+Full lemmatization. Error for 60-ая: 60-й != 
+Full lemmatization. Error for баржевая: баржевый != баржевой
+Full lemmatization. Error for проливная: проливный != проливной
+Full lemmatization. Error for черепяная: черепяной != черепяный
+Full lemmatization. Error for запасной: запасной != запасный
+Full lemmatization. Error for охряной: охряной != охряный
+Full lemmatization. Error for 1950-ой: 1950-й != 
+Full lemmatization. Error for 80-ой: 80-й != 
+Full lemmatization. Error for 1-ой: 1-й != 
+Full lemmatization. Error for 90-ой: 90-й != 
+Full lemmatization. Error for 1980-й: 1980-й != 
+Full lemmatization. Error for фарадей: фарадей != фарадя
+Full lemmatization. Error for долгенькой: долгенькая != долгенька
+Full lemmatization. Error for нартою: нарты != нарта
+Full lemmatization. Error for умела: умести != уметь
+Full lemmatization. Error for строчную: строчной != строчный
+Full lemmatization. Error for вилиевнам: вильевна != вилиевна
+Full lemmatization. Error for отрубном: отрубной != отрубный
+Full lemmatization. Error for 800-ом: 800-й != 
+Full lemmatization. Error for переходном: переходный != переходной
+Full lemmatization. Error for переносном: переносный != переносной
+Full lemmatization. Error for ветряном: ветряный != ветряной
+Full lemmatization. Error for стволовом: стволовой != стволовый
+Full lemmatization. Error for отзывном: отзывной != отзывный
+Full lemmatization. Error for хоботном: хоботный != хоботной
+Full lemmatization. Error for скоблены: скоблить != скобить
+Full lemmatization. Error for адиле: адил != адиле
+Full lemmatization. Error for курбангалиевну: курбангалиевна != курбангальевна
+Full lemmatization. Error for измелите: измолоть != измелить
+Full lemmatization. Error for косых: косых != косыхи
+Full lemmatization. Error for шумковым: шумковой != шумков
+Full lemmatization. Error for арифуллам: арифулла != арифулл
+Full lemmatization. Error for аллиевичам: алльевич != аллиевич
+Full lemmatization. Error for пейзанам: пейзан != пейзанин
+Full lemmatization. Error for альфиевичах: альфиевич != альфьевич
+Full lemmatization. Error for подкупных: подкупной != подкупный
+Full lemmatization. Error for складных: складный != складной
+Full lemmatization. Error for занятых: занятый != занятой
+Full lemmatization. Error for донские: донской != донский
+Full lemmatization. Error for страстные: страстный != страстной
+Full lemmatization. Error for гнездовые: гнездовой != гнездовый
+Full lemmatization. Error for скиповых: скиповой != скиповый
+Full lemmatization. Error for нажимные: нажимной != нажимный
+Full lemmatization. Error for 300-х: 300-й != 
+Full lemmatization. Error for мостовых: мостовый != мостовой
+Full lemmatization. Error for 800-х: 800-й != 
+Full lemmatization. Error for 20-ых: 20-й != 
+Full lemmatization. Error for обводных: обводный != обводной
+Full lemmatization. Error for пофлюсовей: флюсовой != флюсовый
+Full lemmatization. Error for поместнее: местный != поместный
+Full lemmatization. Error for поязыковей: языковой != языковый
+Full lemmatization. Error for складными: складной != складный
+Full lemmatization. Error for бредовыми: бредовый != бредовой
+Full lemmatization. Error for подстывшими: подстыть != подстынуть
+Full lemmatization. Error for перевоженный: перевозить != переводить
+Full lemmatization. Error for отвоженное: отвозить != отводить
+Full lemmatization. Error for ротару: ротару != ротара
+Full lemmatization. Error for глинок: глинки != глинка
+Full lemmatization. Error for аурелиевичами: аурелиевич != аурельевич
+Full lemmatization. Error for полками: полок != полк
+Full lemmatization. Error for сдержу: сдержать != сдерзить
+Full lemmatization. Error for чаус: чаусы != чаусис
+Full lemmatization. Error for ребят: ребята != ребёнок
+Full lemmatization acc: 0.9975052
+Full lemmatization errors count: 123

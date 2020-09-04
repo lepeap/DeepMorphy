@@ -87,8 +87,8 @@ def release_inflect_tests(items, result_path):
         tree.write(f, xml_declaration=True, encoding='utf-8')
 
 
-def release_pure_nn_tests():
-    res_path = os.path.join(ROOT, 'OnlyNn')
+def release_nn_tests():
+    res_path = os.path.join(ROOT, 'Network')
     for gram in GRAM_TYPES:
         items = load_datasets(gram, 'test')
         cls = GRAM_TYPES[gram]['classes']
@@ -330,4 +330,4 @@ release_reg_tests()
 release_nar_numb_tests()
 release_numb_tests()
 release_dictionary_tests()
-release_pure_nn_tests()
+release_nn_tests()
