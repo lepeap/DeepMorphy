@@ -1,10 +1,7 @@
-import string
 import re
 import os
 import gzip
-import tqdm
 import pickle
-import logging
 from utils import CONFIG, get_dict_path, load_datasets
 
 
@@ -102,16 +99,21 @@ def create_dictionary(words_dics):
         cur_forms_dict = {}
         for item in words_dics[id]:
             if item['text'] not in cur_forms_dict:
-                cur_forms_dict[item['text']] = []
+                cur_forms_dict[item['text']] = {}
+
             replace_other = item['replace_other'] if 'replace_other' in item else False
-            cur_forms_dict[item['text']].append((item['main'], replace_other))
+            cur_form_dic = cur_forms_dict[item['text']]
+            if item['main'] not in cur_forms_dict or not cur_forms_dict[item['main']]:
+                cur_form_dic[item['main']] = replace_other
+
             if item['text'] not in order:
                 order.append(item['text'])
 
         for text in order:
             cur_lexeme.append(text)
             cur_lexeme.append(':')
-            for cls, replace_other in cur_forms_dict[text]:
+            for cls in cur_forms_dict[text]:
+                replace_other = cur_forms_dict[text][cls]
                 cur_lexeme.append(str(cls))
                 if replace_other:
                     cur_lexeme.append('!')
@@ -216,31 +218,29 @@ def release_correction_items():
         dict_words[lexeme_id].append(dict(id=lexeme_id, main=word['x_cls'], text=word['x_src'], replace_other=True))
         dict_words[lexeme_id].append(dict(id=lexeme_id, main=word['y_cls'], text=word['y_src'], replace_other=True))
 
-    #with open(os.path.join(CONFIG['bad_path'], "bad_main.pkl"), 'rb') as f:
-    #    items = pickle.load(f)
-    #for bad_item in items:
-    #    text = bad_item[0]['src']
-    #    for word in vec_words[text]['forms']:
-    #        lexeme_id = word['id']
-    #        if lexeme_id not in lemma_dict \
-    #            or (lexeme_id in ad_tags_dict and any([key in ad_tags_dict[lexeme_id] for key in IGNORE_AD_TAGS])):
-    #            continue
-    #
-    #        if lexeme_id not in dict_words:
-    #            dict_words[lexeme_id] = []
-    #
-    #        cls_id = tpl_cls_dict[word['main']]
-    #        dict_words[lexeme_id].append(dict(id=lexeme_id, main=cls_id, text=text, replace_other=True))
-    #        dict_words[lexeme_id].append(dict(id=lexeme_id, main=lemma_dict[lexeme_id][1], text=lemma_dict[lexeme_id][0], replace_other=True))
+    with open(os.path.join(CONFIG['bad_path'], "bad_main.pkl"), 'rb') as f:
+        items = pickle.load(f)
+    for bad_item in items:
+        text = bad_item[0]['src']
+        for word in vec_words[text]['forms']:
+            lexeme_id = word['id']
+            if lexeme_id not in lemma_dict \
+                or (lexeme_id in ad_tags_dict and any([key in ad_tags_dict[lexeme_id] for key in IGNORE_AD_TAGS])):
+                continue
+
+            if lexeme_id not in dict_words:
+                dict_words[lexeme_id] = []
+
+            cls_id = tpl_cls_dict[word['main']]['i']
+            dict_words[lexeme_id].append(dict(id=lexeme_id, main=cls_id, text=text, replace_other=True))
+            dict_words[lexeme_id].append(dict(id=lexeme_id, main=lemma_dict[lexeme_id][1], text=lemma_dict[lexeme_id][0], replace_other=True))
 
     index, lexeme = create_dictionary(dict_words)
     save_dictionary(index, lexeme, REZ_PATHS, 'dict_correction')
 
 
-#release_correction_items()
+release_correction_items()
 release_dict_items()
-print()
-
 
 #with open(NOT_DICT_WORDS_PATH, 'rb') as f:
 #    not_dict_words = pickle.load(f)
