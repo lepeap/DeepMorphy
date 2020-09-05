@@ -89,7 +89,7 @@ namespace DeepMorphy.NeuralNet
                 {
                     yield return (
                         task: batch[i],
-                        rezWord: _getLemma(words[i], netRes, i, 0, classes[i])
+                        resWord: _getLemma(words[i], netRes, i, 0, classes[i])
                     );
                 }
             }

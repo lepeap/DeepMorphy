@@ -43,7 +43,7 @@ namespace DeepMorphy.Numb
                     else if (rdr.Name == "NumbData" && rdr.NodeType == XmlNodeType.Element)
                     {
                         var reg = rdr.GetAttribute("reg");
-                        NumberRegex = new Regex(reg, RegexOptions.Compiled);
+                        NumberRegex = new Regex(reg, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
                         LemmaTagId = rdr.GetAttribute("l")
                                         .Split(',')
                                         .Select(x => int.Parse(x))

@@ -22,7 +22,7 @@ namespace DeepMorphy
             var groups = tpls.Select(x => $"(?<{x.Item1}>^{x.Item2}$)");
             var rezReg = string.Join("|", groups);
             rezReg = $"{rezReg}";
-            Reg = new Regex(rezReg, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Reg = new Regex(rezReg, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
             GroupToClassDic = tpls.ToDictionary(x => x.Item1,
                 x => TagHelper.TagsEnDic.First(t => t.Value["post"] == x.Item1).Key);
             GroupToClassDic["unkn"] = TagHelper.TagsEnDic.First(t => t.Value["post"] == "unkn").Key;
