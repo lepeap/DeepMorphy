@@ -7,8 +7,8 @@ namespace DeepMorphy.WordDict
 {
     internal class Dict
     {
-        private readonly Dictionary<string, int[]> _indexDic = new Dictionary<string, int[]>();
-        private readonly Dictionary<int, string> _lexemeDic = new Dictionary<int, string>();
+        private readonly SortedDictionary<string, int[]> _indexDic = new SortedDictionary<string, int[]>();
+        private readonly SortedDictionary<int, string> _lexemeDic = new SortedDictionary<int, string>();
 
         public Dict()
         {
