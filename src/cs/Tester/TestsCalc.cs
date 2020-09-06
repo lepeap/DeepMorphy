@@ -31,8 +31,8 @@ namespace MetricsCalc
             Console.WriteLine("####################################################");
             Console.WriteLine("####################################################");
             Console.WriteLine();
-            TestGramClassification();
-            //TestMainClassification();
+            //TestGramClassification();
+            TestMainClassification();
             TestLemmatization();
             TestInflect();
         }

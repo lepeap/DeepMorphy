@@ -8,14 +8,14 @@ namespace ExampleConsole
     {
         private static string[] Words = new string[]
         {
-            //"tafsdfdfasd",
-            //"xii",
-            //"123",
-            //".345",
-            //"43,34",
-            //"..!",
-            //"1-ый",
-            //"бутявка",
+            "tafsdfdfasd",
+            "xii",
+            "123",
+            ".345",
+            "43,34",
+            "..!",
+            "1-ый",
+            "бутявка",
             "пальто",
             "плакса",
             "в",
@@ -34,11 +34,7 @@ namespace ExampleConsole
         };
         static void Main(string[] args)
         {
-            Lexeme();
-            Lexeme1();
-            
             SimpleExample();
-            
             
             AnalisysFullExample1();
             AnalisysFullExample2();
@@ -52,6 +48,9 @@ namespace ExampleConsole
             
             LemmatizationExample1();
             LemmatizationExample2();
+        
+            Lexeme();
+            Lexeme1();
         }
 
         static void SimpleExample()
@@ -265,7 +264,6 @@ namespace ExampleConsole
         static void Lexeme1()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
-            
             var word = "я";
             var res = m.Parse("я").ToArray();
             var tag = res[0].BestTag;

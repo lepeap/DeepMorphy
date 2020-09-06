@@ -1,5 +1,4 @@
 import os
-import string
 import pickle
 import numpy as np
 from utils import CONFIG, RANDOM, load_datasets
@@ -173,7 +172,6 @@ def release_dictionary_tests():
                     y_cls=to_word['main'],
                     id=word_id
                 ))
-
 
     main = merge_same_main(main)
     release_main_tests(main, res_path)

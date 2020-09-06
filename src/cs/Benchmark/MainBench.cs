@@ -52,8 +52,10 @@ namespace Benchmark
         private static string[] _repeatWords(int n)
         {
             var list = new List<string>();
-            for(int i =0; i<n; i++)
+            for (int i = 0; i < n; i++)
+            {
                 list.AddRange(Words);
+            }
 
             return list.ToArray();
 
@@ -78,7 +80,6 @@ namespace Benchmark
             
             words = _repeatWords(1000);
             yield return new object[] { words, words.Length };
-
         }
     }
 }

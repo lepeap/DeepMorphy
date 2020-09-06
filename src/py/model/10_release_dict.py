@@ -57,11 +57,10 @@ with open(VECT_PATH, 'rb') as f:
         for form in item['forms']:
             lexeme_id_key = 'inflect_id' if 'inflect_id' in form else 'id'
             lexeme_id = form[lexeme_id_key]
-            cls_id = tpl_cls_dict[form['main']]
+
             if 'ad_tags' not in form:
                 continue
 
-            ad_tags = form['ad_tags']
             if lexeme_id not in ad_tags_dict:
                 ad_tags_dict[lexeme_id] = set()
 
@@ -170,6 +169,7 @@ def release_dict_items():
 
 def release_correction_items():
     dict_words = {}
+
     with open(get_dict_path('lemma'), 'rb') as f:
         items = pickle.load(f)
     for word in items:
@@ -242,80 +242,3 @@ def release_correction_items():
 release_correction_items()
 release_dict_items()
 
-#with open(NOT_DICT_WORDS_PATH, 'rb') as f:
-#    not_dict_words = pickle.load(f)
-#    io_words = [io for io in not_dict_words if 'ё' in io]
-#    for io_word in io_words:
-#        io_items = not_dict_words[io_word]
-#        not_io_word = io_word.replace('ё', 'е')
-#        not_io_items = []
-#        for item in io_items:
-#            not_io_item = dict(item)
-#            if 'lemma' in not_io_item:
-#                not_io_item['lemma'] = not_io_item['lemma'].replace('ё', 'е')
-#            not_io_item['text'] = not_io_item['text'].replace('ё', 'е')
-#            not_io_items.append(not_io_item)
-#
-#        not_dict_words[not_io_word] = not_io_items
-#
-#if with_wrongs:
-#    with open("wrong_words.pkl", 'rb') as f:
-#        wrongs = set(pickle.load(f))
-#else:
-#    wrongs = set()
-#
-#dwords_dic = {word.text: word for word in words}
-#for nd_word in tqdm.tqdm(not_dict_words, desc='Looking for duplicates'):
-#    if nd_word in dwords_dic and not NAR_REG.match(nd_word):
-#        for gram in not_dict_words[nd_word]:
-#            dwords_dic[nd_word].add_gram(gram)
-#    elif nd_word in wrongs:
-#        items = not_dict_words[nd_word]
-#        word = Word(items[0])
-#        del items[0]
-#        for item in items:
-#            word.add_gram(item)
-#
-#        words.append(word)
-#
-#ind_keys = string.ascii_lowercase + string.ascii_uppercase
-#index_dict = {}
-#cur_index = 0
-#txt = []
-#for word in words:
-#    txt.append(word.text)
-#    txt.append('\t')
-#    for ind, g in enumerate(word.get_grams()):
-#        if 'lemma' in g and g['lemma']:
-#            txt.append(g['lemma'])
-#        txt.append(':')
-#        for g_ind, val in enumerate(g['gram'].split(',')):
-#            if val and val not in index_dict:
-#                index_dict[val] = ind_keys[cur_index]
-#                cur_index+=1
-#
-#            if val:
-#                txt.append(index_dict[val])
-#
-#            if g_ind != len(GRAMMEMES_TYPES):
-#                txt.append(',')
-#
-#        if ind != len(word.grams)-1:
-#            txt.append(';')
-#
-#    txt.append('\n')
-#
-#txt.insert(0, "\n")
-#for key in index_dict:
-#    txt.insert(0, f"{index_dict[key]}={key}\n")
-#
-#txt = "".join(txt)
-#rez = txt.encode('utf-8')
-#
-#for path in REZ_PATHS:
-#    path = os.path.join(path, "dict.txt.gz")
-#    with gzip.open(path, 'wb+') as f:
-#        f.write(rez)
-#
-#logging.info("Dictionary released")
-#logging.info(f"Words count {len(words)}")

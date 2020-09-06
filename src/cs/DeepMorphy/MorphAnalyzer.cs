@@ -164,8 +164,8 @@ namespace DeepMorphy
                     taglist.Add(corTag);
                 }
 
-                _mergeTagsPower(taglist);
-                yield return new MorphInfo(netTpl.srcWord, taglist, netTpl.gramDic, UseEnGramNameNames);
+                var resTags = _mergeTagsPower(taglist);
+                yield return new MorphInfo(netTpl.srcWord, resTags, netTpl.gramDic, UseEnGramNameNames);
             }
         }
 
@@ -238,16 +238,17 @@ namespace DeepMorphy
 
             return null;
         }
-
-        private void _mergeTagsPower(List<Tag> tags)
+        
+        
+        private IEnumerable<Tag> _mergeGramProbs(List<Tag> tags)
         {
             var preProcCount = tags.Count(x => (x.Power + 1) < 0.0001);
             if (preProcCount == 0)
             {
-                return;
+                return tags;
             }
 
-            var preProcPower = 1 / (preProcCount + 1);
+            var preProcPower = 1f / (preProcCount + 1);
             foreach (var tag in tags)
             {
                 if ((tag.Power + 1) < 0.0001)
@@ -259,6 +260,34 @@ namespace DeepMorphy
                     tag.Power = preProcPower * tag.Power;
                 }
             }
+
+            var result = tags.OrderByDescending(x => x.Power);
+            return result;
+        }
+
+        private IEnumerable<Tag> _mergeTagsPower(List<Tag> tags)
+        {
+            var preProcCount = tags.Count(x => (x.Power + 1) < 0.0001);
+            if (preProcCount == 0)
+            {
+                return tags;
+            }
+
+            var preProcPower = 1f / (preProcCount + 1);
+            foreach (var tag in tags)
+            {
+                if ((tag.Power + 1) < 0.0001)
+                {
+                    tag.Power = preProcPower;
+                }
+                else
+                {
+                    tag.Power = preProcPower * tag.Power;
+                }
+            }
+
+            var result = tags.OrderByDescending(x => x.Power);
+            return result;
         }
     }
 }
