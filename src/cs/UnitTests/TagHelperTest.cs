@@ -1,6 +1,7 @@
+using DeepMorphy;
 using NUnit.Framework;
 
-namespace DeepMorphy.Tests
+namespace UnitTests
 {
     public class TagHelperTest
     {

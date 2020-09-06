@@ -1,4 +1,4 @@
-namespace MetricsCalc
+namespace IntegrationTester
 {
     public class Test
     {

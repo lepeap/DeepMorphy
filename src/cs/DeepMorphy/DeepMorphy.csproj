@@ -31,10 +31,10 @@
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>DeepMorphy.Tests</_Parameter1>
+            <_Parameter1>UnitTests</_Parameter1>
         </AssemblyAttribute>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>Tester</_Parameter1>
+            <_Parameter1>IntegrationTester</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 

@@ -52,7 +52,7 @@ public_inflect_templates_paths:
   - latest_release
   - ../../cs/DeepMorphy/
 
-publish_tests_path: ../../cs/Tester/
+publish_tests_path: ../../cs/IntegrationTester/
 publish_gram_doc_path: ../../../gram.md
 publish_inflect_doc_path: ../../../inflect.md
 

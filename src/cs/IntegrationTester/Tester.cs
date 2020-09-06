@@ -6,15 +6,15 @@ using System.Text;
 using System.Xml;
 using DeepMorphy;
 
-namespace MetricsCalc
+namespace IntegrationTester
 {
-    public class TestsCalc
+    public class Tester
     {
         private readonly string _pathPrefix;
         private readonly string _testName;
         private readonly MorphAnalyzer _morph;
 
-        internal TestsCalc(MorphAnalyzer morph, string pathPrefix, string testName)
+        internal Tester(MorphAnalyzer morph, string pathPrefix, string testName)
         {
             _morph = morph;
             _pathPrefix = pathPrefix;
@@ -31,7 +31,7 @@ namespace MetricsCalc
             Console.WriteLine("####################################################");
             Console.WriteLine("####################################################");
             Console.WriteLine();
-            //TestGramClassification();
+            TestGramClassification();
             TestMainClassification();
             TestLemmatization();
             TestInflect();
