@@ -44,31 +44,6 @@ class Tester:
 
         return "\n".join(results)
 
-    def build_bad(self):
-        config = tf.ConfigProto(allow_soft_placement=True)
-        with tf.Session(config=config, graph=self.rnn.graph) as sess:
-            sess.run(tf.global_variables_initializer())
-            sess.run(tf.local_variables_initializer())
-            self.rnn.restore(sess)
-
-            #print("Building bad main")
-            #_, _, main_bad = self.__test_classification__(sess, 'main', self.rnn.main_graph_part, 'test', 'train', 'valid')
-            #print(f"Main bad count: {len(main_bad)}")
-            #with open(os.path.join(self.config['bad_path'], "bad_main.pkl"), 'wb+') as f:
-            #    pickle.dump(main_bad, f)
-
-            print("Building bad lemma")
-            _, lemm_bad = self.__test_lemmas__(sess, 'test', 'train', 'valid')
-            print(f"Lemma bad count: {len(lemm_bad)}")
-            with open(os.path.join(self.config['bad_path'], "bad_lemma.pkl"), 'wb+') as f:
-                pickle.dump(lemm_bad, f)
-#
-            print("Building bad inflect")
-            _, inflect_bad = self.__test_inflect__(sess, 'test', 'train', 'valid')
-            print(f"Inflect bad count: {len(inflect_bad)}")
-            with open(os.path.join(self.config['bad_path'], "bad_inflect.pkl"), 'wb+') as f:
-                pickle.dump(inflect_bad, f)
-
     def __get_classification_items__(self, sess, items, graph_part):
         wi = 0
         pbar = tqdm(total=len(items), desc='Getting classification info')

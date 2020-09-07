@@ -139,6 +139,7 @@ def create_cls_tuple(item):
         for key in GRAMMEMES_TYPES
     )
 
+
 def load_datasets(main_type, *ds_type):
     words = []
 
