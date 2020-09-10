@@ -124,6 +124,11 @@ namespace DeepMorphy.NeuralNet
             return  Inflect(items).Select(x => (x.resTagId, x.resWord)).Append((tagId, word));
         }
 
+        internal int GetLemmaTagId(int tagId)
+        {
+            return this._config.TagToLemmaDic[tagId];
+        }
+
         private void _vectorizeWords(string[] srcMas,
             out int maxLength,
             out List<int[]> indexes,

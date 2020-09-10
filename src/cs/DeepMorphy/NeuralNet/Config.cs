@@ -20,7 +20,7 @@ namespace DeepMorphy.NeuralNet
         public int StartCharIndex { get; private set; }
         public int EndCharIndex { get; private set; }
         public ReadOnlyDictionary<int, int[]> InflectTemplatesDic { get; private set;  }
-        public ReadOnlyDictionary<int, int> ClsToLemmaDic { get; private set;  }
+        public ReadOnlyDictionary<int, int> TagToLemmaDic { get; private set;  }
         public Dictionary<char, int> CharToId { get; } = new Dictionary<char, int>();
         public Dictionary<int, char> IdToChar { get; } = new Dictionary<int, char>();
         public Dictionary<string, string> OpDic { get; } = new Dictionary<string, string>();
@@ -36,7 +36,7 @@ namespace DeepMorphy.NeuralNet
             }
         }
 
-        private void _loadReleaseInfo()
+        private  void _loadReleaseInfo()
         {
             var inflectDic = new Dictionary<int, List<int>>();
             var clsToLemmaDic = new Dictionary<int, int>();
@@ -88,6 +88,7 @@ namespace DeepMorphy.NeuralNet
                     {
                         curInflectLemmaId = int.Parse(rdr.GetAttribute("i"));
                         inflectDic[curInflectLemmaId] = new List<int>();
+                        clsToLemmaDic[curInflectLemmaId] = curInflectLemmaId;
                     }
                     else if (rdr.Name == "I" && rdr.NodeType == XmlNodeType.Element)
                     {
@@ -99,7 +100,7 @@ namespace DeepMorphy.NeuralNet
             }
             InflectTemplatesDic =
                 new ReadOnlyDictionary<int, int[]>(inflectDic.ToDictionary(x => x.Key, x => x.Value.ToArray()));
-            ClsToLemmaDic = new ReadOnlyDictionary<int, int>(clsToLemmaDic);
+            TagToLemmaDic = new ReadOnlyDictionary<int, int>(clsToLemmaDic);
         }
 
         private Stream _getXmlStream()

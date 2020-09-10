@@ -1,2 +1,285 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Root batch_size="BatchSize" inflect_result="Inflect/Decoder_1/decoder/transpose_1" inflect_x_cls="Inflect/XClass" inflect_y_cls="Inflect/YClass" lem_cls_result="Reshape_1" lem_result="ExpandDims" lem_x_cls="Lemm_1/XClass" prob_case="Case/Softmax" prob_gndr="Gndr/Softmax" prob_mood="Mood/Softmax" prob_nmbr="Nmbr/Softmax" prob_pers="Pers/Softmax" prob_post="Post/Softmax" prob_tens="Tens/Softmax" prob_voic="Voic/Softmax" res_case="Case/Results" res_gndr="Gndr/Results" res_indexes="Main/Results" res_mood="Mood/Results" res_nmbr="Nmbr/Results" res_pers="Pers/Results" res_post="Post/Results" res_tens="Tens/Results" res_values="Main/Results" res_voic="Voic/Results" seq_len="SeqLen" x_ind="XIndexes" x_shape="XShape" x_val="XValues"><Chars end_char="35" start_char="36"><Char index="0" value="UNDEFINED" /><Char index="1" value="а" /><Char index="2" value="б" /><Char index="3" value="в" /><Char index="4" value="г" /><Char index="5" value="д" /><Char index="6" value="е" /><Char index="7" value="ё" /><Char index="8" value="ж" /><Char index="9" value="з" /><Char index="10" value="и" /><Char index="11" value="й" /><Char index="12" value="к" /><Char index="13" value="л" /><Char index="14" value="м" /><Char index="15" value="н" /><Char index="16" value="о" /><Char index="17" value="п" /><Char index="18" value="р" /><Char index="19" value="с" /><Char index="20" value="т" /><Char index="21" value="у" /><Char index="22" value="ф" /><Char index="23" value="х" /><Char index="24" value="ч" /><Char index="25" value="ц" /><Char index="26" value="ш" /><Char index="27" value="щ" /><Char index="28" value="ъ" /><Char index="29" value="ы" /><Char index="30" value="ь" /><Char index="31" value="э" /><Char index="32" value="ю" /><Char index="33" value="я" /><Char index="34" value="-" /></Chars><Grams><G key="post" op="Post/Softmax" /><G key="gndr" op="Gndr/Softmax" /><G key="nmbr" op="Nmbr/Softmax" /><G key="case" op="Case/Softmax" /><G key="pers" op="Pers/Softmax" /><G key="tens" op="Tens/Softmax" /><G key="mood" op="Mood/Softmax" /><G key="voic" op="Voic/Softmax" /></Grams><Inflect><Im i="48"><I i="173" /><I i="83" /><I i="75" /><I i="214" /><I i="203" /><I i="49" /><I i="213" /><I i="85" /><I i="29" /><I i="82" /><I i="212" /><I i="207" /><I i="57" /><I i="28" /><I i="38" /><I i="0" /></Im><Im i="58"><I i="8" /><I i="78" /><I i="6" /><I i="68" /><I i="10" /><I i="216" /><I i="144" /><I i="5" /><I i="217" /><I i="1" /><I i="7" /><I i="205" /><I i="4" /><I i="47" /></Im><Im i="135"><I i="177" /><I i="105" /><I i="123" /><I i="79" /><I i="220" /><I i="180" /><I i="215" /><I i="141" /><I i="34" /><I i="59" /><I i="101" /><I i="61" /><I i="131" /><I i="138" /><I i="197" /><I i="176" /><I i="86" /><I i="35" /><I i="161" /><I i="3" /><I i="183" /><I i="104" /><I i="115" /><I i="195" /><I i="143" /><I i="111" /><I i="120" /><I i="108" /><I i="127" /><I i="134" /><I i="133" /><I i="158" /><I i="51" /><I i="218" /><I i="56" /><I i="26" /><I i="185" /><I i="102" /><I i="149" /><I i="11" /><I i="192" /><I i="94" /><I i="174" /><I i="46" /><I i="53" /><I i="52" /><I i="107" /><I i="76" /><I i="124" /><I i="121" /><I i="97" /><I i="151" /><I i="159" /><I i="50" /><I i="87" /><I i="9" /><I i="19" /><I i="27" /><I i="194" /><I i="226" /><I i="55" /><I i="25" /><I i="125" /><I i="71" /><I i="132" /><I i="130" /><I i="100" /><I i="160" /><I i="179" /><I i="150" /><I i="129" /><I i="118" /><I i="198" /><I i="178" /><I i="162" /><I i="65" /><I i="21" /><I i="122" /><I i="80" /><I i="201" /><I i="202" /><I i="72" /><I i="190" /><I i="126" /><I i="20" /><I i="181" /><I i="99" /><I i="184" /><I i="66" /><I i="175" /><I i="44" /><I i="60" /><I i="199" /><I i="74" /><I i="204" /><I i="95" /><I i="110" /><I i="24" /><I i="92" /><I i="116" /><I i="88" /><I i="77" /><I i="191" /><I i="43" /><I i="45" /><I i="30" /><I i="117" /><I i="54" /><I i="148" /><I i="62" /><I i="137" /><I i="64" /><I i="93" /><I i="23" /><I i="196" /><I i="22" /><I i="73" /><I i="67" /><I i="2" /><I i="114" /><I i="140" /><I i="139" /><I i="128" /><I i="109" /><I i="186" /><I i="200" /><I i="187" /><I i="193" /></Im><Im i="18"><I i="12" /><I i="63" /><I i="32" /><I i="90" /><I i="152" /><I i="36" /><I i="39" /><I i="41" /><I i="96" /><I i="98" /><I i="31" /><I i="40" /><I i="189" /><I i="103" /><I i="14" /><I i="17" /><I i="13" /><I i="89" /><I i="42" /><I i="16" /><I i="119" /><I i="70" /><I i="221" /><I i="15" /><I i="33" /><I i="69" /><I i="182" /><I i="37" /><I i="91" /></Im><Im i="112"><I i="136" /><I i="228" /><I i="157" /><I i="142" /><I i="113" /><I i="146" /><I i="156" /><I i="147" /><I i="153" /><I i="224" /><I i="227" /><I i="145" /><I i="155" /><I i="222" /><I i="154" /></Im><Im i="163"><I i="165" /><I i="168" /><I i="172" /><I i="81" /><I i="171" /><I i="164" /><I i="106" /><I i="167" /><I i="219" /><I i="166" /><I i="169" /><I i="170" /></Im></Inflect></Root>
+<Root batch_size="BatchSize" inflect_result="Inflect/Decoder_1/decoder/transpose_1" inflect_x_cls="Inflect/XClass"
+      inflect_y_cls="Inflect/YClass" lem_cls_result="Reshape_1" lem_result="ExpandDims" lem_x_cls="Lemm_1/XClass"
+      prob_case="Case/Softmax" prob_gndr="Gndr/Softmax" prob_mood="Mood/Softmax" prob_nmbr="Nmbr/Softmax"
+      prob_pers="Pers/Softmax" prob_post="Post/Softmax" prob_tens="Tens/Softmax" prob_voic="Voic/Softmax"
+      res_case="Case/Results" res_gndr="Gndr/Results" res_indexes="Main/Results" res_mood="Mood/Results"
+      res_nmbr="Nmbr/Results" res_pers="Pers/Results" res_post="Post/Results" res_tens="Tens/Results"
+      res_values="Main/Results" res_voic="Voic/Results" seq_len="SeqLen" x_ind="XIndexes" x_shape="XShape"
+      x_val="XValues">
+    <Chars end_char="35" start_char="36">
+        <Char index="0" value="UNDEFINED"/>
+        <Char index="1" value="а"/>
+        <Char index="2" value="б"/>
+        <Char index="3" value="в"/>
+        <Char index="4" value="г"/>
+        <Char index="5" value="д"/>
+        <Char index="6" value="е"/>
+        <Char index="7" value="ё"/>
+        <Char index="8" value="ж"/>
+        <Char index="9" value="з"/>
+        <Char index="10" value="и"/>
+        <Char index="11" value="й"/>
+        <Char index="12" value="к"/>
+        <Char index="13" value="л"/>
+        <Char index="14" value="м"/>
+        <Char index="15" value="н"/>
+        <Char index="16" value="о"/>
+        <Char index="17" value="п"/>
+        <Char index="18" value="р"/>
+        <Char index="19" value="с"/>
+        <Char index="20" value="т"/>
+        <Char index="21" value="у"/>
+        <Char index="22" value="ф"/>
+        <Char index="23" value="х"/>
+        <Char index="24" value="ч"/>
+        <Char index="25" value="ц"/>
+        <Char index="26" value="ш"/>
+        <Char index="27" value="щ"/>
+        <Char index="28" value="ъ"/>
+        <Char index="29" value="ы"/>
+        <Char index="30" value="ь"/>
+        <Char index="31" value="э"/>
+        <Char index="32" value="ю"/>
+        <Char index="33" value="я"/>
+        <Char index="34" value="-"/>
+    </Chars>
+    <Grams>
+        <G key="post" op="Post/Softmax"/>
+        <G key="gndr" op="Gndr/Softmax"/>
+        <G key="nmbr" op="Nmbr/Softmax"/>
+        <G key="case" op="Case/Softmax"/>
+        <G key="pers" op="Pers/Softmax"/>
+        <G key="tens" op="Tens/Softmax"/>
+        <G key="mood" op="Mood/Softmax"/>
+        <G key="voic" op="Voic/Softmax"/>
+    </Grams>
+    <Inflect>
+        <Im i="48">
+            <I i="173"/>
+            <I i="83"/>
+            <I i="75"/>
+            <I i="214"/>
+            <I i="203"/>
+            <I i="49"/>
+            <I i="213"/>
+            <I i="85"/>
+            <I i="29"/>
+            <I i="82"/>
+            <I i="212"/>
+            <I i="207"/>
+            <I i="57"/>
+            <I i="28"/>
+            <I i="38"/>
+            <I i="0"/>
+        </Im>
+        <Im i="58">
+            <I i="8"/>
+            <I i="78"/>
+            <I i="6"/>
+            <I i="68"/>
+            <I i="10"/>
+            <I i="216"/>
+            <I i="144"/>
+            <I i="5"/>
+            <I i="217"/>
+            <I i="1"/>
+            <I i="7"/>
+            <I i="205"/>
+            <I i="4"/>
+            <I i="47"/>
+        </Im>
+        <Im i="135">
+            <I i="177"/>
+            <I i="105"/>
+            <I i="123"/>
+            <I i="79"/>
+            <I i="220"/>
+            <I i="180"/>
+            <I i="215"/>
+            <I i="141"/>
+            <I i="34"/>
+            <I i="59"/>
+            <I i="101"/>
+            <I i="61"/>
+            <I i="131"/>
+            <I i="138"/>
+            <I i="197"/>
+            <I i="176"/>
+            <I i="86"/>
+            <I i="35"/>
+            <I i="161"/>
+            <I i="3"/>
+            <I i="183"/>
+            <I i="104"/>
+            <I i="115"/>
+            <I i="195"/>
+            <I i="143"/>
+            <I i="111"/>
+            <I i="120"/>
+            <I i="108"/>
+            <I i="127"/>
+            <I i="134"/>
+            <I i="133"/>
+            <I i="158"/>
+            <I i="51"/>
+            <I i="218"/>
+            <I i="56"/>
+            <I i="26"/>
+            <I i="185"/>
+            <I i="102"/>
+            <I i="149"/>
+            <I i="11"/>
+            <I i="192"/>
+            <I i="94"/>
+            <I i="174"/>
+            <I i="46"/>
+            <I i="53"/>
+            <I i="52"/>
+            <I i="107"/>
+            <I i="76"/>
+            <I i="124"/>
+            <I i="121"/>
+            <I i="97"/>
+            <I i="151"/>
+            <I i="159"/>
+            <I i="50"/>
+            <I i="87"/>
+            <I i="9"/>
+            <I i="19"/>
+            <I i="27"/>
+            <I i="194"/>
+            <I i="226"/>
+            <I i="55"/>
+            <I i="25"/>
+            <I i="125"/>
+            <I i="71"/>
+            <I i="132"/>
+            <I i="130"/>
+            <I i="100"/>
+            <I i="160"/>
+            <I i="179"/>
+            <I i="150"/>
+            <I i="129"/>
+            <I i="118"/>
+            <I i="198"/>
+            <I i="178"/>
+            <I i="162"/>
+            <I i="65"/>
+            <I i="21"/>
+            <I i="122"/>
+            <I i="80"/>
+            <I i="201"/>
+            <I i="202"/>
+            <I i="72"/>
+            <I i="190"/>
+            <I i="126"/>
+            <I i="20"/>
+            <I i="181"/>
+            <I i="99"/>
+            <I i="184"/>
+            <I i="66"/>
+            <I i="175"/>
+            <I i="44"/>
+            <I i="60"/>
+            <I i="199"/>
+            <I i="74"/>
+            <I i="204"/>
+            <I i="95"/>
+            <I i="110"/>
+            <I i="24"/>
+            <I i="92"/>
+            <I i="116"/>
+            <I i="88"/>
+            <I i="77"/>
+            <I i="191"/>
+            <I i="43"/>
+            <I i="45"/>
+            <I i="30"/>
+            <I i="117"/>
+            <I i="54"/>
+            <I i="148"/>
+            <I i="62"/>
+            <I i="137"/>
+            <I i="64"/>
+            <I i="93"/>
+            <I i="23"/>
+            <I i="196"/>
+            <I i="22"/>
+            <I i="73"/>
+            <I i="67"/>
+            <I i="2"/>
+            <I i="114"/>
+            <I i="140"/>
+            <I i="139"/>
+            <I i="128"/>
+            <I i="109"/>
+            <I i="186"/>
+            <I i="200"/>
+            <I i="187"/>
+            <I i="193"/>
+        </Im>
+        <Im i="18">
+            <I i="12"/>
+            <I i="63"/>
+            <I i="32"/>
+            <I i="90"/>
+            <I i="152"/>
+            <I i="36"/>
+            <I i="39"/>
+            <I i="41"/>
+            <I i="96"/>
+            <I i="98"/>
+            <I i="31"/>
+            <I i="40"/>
+            <I i="189"/>
+            <I i="103"/>
+            <I i="14"/>
+            <I i="17"/>
+            <I i="13"/>
+            <I i="89"/>
+            <I i="42"/>
+            <I i="16"/>
+            <I i="119"/>
+            <I i="70"/>
+            <I i="221"/>
+            <I i="15"/>
+            <I i="33"/>
+            <I i="69"/>
+            <I i="182"/>
+            <I i="37"/>
+            <I i="91"/>
+        </Im>
+        <Im i="112">
+            <I i="136"/>
+            <I i="228"/>
+            <I i="157"/>
+            <I i="142"/>
+            <I i="113"/>
+            <I i="146"/>
+            <I i="156"/>
+            <I i="147"/>
+            <I i="153"/>
+            <I i="224"/>
+            <I i="227"/>
+            <I i="145"/>
+            <I i="155"/>
+            <I i="222"/>
+            <I i="154"/>
+        </Im>
+        <Im i="163">
+            <I i="165"/>
+            <I i="168"/>
+            <I i="172"/>
+            <I i="81"/>
+            <I i="171"/>
+            <I i="164"/>
+            <I i="106"/>
+            <I i="167"/>
+            <I i="219"/>
+            <I i="166"/>
+            <I i="169"/>
+            <I i="170"/>
+        </Im>
+    </Inflect>
+</Root>

@@ -1,4 +1,4 @@
-9/7/20 12:02:23 AM
+9/10/20 2:43:38 AM
 
 
 ####################################################
@@ -7,6 +7,22 @@ Only network:
 ####################################################
 ####################################################
 
+Only network case classification. Full acc: 0.980693
+Only network case classification. Classes acc: 0.9857899
+Only network gndr classification. Full acc: 0.9604921
+Only network gndr classification. Classes acc: 0.9670466
+Only network mood classification. Full acc: 0.9986894
+Only network mood classification. Classes acc: 0.9987578
+Only network nmbr classification. Full acc: 0.9931398
+Only network nmbr classification. Classes acc: 0.9935647
+Only network pers classification. Full acc: 1
+Only network pers classification. Classes acc: 1
+Only network post classification. Full acc: 0.9876785
+Only network post classification. Classes acc: 0.9877545
+Only network tens classification. Full acc: 1
+Only network tens classification. Classes acc: 1
+Only network voic classification. Full acc: 1
+Only network voic classification. Classes acc: 1
 Only network main. Error: пете
 Only network main. Error: вольноопределяющемуся
 Only network main. Error: йове
@@ -1160,6 +1176,22 @@ Full:
 ####################################################
 ####################################################
 
+Full case classification. Full acc: 0.980693
+Full case classification. Classes acc: 0.9857899
+Full gndr classification. Full acc: 0.9604921
+Full gndr classification. Classes acc: 0.9670466
+Full mood classification. Full acc: 0.9986894
+Full mood classification. Classes acc: 0.9987578
+Full nmbr classification. Full acc: 0.9931398
+Full nmbr classification. Classes acc: 0.9935647
+Full pers classification. Full acc: 1
+Full pers classification. Classes acc: 1
+Full post classification. Full acc: 0.9876785
+Full post classification. Classes acc: 0.9877545
+Full tens classification. Full acc: 1
+Full tens classification. Classes acc: 1
+Full voic classification. Full acc: 1
+Full voic classification. Classes acc: 1
 Full main. Error: негэнтропии
 Full main. Error: устремлённости
 Full main. Error: деривации

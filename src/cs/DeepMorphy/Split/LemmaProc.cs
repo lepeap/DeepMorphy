@@ -7,11 +7,7 @@ namespace DeepMorphy.Split
 {
     internal class LemmaProc : SplittedProc<(string word, Tag tag), string>
     {
-        public LemmaProc(IEnumerable<(string word, Tag tag)> input,
-                                      IMorphProcessor[] processors,
-                                      NetworkProc net,
-                                      Dict correctionDict) 
-                        : base(input, processors, net, correctionDict)
+        public LemmaProc(IEnumerable<(string word, Tag tag)> input, MorphAnalyzer morph) : base(input, morph)
         {
         }
         

@@ -107,17 +107,16 @@ namespace DeepMorphy
         {
             return new Tag(TagsDic[tagId], power, tagId, lemma);
         }
-
-
+        
         public Tag CreateTag(string post,
-                            string gndr = null,
-                            string nmbr = null,
-                            string @case = null,
-                            string pers = null,
-                            string tens = null,
-                            string mood = null,
-                            string voic = null,
-                            string lemma = null)
+                             string gndr = null,
+                             string nmbr = null,
+                             string @case = null,
+                             string pers = null,
+                             string tens = null,
+                             string mood = null,
+                             string voic = null,
+                             string lemma = null)
         {
             var foundTags = TagsDic.Where(t =>
             {
@@ -180,7 +179,7 @@ namespace DeepMorphy
                 }));
                 var message = _useEn
                     ? $"Ambigious gram values. Found several possible tags: {tagsText}"
-                    : $"Неоднозначные значения граммем. Найдено несколько допустимых тагов: {tagsText}";
+                    : $"Неоднозначные значения граммем. Найдено несколько допустимых тэгов: {tagsText}";
                 
                 throw new AmbigGramsForTagException(message);
             }

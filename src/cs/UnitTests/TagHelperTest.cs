@@ -8,13 +8,13 @@ namespace UnitTests
         [Test]
         public void TestExistingEnTagCreation()
         {
-            _testExistingTagCreation(new MorphAnalyzer(onlyNetwork: false, useEnGramNames: true));
+            _testExistingTagCreation(new MorphAnalyzer(useEnGramNames: true));
         }
 
         [Test]
         public void TestExistingRuTagCreation()
         {
-            _testExistingTagCreation(new MorphAnalyzer(onlyNetwork: false, useEnGramNames: false));
+            _testExistingTagCreation(new MorphAnalyzer());
         }
 
         private void _testExistingTagCreation(MorphAnalyzer morph)
