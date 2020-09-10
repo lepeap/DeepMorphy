@@ -109,8 +109,7 @@ namespace DeepMorphy
         }
         
         internal int Id { get; }
-
-
+        
         private string _getWithMultilangKey(string enKey)
         {
             if (GramsDic.ContainsKey(enKey))

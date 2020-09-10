@@ -76,21 +76,20 @@ namespace DeepMorphy
         private readonly string _tensKey = "tens";
         private readonly string _moodKey = "mood";
         private readonly string _voicKey = "voic";
-
-
-        internal TagHelper(bool useEn, GramHelper gramHelper)
+        
+        internal TagHelper(bool useEn)
         {
             _useEn = useEn;
             if (!useEn)
             {
-                _postKey = gramHelper.TranslateKeyToRu(_postKey);
-                _nmbrKey = gramHelper.TranslateKeyToRu(_nmbrKey);
-                _gndrKey = gramHelper.TranslateKeyToRu(_gndrKey);
-                _caseKey = gramHelper.TranslateKeyToRu(_caseKey);
-                _persKey = gramHelper.TranslateKeyToRu(_persKey);
-                _tensKey = gramHelper.TranslateKeyToRu(_tensKey);
-                _moodKey = gramHelper.TranslateKeyToRu(_moodKey);
-                _voicKey = gramHelper.TranslateKeyToRu(_voicKey);
+                _postKey = GramInfo.TranslateKeyToRu(_postKey);
+                _nmbrKey = GramInfo.TranslateKeyToRu(_nmbrKey);
+                _gndrKey = GramInfo.TranslateKeyToRu(_gndrKey);
+                _caseKey = GramInfo.TranslateKeyToRu(_caseKey);
+                _persKey = GramInfo.TranslateKeyToRu(_persKey);
+                _tensKey = GramInfo.TranslateKeyToRu(_tensKey);
+                _moodKey = GramInfo.TranslateKeyToRu(_moodKey);
+                _voicKey = GramInfo.TranslateKeyToRu(_voicKey);
             }
 
             TagsDic = useEn ? TagsEnDic : TagsRuDic;
@@ -166,7 +165,6 @@ namespace DeepMorphy
                 {
                     return false;
                 }
-
                 return true;
             }).ToArray();
 
@@ -180,7 +178,6 @@ namespace DeepMorphy
                 var message = _useEn
                     ? $"Ambigious gram values. Found several possible tags: {tagsText}"
                     : $"Неоднозначные значения граммем. Найдено несколько допустимых тэгов: {tagsText}";
-                
                 throw new AmbigGramsForTagException(message);
             }
 

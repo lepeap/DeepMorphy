@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Schema;
 using DeepMorphy.Numb;
 using DeepMorphy.Split;
 using DeepMorphy.WordDict;
@@ -56,8 +55,7 @@ namespace DeepMorphy
             
             _withTrimAndLower = withTrimAndLower;
             UseEnGramNameNames = useEnGramNames;
-            GramHelper = new GramHelper();
-            TagHelper = new TagHelper(useEnGramNames, GramHelper);
+            TagHelper = new TagHelper(useEnGramNames);
             Net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGramNames);
             CorrectionDict = new Dict("dict_correction");
             Processors = new IMorphProcessor[]
@@ -72,8 +70,6 @@ namespace DeepMorphy
         public bool UseEnGramNameNames { get; }
 
         public TagHelper TagHelper { get; }
-
-        public GramHelper GramHelper { get; }
 
         internal NeuralNet.NetworkProc Net { get; }
         internal IMorphProcessor[] Processors { get; set; }

@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace DeepMorphy
 {
-    public class GramInfo
+    internal class GramInfo
     {
         static GramInfo()
         {
@@ -100,6 +100,16 @@ namespace DeepMorphy
         public static ReadOnlyDictionary<string, string> RuEnDic { get; }
         public static ReadOnlyDictionary<string, GramInfo> GramsDic { get;  }
         public static ReadOnlyDictionary<int, GramInfo> GramCatIndexDic { get; }
+        
+        public static string TranslateKeyToEn(string key)
+        {
+            return RuEnDic[key];
+        }
+
+        public static string TranslateKeyToRu(string key)
+        {
+            return EnRuDic[key];
+        }
         
         public class Cls
         {

@@ -29,14 +29,14 @@ namespace UnitTests
             string voicKey = "voic";
             if (!morph.UseEnGramNameNames)
             {
-                postKey = morph.GramHelper.TranslateKeyToRu(postKey);
-                nmbrKey = morph.GramHelper.TranslateKeyToRu(nmbrKey);
-                gndrKey = morph.GramHelper.TranslateKeyToRu(gndrKey);
-                caseKey = morph.GramHelper.TranslateKeyToRu(caseKey);
-                persKey = morph.GramHelper.TranslateKeyToRu(persKey);
-                tensKey = morph.GramHelper.TranslateKeyToRu(tensKey);
-                moodKey = morph.GramHelper.TranslateKeyToRu(moodKey);
-                voicKey = morph.GramHelper.TranslateKeyToRu(voicKey);
+                postKey = GramInfo.TranslateKeyToRu(postKey);
+                nmbrKey = GramInfo.TranslateKeyToRu(nmbrKey);
+                gndrKey = GramInfo.TranslateKeyToRu(gndrKey);
+                caseKey = GramInfo.TranslateKeyToRu(caseKey);
+                persKey = GramInfo.TranslateKeyToRu(persKey);
+                tensKey = GramInfo.TranslateKeyToRu(tensKey);
+                moodKey = GramInfo.TranslateKeyToRu(moodKey);
+                voicKey = GramInfo.TranslateKeyToRu(voicKey);
             }
 
             foreach (var kp in morph.TagHelper.TagsDic)

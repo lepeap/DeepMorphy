@@ -1,5 +1,3 @@
-using System;
-
 namespace DeepMorphy.WordDict
 {
     internal class Word

@@ -19,7 +19,7 @@ namespace DeepMorphy.Numb
             }
 
             var lemma = curLexeme.First(x => NumbInfo.LemmaTagId.Contains(x.tagId)).text;
-            return curLexeme.Where(x => x.text == mainWord).Select(kp => (kp.tagId, lemma));
+            return curLexeme.Where(x => x.text == mainWord).Select(kp => (kp.tagId, $"{prefix}{lemma}"));
         }
 
         public string Lemmatize(string word, int tagId)
@@ -32,9 +32,8 @@ namespace DeepMorphy.Numb
                 return null;
             }
             
-
             var lemma = curLexeme.First(x => NumbInfo.LemmaTagId.Contains(x.tagId)).text;
-            return lemma;
+            return $"{prefix}{lemma}";
         }
 
         public string Inflect(string word, int wordTag, int resultTag)

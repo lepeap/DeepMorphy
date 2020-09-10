@@ -126,7 +126,7 @@ namespace DeepMorphy.NeuralNet
 
         internal int GetLemmaTagId(int tagId)
         {
-            return this._config.TagToLemmaDic[tagId];
+            return _config.TagToLemmaDic[tagId];
         }
 
         private void _vectorizeWords(string[] srcMas,

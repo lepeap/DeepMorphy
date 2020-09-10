@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using DeepMorphy.NeuralNet;
-using DeepMorphy.WordDict;
 
 namespace DeepMorphy.Split
 {

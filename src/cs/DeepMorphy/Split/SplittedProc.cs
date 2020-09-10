@@ -32,7 +32,6 @@ namespace DeepMorphy.Split
         
         protected Dict CorrectionDict { get; }
         
-
         protected abstract int _GetTagIndex(I input);
 
         protected IEnumerable<string> GetProcessorKeys()
