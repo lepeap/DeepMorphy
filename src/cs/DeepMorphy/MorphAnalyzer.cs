@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DeepMorphy.Model;
 using DeepMorphy.Numb;
 using DeepMorphy.Split;
 using DeepMorphy.WordDict;
@@ -23,7 +24,7 @@ namespace DeepMorphy
         /// Initializes morphology analyzer
         /// </summary>
         /// <param name="withLemmatization">
-        /// Вычислять ли леммы слов при разборе слов (по умолчанию - false). Если нужна лемматизация, то необходимо выставить в true,
+        /// Вычислять ли леммы слов при разборе слов (по умолчанию - false). Если нужна лемматизация при разборе, то необходимо выставить в true,
         /// иначе лучше не включать (без флага работает быстрее).
         /// --------------------
         /// Perform lemmatization on for each tag in while parsing
@@ -68,7 +69,6 @@ namespace DeepMorphy
         }
 
         public bool UseEnGramNameNames { get; }
-
         public TagHelper TagHelper { get; }
 
         internal NeuralNet.NetworkProc Net { get; }
@@ -155,25 +155,24 @@ namespace DeepMorphy
         {
             var req = new[]
             {
-                (word: word, tag: tag)
+                new LemTask(word, tag)
             };
             return Lemmatize(req).First();
         }
 
-        public IEnumerable<string> Lemmatize(IEnumerable<(string word, Tag tag)> words)
+        public IEnumerable<string> Lemmatize(IEnumerable<LemTask> tasks)
         {
-            return new LemmaProc(words, this).Process();
+            return new LemmaProc(tasks, this).Process();
         }
-
-        public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag)> words, Tag resultTag)
+        
+        /// <summary>
+        /// Производит постановку слов в другую форму
+        /// </summary>
+        /// <param name="tasks">Слова для изменения формы</param>
+        /// <returns>Слова в запрашиваемых формах (если не удалось поставить слово в форму, то null)</returns>
+        public IEnumerable<string> Inflect(IEnumerable<InflectTask> tasks)
         {
-            var request = words.Select(x => (x.word, x.wordTag, resultTag));
-            return Inflect(request);
-        }
-
-        public IEnumerable<string> Inflect(IEnumerable<(string word, Tag wordTag, Tag resultTag)> words)
-        {
-            return new InflectProc(words, this).Process();
+            return new InflectProc(tasks, this).Process();
         }
 
         /// <summary>
@@ -181,7 +180,7 @@ namespace DeepMorphy
         /// </summary>
         /// <param name="word">Слово</param>
         /// <param name="tag">Тег слова</param>
-        /// <returns>Словарь, тег - слово</returns>
+        /// <returns>Перечисление, тег - слово</returns>
         public IEnumerable<(Tag tag, string text)> Lexeme(string word, Tag tag)
         {
             var procKey = TagHelper.TagProcDic[tag.Id];
@@ -215,33 +214,7 @@ namespace DeepMorphy
 
             return null;
         }
-
-
-        private IEnumerable<Tag> _mergeGramProbs(List<Tag> tags)
-        {
-            var preProcCount = tags.Count(x => (x.Power + 1) < 0.0001);
-            if (preProcCount == 0)
-            {
-                return tags;
-            }
-
-            var preProcPower = 1f / (preProcCount + 1);
-            foreach (var tag in tags)
-            {
-                if ((tag.Power + 1) < 0.0001)
-                {
-                    tag.Power = preProcPower;
-                }
-                else
-                {
-                    tag.Power = preProcPower * tag.Power;
-                }
-            }
-
-            var result = tags.OrderByDescending(x => x.Power);
-            return result;
-        }
-
+        
         private IEnumerable<Tag> _mergeTagsPower(List<Tag> tags)
         {
             var preProcCount = tags.Count(x => (x.Power + 1) < 0.0001);

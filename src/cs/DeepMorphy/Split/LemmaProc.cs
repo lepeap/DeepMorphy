@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
+using DeepMorphy.Model;
 
 namespace DeepMorphy.Split
 {
-    internal class LemmaProc : SplittedProc<(string word, Tag tag), string>
+    internal class LemmaProc : SplittedProc<LemTask, string>
     {
-        public LemmaProc(IEnumerable<(string word, Tag tag)> input, MorphAnalyzer morph) : base(input, morph)
+        public LemmaProc(IEnumerable<LemTask> input, MorphAnalyzer morph) : base(input, morph)
         {
         }
         
-        protected override int _GetTagIndex((string word, Tag tag) input)
+        protected override int _GetTagIndex(LemTask input)
         {
             return input.tag.Id;
         }

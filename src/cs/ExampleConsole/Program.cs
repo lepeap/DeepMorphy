@@ -32,25 +32,26 @@ namespace ExampleConsole
             "укрывал",
             "шоссе"
         };
+        
         static void Main(string[] args)
-        {
+        {        
+            Lexeme();
+            Lexeme1();
+            
             SimpleExample();
             
-            AnalisysFullExample1();
-            AnalisysFullExample2();
-            AnalisysFullExample3();
-            AnalisysFullExample4();
-            AnalisysFullExample5();
+            ParseFullExample1();
+            ParseFullExample2();
+            ParseFullExample3();
+            ParseFullExample4();
+            ParseFullExample5();
             
-            AnalisysPartExample1();
-            AnalisysPartExample2();
-            AnalisysPartExample3();
+            ParsePartExample1();
+            ParsePartExample2();
+            ParsePartExample3();
             
             LemmatizationExample1();
             LemmatizationExample2();
-        
-            Lexeme();
-            Lexeme1();
         }
 
         static void SimpleExample()
@@ -64,7 +65,7 @@ namespace ExampleConsole
             }
         }
         
-        static void AnalisysFullExample1()
+        static void ParseFullExample1()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -75,7 +76,7 @@ namespace ExampleConsole
             }
         }
         
-        static void AnalisysFullExample2()
+        static void ParseFullExample2()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -90,7 +91,7 @@ namespace ExampleConsole
             }
         }
         
-        static void AnalisysFullExample3()
+        static void ParseFullExample3()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -107,7 +108,7 @@ namespace ExampleConsole
             }
         }
         
-        static void AnalisysFullExample4()
+        static void ParseFullExample4()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -122,7 +123,7 @@ namespace ExampleConsole
             }
         }
         
-        static void AnalisysFullExample5()
+        static void ParseFullExample5()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -136,7 +137,7 @@ namespace ExampleConsole
             }
         }
                 
-        static void AnalisysPartExample1()
+        static void ParsePartExample1()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -150,7 +151,7 @@ namespace ExampleConsole
             }
         }
 
-        static void AnalisysPartExample2()
+        static void ParsePartExample2()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -162,7 +163,7 @@ namespace ExampleConsole
             }
         }
         
-        static void AnalisysPartExample3()
+        static void ParsePartExample3()
         {
             var m = new MorphAnalyzer();
             WriteHeader("Полная информация по падежу");
@@ -209,8 +210,7 @@ namespace ExampleConsole
                 }
             }
         }
-
-                
+        
         static void LemmatizationExample2()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
@@ -259,8 +259,7 @@ namespace ExampleConsole
                 Console.WriteLine($"{tpl.tag} - {tpl.text}");
             }
         }
-        
-        
+
         static void Lexeme1()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
@@ -276,7 +275,6 @@ namespace ExampleConsole
             Console.WriteLine();
         }
         
-
         static void WriteHeader(string message)
         {
             Console.WriteLine();

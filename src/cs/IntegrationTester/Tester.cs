@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using DeepMorphy;
+using DeepMorphy.Model;
 
 namespace IntegrationTester
 {
@@ -43,7 +44,7 @@ namespace IntegrationTester
             float totalCount = tests.Length;
             float correctCount = 0;
             int i = 0;
-            var tasks = tests.Select(x => (x.X, GetTag(x.ClsX)));
+            var tasks = tests.Select(x => new LemTask(x.X, GetTag(x.ClsX)));
             var results = _morph.Lemmatize(tasks).ToArray();
             foreach (var res in results)
             {
@@ -71,7 +72,7 @@ namespace IntegrationTester
             float totalCount = tests.Length;
             float correctCount = 0;
             int i = 0;
-            var tasks = tests.Select(x => (x.X, GetTag(x.ClsX), GetTag(x.ClsY)));
+            var tasks = tests.Select(x => new InflectTask(x.X, GetTag(x.ClsX), GetTag(x.ClsY)));
 
             foreach (var res in _morph.Inflect(tasks))
             {

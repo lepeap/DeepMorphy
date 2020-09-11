@@ -1,5 +1,6 @@
 using System.Linq;
 using DeepMorphy;
+using DeepMorphy.Model;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -42,9 +43,9 @@ namespace UnitTests
             Assert.AreEqual("большие", result);
         }
 
-        private (string word, Tag wordTag, Tag resultTag) _t(string word, Tag srcTag, Tag resTag)
+        private InflectTask _t(string word, Tag srcTag, Tag resTag)
         {
-            return (word: word, wordTag: srcTag, resultTag: resTag);
+            return new InflectTask(word, srcTag, resTag);
         }
     }
 }

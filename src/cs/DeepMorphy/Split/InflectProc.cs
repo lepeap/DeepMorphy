@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using DeepMorphy.Model;
 
 namespace DeepMorphy.Split
 {
-    internal class InflectProc : SplittedProc<(string word, Tag wordTag, Tag resultTag), string>
+    internal class InflectProc : SplittedProc<InflectTask, string>
     {
-        public InflectProc(IEnumerable<(string word, Tag wordTag, Tag resultTag)> input, MorphAnalyzer morph)
+        public InflectProc(IEnumerable<InflectTask> input, MorphAnalyzer morph)
             : base(input, morph)
         {
         }
 
-        protected override int _GetTagIndex((string word, Tag wordTag, Tag resultTag) input)
+        protected override int _GetTagIndex(InflectTask input)
         {
             return input.wordTag.Id;
         }
@@ -50,7 +51,7 @@ namespace DeepMorphy.Split
             var netTask = GetForProcessor("nn").ToArray();
             if (netTask.Length != 0)
             {
-                var lemTask = netTask.Select(x => (x.input.word, x.input.wordTag));
+                var lemTask = netTask.Select(x => new LemTask(x.input.word, x.input.wordTag));
                 var lemResults = Morph.Lemmatize(lemTask);
                 int i = 0;
                 foreach (var lemResult in lemResults)
@@ -62,11 +63,7 @@ namespace DeepMorphy.Split
                         ? srcInput.wordTag
                         : Morph.TagHelper.CreateTagFromId(lemTagId);
                     netTask[i] = (
-                        input: (
-                            word: lemResult, 
-                            wordTag: lemTag,
-                            resultTag: srcInput.resultTag
-                        ),
+                        input: new InflectTask(lemResult, lemTag, srcInput.resultTag),
                         index: srcTask.index
                     );
                     i++;
