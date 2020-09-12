@@ -132,7 +132,7 @@ namespace DeepMorphy
                 var message = _useEn
                     ? "Tag not found"
                     : "Тег не найден";
-                throw new TagNotSupportedException(message);
+                throw new TagNotFoundException(message);
             }
 
             return foundTags[0];

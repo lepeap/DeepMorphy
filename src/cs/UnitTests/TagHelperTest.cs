@@ -1,4 +1,5 @@
 using DeepMorphy;
+using DeepMorphy.Exception;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -75,6 +76,26 @@ namespace UnitTests
                 Assert.AreEqual(index, tagWithoutLemma.Id, "Неправильный айди при создании без леммы");
                 Assert.AreEqual(index, tagWithoutLemma.Id, "Неправильный айди при создании c леммой");
             }
+        }
+        
+        [Test]
+        public void TestNotExistingTagException()
+        {
+            Assert.Throws<TagNotFoundException>(() =>
+            {
+                var morph = new MorphAnalyzer();
+                morph.TagHelper.CreateTag("сущ", tens: "буд");
+            });
+        }
+        
+        [Test]
+        public void TestAmbigGramsForTagException()
+        {
+            Assert.Throws<TagNotFoundException>(() =>
+            {
+                var morph = new MorphAnalyzer();
+                morph.TagHelper.CreateTag("сущ", gndr: "муж");
+            });
         }
     }
 }
