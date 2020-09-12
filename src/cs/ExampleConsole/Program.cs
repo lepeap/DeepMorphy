@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DeepMorphy;
+using DeepMorphy.Model;
 
 namespace ExampleConsole
 {
@@ -32,29 +33,34 @@ namespace ExampleConsole
             "укрывал",
             "шоссе"
         };
-        
+
         static void Main(string[] args)
-        {        
-            Lexeme();
+        {
+            Simple();
+
+            ParseFull1();
+            ParseFull2();
+            ParseFull3();
+            ParseFull4();
+            ParseFull5();
+
+            ParsePart1();
+            ParsePart2();
+            ParsePart3();
+
+            Lemmatization1();
+            Lemmatization2();
+            Lemmatization3();
+
+            Inflect1();
+            Inflect2();
+            Inflect3();
+            
             Lexeme1();
-            
-            SimpleExample();
-            
-            ParseFullExample1();
-            ParseFullExample2();
-            ParseFullExample3();
-            ParseFullExample4();
-            ParseFullExample5();
-            
-            ParsePartExample1();
-            ParsePartExample2();
-            ParsePartExample3();
-            
-            LemmatizationExample1();
-            LemmatizationExample2();
+            Lexeme2();
         }
 
-        static void SimpleExample()
+        static void Simple()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -64,8 +70,8 @@ namespace ExampleConsole
                 Console.WriteLine(morphInfo.ToString());
             }
         }
-        
-        static void ParseFullExample1()
+
+        static void ParseFull1()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -75,8 +81,8 @@ namespace ExampleConsole
                 Console.WriteLine($"{morphInfo.Text} - {morphInfo.BestTag}");
             }
         }
-        
-        static void ParseFullExample2()
+
+        static void ParseFull2()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -90,8 +96,8 @@ namespace ExampleConsole
                 }
             }
         }
-        
-        static void ParseFullExample3()
+
+        static void ParseFull3()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -107,8 +113,8 @@ namespace ExampleConsole
                 }
             }
         }
-        
-        static void ParseFullExample4()
+
+        static void ParseFull4()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -122,8 +128,8 @@ namespace ExampleConsole
                 }
             }
         }
-        
-        static void ParseFullExample5()
+
+        static void ParseFull5()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -136,8 +142,8 @@ namespace ExampleConsole
                 }
             }
         }
-                
-        static void ParsePartExample1()
+
+        static void ParsePart1()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -151,7 +157,7 @@ namespace ExampleConsole
             }
         }
 
-        static void ParsePartExample2()
+        static void ParsePart2()
         {
             var m = new MorphAnalyzer();
             var results = m.Parse(Words).ToArray();
@@ -162,12 +168,12 @@ namespace ExampleConsole
                 Console.WriteLine($"{morphInfo.Text} - {bestGram.Key}:{bestGram.Power} ");
             }
         }
-        
-        static void ParsePartExample3()
+
+        static void ParsePart3()
         {
             var m = new MorphAnalyzer();
             WriteHeader("Полная информация по падежу");
-            var results = m.Parse(new string[]{"речка"}).ToArray();
+            var results = m.Parse("речка").ToArray();
 
             foreach (var morphInfo in results)
             {
@@ -178,12 +184,12 @@ namespace ExampleConsole
                 }
             }
         }
-        
-        static void LemmatizationExample1()
+
+        static void Lemmatization1()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
             WriteHeader("Выводим формы слова 'королевский'");
-            
+
             var words = new string[]
             {
                 "королевский",
@@ -193,13 +199,13 @@ namespace ExampleConsole
                 "обновляя",
                 "выходящие",
                 "собаковод",
-                "раскладывала", 
+                "раскладывала",
                 "обучает",
                 "юбка",
                 "пересказывают",
                 "королевского"
             };
-            
+
             var results = m.Parse(words).ToArray();
             var mainWord = results[0];
             foreach (var morphInfo in results)
@@ -210,12 +216,12 @@ namespace ExampleConsole
                 }
             }
         }
-        
-        static void LemmatizationExample2()
+
+        static void Lemmatization2()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
             WriteHeader("Выводим все леммы из главных тэгов");
-            
+
             var words = new string[]
             {
                 "королевские",
@@ -224,13 +230,13 @@ namespace ExampleConsole
                 "обновляя",
                 "выходящие",
                 "собаковод",
-                "раскладывала", 
+                "раскладывала",
                 "обучает",
                 "юбка",
                 "пересказывают",
                 "шоссе"
             };
-            
+
             var results = m.Parse(words).ToArray();
 
             foreach (var morphInfo in results)
@@ -239,20 +245,92 @@ namespace ExampleConsole
             }
         }
 
-        static void Lexeme()
+        static void Lemmatization3()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
-            var word = "дебажить";
+            WriteHeader("Лемматизация без классификации");
+            var tasks = new[]
+            {
+                new LemTask("синяя", m.TagHelper.CreateTag("прил", gndr: "жен", nmbr: "ед", @case: "им")),
+                new LemTask("гуляя", m.TagHelper.CreateTag("деепр", tens: "наст"))
+            };
+
+            var lemmas = m.Lemmatize(tasks).ToArray();
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                Console.WriteLine($"{tasks[i].word} - {lemmas[i]}");
+            }
+        }
+
+        static void Inflect1()
+        {
+            var m = new MorphAnalyzer(withLemmatization: true);
+            WriteHeader("Изменение формы слов");
+            var tasks = new[]
+            {
+                new InflectTask("синяя", 
+                    m.TagHelper.CreateTag("прил", gndr: "жен", nmbr: "ед", @case: "им"),
+                    m.TagHelper.CreateTag("прил", gndr: "муж", nmbr: "ед", @case: "им")),
+                new InflectTask("гулять", 
+                    m.TagHelper.CreateTag("инф_гл"),  
+                    m.TagHelper.CreateTag("деепр", tens: "наст"))
+            };
+
+            var results = m.Inflect(tasks).ToArray();
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                Console.WriteLine($"{tasks[i].word} -> {results[i]} {tasks[i].resultTag}");
+            }
+        }
+        
+        static void Inflect2()
+        {
+            var m = new MorphAnalyzer(withLemmatization: true);
+            WriteHeader("Переводим слова во множественное число");
+
+            var morphRes = m.Parse("стула", "стола", "горшка").ToArray();
+
+            var tasks = morphRes
+                .Select(mi => new InflectTask(mi.Text, 
+                                              mi.BestTag,
+                                              m.TagHelper.CreateTag("сущ", gndr: mi.BestTag["род"], @case: mi.BestTag["падеж"], nmbr: "мн")))
+                .ToArray();
+
+            var results = m.Inflect(tasks).ToArray();
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                Console.WriteLine($"{tasks[i].word} {tasks[i].wordTag} -> {results[i]} {tasks[i].resultTag}");
+            }
+        }
+        
+        static void Inflect3()
+        {
+            var m = new MorphAnalyzer(withLemmatization: true);
+            WriteHeader("Гипотетическая форма слова");
+            var tasks = new[]
+            {
+                new InflectTask("победить", 
+                    m.TagHelper.CreateTag("инф_гл"),  
+                    m.TagHelper.CreateTag("гл", nmbr: "ед", tens: "буд", pers: "1л", mood: "изъяв"))
+            };
+            Console.WriteLine($"{tasks[0].word} {tasks[0].wordTag} -> {m.Inflect(tasks).First()} {tasks[0].resultTag}");
+        }
+        
+        static void Lexeme1()
+        {
+            var m = new MorphAnalyzer(withLemmatization: true);
+            var word = "лемматизировать";
             var tag = m.TagHelper.CreateTag("инф_гл");
             var results = m.Lexeme(word, tag).ToArray();
-            
+
             WriteHeader($"Лексема для слова {word}[{tag}]");
             foreach (var tpl in results)
             {
                 Console.WriteLine($"{tpl.tag} - {tpl.text}");
             }
+
             Console.WriteLine();
-            
+
             WriteHeader($"Только деепричастия из лексемы {word}[{tag}]");
             foreach (var tpl in results.Where(x => x.tag.Has("деепр")))
             {
@@ -260,21 +338,22 @@ namespace ExampleConsole
             }
         }
 
-        static void Lexeme1()
+        static void Lexeme2()
         {
             var m = new MorphAnalyzer(withLemmatization: true);
             var word = "я";
             var res = m.Parse("я").ToArray();
             var tag = res[0].BestTag;
-            var results = m.Lexeme(word,tag ).ToArray();
+            var results = m.Lexeme(word, tag).ToArray();
             WriteHeader($"Лексема для слова {word}[{tag}]");
             foreach (var tpl in results)
             {
                 Console.WriteLine($"{tpl.tag} - {tpl.text}");
             }
+
             Console.WriteLine();
         }
-        
+
         static void WriteHeader(string message)
         {
             Console.WriteLine();

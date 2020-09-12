@@ -114,70 +114,16 @@ namespace DeepMorphy
                              string pers = null,
                              string tens = null,
                              string mood = null,
-                             string voic = null,
-                             string lemma = null)
+                             string voic = null)
         {
-            var foundTags = TagsDic.Where(t =>
-            {
-                if (t.Value[_postKey] != post)
-                {
-                    return false;
-                }
-
-                var tGndr = t.Value.ContainsKey(_gndrKey) ? t.Value[_gndrKey] : null;
-                if (tGndr != gndr)
-                {
-                    return false;
-                }
-
-                var tNmbr = t.Value.ContainsKey(_nmbrKey) ? t.Value[_nmbrKey] : null;
-                if (tNmbr != nmbr)
-                {
-                    return false;
-                }
-
-                var tCase = t.Value.ContainsKey(_caseKey) ? t.Value[_caseKey] : null;
-                if (tCase != @case)
-                {
-                    return false;
-                }
-
-                var tPers = t.Value.ContainsKey(_persKey) ? t.Value[_persKey] : null;
-                if (tPers != pers)
-                {
-                    return false;
-                }
-
-                var tTens = t.Value.ContainsKey(_tensKey) ? t.Value[_tensKey] : null;
-                if (tTens != tens)
-                {
-                    return false;
-                }
-
-                var tMood = t.Value.ContainsKey(_moodKey) ? t.Value[_moodKey] : null;
-                if (tMood != mood)
-                {
-                    return false;
-                }
-
-                var tVoid = t.Value.ContainsKey(_voicKey) ? t.Value[_voicKey] : null;
-                if (tVoid != voic)
-                {
-                    return false;
-                }
-                return true;
-            }).ToArray();
-
+            var foundTags = FilterTags(post, gndr, nmbr, @case, pers, tens, mood, voic, fullMatch: true).ToArray();
             if (foundTags.Length > 1)
             {
-                var tagsText = string.Join("; ", foundTags.Select(d =>
-                {
-                    var tText = string.Join(",", d.Value);
-                    return $"<{tText}>";
-                }));
+                var tags = foundTags.Select(t=>t.ToString());
+                var tagsText = string.Join("\n", tags);
                 var message = _useEn
-                    ? $"Ambigious gram values. Found several possible tags: {tagsText}"
-                    : $"Неоднозначные значения граммем. Найдено несколько допустимых тэгов: {tagsText}";
+                    ? $"Ambigious gram values. Found several possible tags:\n{tagsText}"
+                    : $"Неоднозначные значения граммем. Найдено несколько допустимых тэгов:\n{tagsText}";
                 throw new AmbigGramsForTagException(message);
             }
 
@@ -189,8 +135,84 @@ namespace DeepMorphy
                 throw new TagNotSupportedException(message);
             }
 
-            var tag = new Tag(foundTags[0].Value, 1, foundTags[0].Key, lemma);
-            return tag;
+            return foundTags[0];
+        }
+
+        public IEnumerable<Tag> FilterTags(string post,
+                                           string gndr = null,
+                                           string nmbr = null,
+                                           string @case = null,
+                                           string pers = null,
+                                           string tens = null,
+                                           string mood = null,
+                                           string voic = null,
+                                           bool fullMatch = false)
+        {
+            return TagsDic.Where(t =>
+            {
+                if (t.Value[_postKey] != post)
+                {
+                    return false;
+                }
+
+                var tGndr = t.Value.ContainsKey(_gndrKey) ? t.Value[_gndrKey] : null;
+                var fm = fullMatch ? true : gndr != null;
+                if (fm && tGndr != gndr)
+                {
+                    return false;
+                }
+
+                var tNmbr = t.Value.ContainsKey(_nmbrKey) ? t.Value[_nmbrKey] : null;
+                fm = fullMatch ? true : nmbr != null;
+                if (fm && tNmbr != nmbr)
+                {
+                    return false;
+                }
+
+                var tCase = t.Value.ContainsKey(_caseKey) ? t.Value[_caseKey] : null;
+                fm = fullMatch ? true : @case != null;
+                if (fm && tCase != @case)
+                {
+                    return false;
+                }
+
+                var tPers = t.Value.ContainsKey(_persKey) ? t.Value[_persKey] : null;
+                fm = fullMatch ? true : pers != null;
+                if (fm && tPers != pers)
+                {
+                    return false;
+                }
+
+                var tTens = t.Value.ContainsKey(_tensKey) ? t.Value[_tensKey] : null;
+                fm = fullMatch ? true : tens != null;
+                if (fm && tTens != tens)
+                {
+                    return false;
+                }
+
+                var tMood = t.Value.ContainsKey(_moodKey) ? t.Value[_moodKey] : null;
+                fm = fullMatch ? true : mood != null;
+                if (fm && tMood != mood)
+                {
+                    return false;
+                }
+
+                var tVoid = t.Value.ContainsKey(_voicKey) ? t.Value[_voicKey] : null;
+                fm = fullMatch ? true : tens != null;
+                if (fm && tVoid != voic)
+                {
+                    return false;
+                }
+                return true;
+            })
+            .Select(kp => new Tag(kp.Value, 1, kp.Key))
+            .OrderByDescending(t => t.Id);
+        }
+
+        public IEnumerable<Tag> ListSupportedTags()
+        {
+            return TagsDic.OrderByDescending(kp => TagOrderDic[kp.Key])
+                          .Select(kp => new Tag(kp.Value, 1, kp.Key));
         }
 
         public ReadOnlyDictionary<string, string> this[int tagIndex]

@@ -15,8 +15,8 @@ namespace DeepMorphy
     /// </summary>
     public sealed class MorphAnalyzer
     {
-        private readonly bool _withTrimAndLower;
-
+        internal readonly bool _withTrimAndLower;
+        
         /// <summary>
         /// Создает морфологический анализатор. В идеале лучше использовать его как синглтон,
         /// при создании объекта какое-то время уходит на загрузку словарей и сети.
@@ -74,6 +74,8 @@ namespace DeepMorphy
         internal NeuralNet.NetworkProc Net { get; }
         internal IMorphProcessor[] Processors { get; set; }
         internal Dict CorrectionDict { get; set; }
+        
+        
 
         /// <summary>
         /// Производит морфологический разбор слов
@@ -162,6 +164,10 @@ namespace DeepMorphy
 
         public IEnumerable<string> Lemmatize(IEnumerable<LemTask> tasks)
         {
+            if (_withTrimAndLower)
+            {
+                tasks = tasks.Select(t => new LemTask(t.word.Trim().ToLower(), t.tag));
+            }
             return new LemmaProc(tasks, this).Process();
         }
         
@@ -172,6 +178,10 @@ namespace DeepMorphy
         /// <returns>Слова в запрашиваемых формах (если не удалось поставить слово в форму, то null)</returns>
         public IEnumerable<string> Inflect(IEnumerable<InflectTask> tasks)
         {
+            if (_withTrimAndLower)
+            {
+                tasks = tasks.Select(t => new InflectTask(t.word.Trim().ToLower(), t.wordTag, t.resultTag));
+            }
             return new InflectProc(tasks, this).Process();
         }
 
@@ -183,6 +193,11 @@ namespace DeepMorphy
         /// <returns>Перечисление, тег - слово</returns>
         public IEnumerable<(Tag tag, string text)> Lexeme(string word, Tag tag)
         {
+            if (_withTrimAndLower)
+            {
+                word = word.Trim().ToLower();
+            }
+            
             var procKey = TagHelper.TagProcDic[tag.Id];
             if (procKey == "nn")
             {

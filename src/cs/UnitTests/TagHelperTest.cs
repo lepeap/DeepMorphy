@@ -70,13 +70,10 @@ namespace UnitTests
                     pers = pers,
                     tens = tens,
                     mood = mood,
-                    voic = voic,
-                    lemma: "111");
+                    voic = voic);
 
                 Assert.AreEqual(index, tagWithoutLemma.Id, "Неправильный айди при создании без леммы");
                 Assert.AreEqual(index, tagWithoutLemma.Id, "Неправильный айди при создании c леммой");
-                Assert.IsNull(tagWithoutLemma.Lemma, "Лемма заполнена (должна быть пустой)");
-                Assert.AreEqual("111", tagWithLemma.Lemma, "Неправильная лемма");
             }
         }
     }
