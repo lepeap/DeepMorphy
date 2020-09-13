@@ -9,6 +9,9 @@ using DeepMorphy.Model;
 
 namespace DeepMorphy
 {
+    /// <summary>
+    /// Класс для работы с тегами
+    /// </summary>
     public class TagHelper
     {
         internal static int[] LemmasIds { get; }
@@ -95,19 +98,24 @@ namespace DeepMorphy
 
             TagsDic = useEn ? TagsEnDic : TagsRuDic;
         }
-
-        internal static bool IsLemma(int tagId)
-        {
-            return LemmasIds.Contains(tagId);
-        }
-
-        internal Dictionary<int, ReadOnlyDictionary<string, string>> TagsDic { get; }
-
-        internal Tag CreateTagFromId(int tagId, float power = 1.0f, string lemma = null)
-        {
-            return new Tag(TagsDic[tagId], power, tagId, lemma);
-        }
         
+        /// <summary>
+        /// Создает тег из значений грамматических категорий
+        /// </summary>
+        /// <param name="post">Часть речи</param>
+        /// <param name="gndr">Род</param>
+        /// <param name="nmbr">Число</param>
+        /// <param name="case">Падеж</param>
+        /// <param name="pers">Лицо</param>
+        /// <param name="tens">Время</param>
+        /// <param name="mood">Наклонение</param>
+        /// <param name="voic">Залог</param>
+        /// <returns>
+        /// Тег с перечисленными граммемами
+        /// </returns>
+        /// <exception cref="TagNotFoundException">
+        /// Данная комбинация граммем не поддерживается
+        /// </exception>
         public Tag CreateTag(string post,
                              string gndr = null,
                              string nmbr = null,
@@ -118,16 +126,6 @@ namespace DeepMorphy
                              string voic = null)
         {
             var foundTags = FilterTags(post, gndr, nmbr, @case, pers, tens, mood, voic, fullMatch: true).ToArray();
-            if (foundTags.Length > 1)
-            {
-                var tags = foundTags.Select(t=>t.ToString());
-                var tagsText = string.Join("\n", tags);
-                var message = _useEn
-                    ? $"Ambigious gram values. Found several possible tags:\n{tagsText}"
-                    : $"Неоднозначные значения граммем. Найдено несколько допустимых тэгов:\n{tagsText}";
-                throw new AmbigGramsForTagException(message);
-            }
-
             if (foundTags.Length == 0)
             {
                 var message = _useEn
@@ -138,7 +136,23 @@ namespace DeepMorphy
 
             return foundTags[0];
         }
-
+        
+        /// <summary>
+        /// Возвращает теги, которые подходят для данной комбинации граммем
+        /// </summary>
+        /// <param name="post">Часть речи</param>
+        /// <param name="gndr">Род</param>
+        /// <param name="nmbr">Число</param>
+        /// <param name="case">Падеж</param>
+        /// <param name="pers">Лицо</param>
+        /// <param name="tens">Время</param>
+        /// <param name="mood">Наклонение</param>
+        /// <param name="voic">Залог</param>
+        /// <param name="fullMatch">
+        /// Полное соответствие (игнорировать ли незаполненные грамматические категории)</param>
+        /// <returns>
+        /// Перечисление тегов с перечисленными граммемами
+        /// </returns>
         public IEnumerable<Tag> FilterTags(string post,
                                            string gndr = null,
                                            string nmbr = null,
@@ -210,13 +224,31 @@ namespace DeepMorphy
             .OrderByDescending(t => t.Id);
         }
 
+        /// <summary>
+        /// Выводит все поддерживаемые теги
+        /// </summary>
+        /// <returns>
+        /// Перечисление тегов
+        /// </returns>
         public IEnumerable<Tag> ListSupportedTags()
         {
             return TagsDic.OrderByDescending(kp => TagOrderDic[kp.Key])
                           .Select(kp => new Tag(kp.Value, 1, kp.Key));
         }
+        
+        internal static bool IsLemma(int tagId)
+        {
+            return LemmasIds.Contains(tagId);
+        }
 
-        public ReadOnlyDictionary<string, string> this[int tagIndex]
+        internal Dictionary<int, ReadOnlyDictionary<string, string>> TagsDic { get; }
+
+        internal Tag CreateTagFromId(int tagId, float power = 1.0f, string lemma = null)
+        {
+            return new Tag(TagsDic[tagId], power, tagId, lemma);
+        }
+
+        internal ReadOnlyDictionary<string, string> this[int tagIndex]
         {
             get => TagsDic[tagIndex];
         }

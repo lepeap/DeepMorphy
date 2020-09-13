@@ -67,8 +67,15 @@ namespace DeepMorphy
                 new DictProc("dict")
             };
         }
-
+        
+        /// <summary>
+        /// Используются ли английские названия граммем
+        /// </summary>
         public bool UseEnGramNames { get; }
+        
+        /// <summary>
+        /// Объект для работы с тегами
+        /// </summary>
         public TagHelper TagHelper { get; }
 
         internal NeuralNet.NetworkProc Net { get; }
@@ -154,7 +161,13 @@ namespace DeepMorphy
         {
             return Parse((IEnumerable<string>) words);
         }
-
+        
+        /// <summary>
+        /// Производит лемматизация одного слова
+        /// </summary>
+        /// <param name="word">Слово</param>
+        /// <param name="tag">Тег слова</param>
+        /// <returns>Лемма</returns>
         public string Lemmatize(string word, Tag tag)
         {
             var req = new[]
@@ -163,7 +176,12 @@ namespace DeepMorphy
             };
             return Lemmatize(req).First();
         }
-
+        
+        /// <summary>
+        /// Производит лемматизацию слов
+        /// </summary>
+        /// <param name="tasks">Слова для лемматизации</param>
+        /// <returns>Перечисление получившихся лемм</returns>
         public IEnumerable<string> Lemmatize(IEnumerable<LemTask> tasks)
         {
             if (_withTrimAndLower)

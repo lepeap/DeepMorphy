@@ -11,7 +11,7 @@ namespace DeepMorphy.Model
     public sealed class MorphInfo
     {
         private readonly bool _useEnGrams;
-        private Dictionary<string, GramCategory> _gramCats;
+        private readonly Dictionary<string, GramCategory> _gramCats;
         
         internal MorphInfo(
             string text,
@@ -189,35 +189,6 @@ namespace DeepMorphy.Model
             return new MorphInfo(Text, Tags, _useEnGrams);
         }
         
-        private Dictionary<string, GramCategory> GramsCat
-        {
-            get
-            {
-                if (_gramCats == null)
-                {
-                    _gramCats = new Dictionary<string, GramCategory>();
-                    foreach (var gram in GramInfo.GramsInfo)
-                    {
-                        var gramName = _useEnGrams ? gram.KeyEn : gram.KeyRu;
-                        var grams = Tags.Select(x => x[gramName])
-                            .Where(x => x != null)
-                            .Distinct()
-                            .ToArray();
-
-                        if (grams.Length == 0)
-                        {
-                            grams = gram.Classes
-                                .Select(x => _useEnGrams ? x.KeyEn : x.KeyRu)
-                                .ToArray();
-                        }
-                        
-                        var power = (float)1.0 / grams.Length;
-                        _gramCats[gramName] = new GramCategory(grams.Select(x => new Gram(x, power)).ToArray());
-                    }
-                }
-
-                return _gramCats;
-            }
-        }
+        private Dictionary<string, GramCategory> GramsCat => _gramCats;
     }
 }

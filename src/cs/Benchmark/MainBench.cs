@@ -3,14 +3,14 @@ using System.Diagnostics;
 using System.Linq;
 using DeepMorphy;
 using BenchmarkDotNet.Attributes;
+using DeepMorphy.Model;
 
 namespace Benchmark
 {
     [MemoryDiagnoser]
     public class MainBench
     {
-        private static readonly string[] Words = new[]
-        {
+        private static readonly string[] Words = {
             "tafsdfdfasd",
             "xii",
             "123",
