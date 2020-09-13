@@ -48,8 +48,24 @@ namespace DeepMorphy.Split
                 }
             }
 
-            var netTask = GetForProcessor("nn").ToArray();
-            if (netTask.Length != 0)
+            _processNetworkItems();
+            return Result;
+        }
+
+        private void _processNetworkItems()
+        {
+            List<(InflectTask input, int index)> netTask = new List<(InflectTask task, int index)>();
+            foreach (var task in GetForProcessor("nn"))
+            {
+                if (TagHelper.TagProcDic[task.input.resultTag.Id] != "nn")
+                {
+                    Result[task.index] = null;
+                    continue;
+                }
+                netTask.Add(task);
+            }
+
+            if (netTask.Count != 0)
             {
                 var lemTask = netTask.Select(x => new LemTask(x.input.word, x.input.wordTag));
                 var lemResults = Morph.Lemmatize(lemTask);
@@ -85,8 +101,6 @@ namespace DeepMorphy.Split
                     i++;
                 }
             }
-            
-            return Result;
         }
     }
 }

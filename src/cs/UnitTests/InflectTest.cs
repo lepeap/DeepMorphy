@@ -42,6 +42,48 @@ namespace UnitTests
             var result = _morph.Inflect(inflectTask).First();
             Assert.AreEqual("большие", result);
         }
+        
+        [Test]
+        public void UnsupportedNetworkInflect()
+        {
+            var word = "тест";
+            var srcTag = _morph.TagHelper.CreateTag("прил", gndr: "жен", nmbr: "ед", @case: "им");
+            var resTag = _morph.TagHelper.CreateTag("предл");
+            var inflectTask = new []
+            {
+                _t(word, srcTag, resTag)
+            };
+            var result = _morph.Inflect(inflectTask).First();
+            Assert.IsNull(result);
+        }
+        
+        [Test]
+        public void UnsupportedNumbInflect()
+        {
+            var word = "тест";
+            var srcTag = _morph.TagHelper.CreateTag("числ", gndr: "муж", nmbr: "ед", @case: "им");
+            var resTag = _morph.TagHelper.CreateTag("предл");
+            var inflectTask = new []
+            {
+                _t(word, srcTag, resTag)
+            };
+            var result = _morph.Inflect(inflectTask).First();
+            Assert.IsNull(result);
+        }
+        
+        [Test]
+        public void UnsupportedDictInflect()
+        {
+            var word = "тест";
+            var srcTag = _morph.TagHelper.CreateTag("союз");
+            var resTag = _morph.TagHelper.CreateTag("предл");
+            var inflectTask = new []
+            {
+                _t(word, srcTag, resTag)
+            };
+            var result = _morph.Inflect(inflectTask).First();
+            Assert.IsNull(result);
+        }
 
         private InflectTask _t(string word, Tag srcTag, Tag resTag)
         {

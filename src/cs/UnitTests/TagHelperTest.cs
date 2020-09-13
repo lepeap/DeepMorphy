@@ -28,7 +28,7 @@ namespace UnitTests
             string tensKey = "tens";
             string moodKey = "mood";
             string voicKey = "voic";
-            if (!morph.UseEnGramNameNames)
+            if (!morph.UseEnGramNames)
             {
                 postKey = GramInfo.TranslateKeyToRu(postKey);
                 nmbrKey = GramInfo.TranslateKeyToRu(nmbrKey);
