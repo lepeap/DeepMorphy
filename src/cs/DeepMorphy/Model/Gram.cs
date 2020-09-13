@@ -1,4 +1,4 @@
-namespace DeepMorphy
+namespace DeepMorphy.Model
 {
     /// <summary>
     /// Значение граммемы для слова

@@ -28,11 +28,13 @@ namespace DeepMorphy
             GroupToClassDic["unkn"] = TagHelper.TagsEnDic.First(t => t.Value["post"] == "unkn").Key;
         }
         
+        private readonly char[] _netChars;
         private readonly char[] _availableChars;
         private readonly int _minAvailablePersent;
         
         public RegProc(char[] netChars, int minAvailablePersent)
         {
+            _netChars = netChars;
             _availableChars = netChars.Concat(new[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}).ToArray();
             _minAvailablePersent = minAvailablePersent;
         }
@@ -89,6 +91,10 @@ namespace DeepMorphy
 
         private bool _isUnknown(string word)
         {
+            if (word.Length > 1 && word.Count(x => _netChars.Contains(x)) < 2)
+            {
+                return true;
+            }
             var availableCount = word.Count(x => _availableChars.Contains(x));
             var availablePers = 100 * availableCount / word.Length;
             return availablePers < _minAvailablePersent;

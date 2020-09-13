@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DeepMorphy
+namespace DeepMorphy.Model
 {
     /// <summary>
     /// Грамматическая категория, содержит вероятность каждой граммемы в категории для текущего слова

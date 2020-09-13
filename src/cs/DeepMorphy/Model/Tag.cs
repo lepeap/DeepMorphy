@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace DeepMorphy
+namespace DeepMorphy.Model
 {
     /// <summary>
     /// Комбинация граммем для данного слова

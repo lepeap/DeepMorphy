@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using DeepMorphy.Exception;
+using DeepMorphy.Model;
 
 namespace DeepMorphy
 {

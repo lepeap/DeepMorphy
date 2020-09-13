@@ -55,7 +55,7 @@ namespace DeepMorphy
             }
             
             _withTrimAndLower = withTrimAndLower;
-            UseEnGramNameNames = useEnGramNames;
+            UseEnGramNames = useEnGramNames;
             TagHelper = new TagHelper(useEnGramNames);
             Net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGramNames);
             CorrectionDict = new Dict("dict_correction");
@@ -68,15 +68,13 @@ namespace DeepMorphy
             };
         }
 
-        public bool UseEnGramNameNames { get; }
+        public bool UseEnGramNames { get; }
         public TagHelper TagHelper { get; }
 
         internal NeuralNet.NetworkProc Net { get; }
         internal IMorphProcessor[] Processors { get; set; }
         internal Dict CorrectionDict { get; set; }
         
-        
-
         /// <summary>
         /// Производит морфологический разбор слов
         /// --------------------
@@ -126,6 +124,10 @@ namespace DeepMorphy
                     break;
                 }
 
+                var gramDic = taglist.Any(t => TagHelper.TagProcDic[t.Id] != "nn")
+                    ? _mergeGramDic(taglist, netTpl.gramDic)
+                    : netTpl.gramDic;
+
                 if (!ignoreNetworkResult)
                 {
                     taglist.AddRange(netTpl.tags);
@@ -144,7 +146,7 @@ namespace DeepMorphy
                 }
 
                 var resTags = _mergeTagsPower(taglist);
-                yield return new MorphInfo(netTpl.srcWord, resTags, netTpl.gramDic, UseEnGramNameNames);
+                yield return new MorphInfo(netTpl.srcWord, resTags, gramDic, UseEnGramNames);
             }
         }
 
@@ -253,6 +255,41 @@ namespace DeepMorphy
 
             var result = tags.OrderByDescending(x => x.Power);
             return result;
+        }
+        
+        private Dictionary<string, GramCategory> _mergeGramDic(List<Tag> tags, Dictionary<string, GramCategory> netGrams)
+        {
+            var rezCats = new Dictionary<string, GramCategory>();
+            foreach (var gram in GramInfo.GramsInfo)
+            {
+                var gramName = UseEnGramNames ? gram.KeyEn : gram.KeyRu;
+                var tagGrams = tags.Select(x => x[gramName])
+                                .Where(x => x != null)
+                                .Distinct()
+                                .ToArray();
+
+                if (tagGrams.Length == 0)
+                {
+                    tagGrams = gram.Classes
+                        .Select(x => UseEnGramNames ? x.KeyEn : x.KeyRu)
+                        .ToArray();
+                }
+                        
+                var power = 1.0f / (tagGrams.Length + 1);
+                var curRezDic = tagGrams.ToDictionary(x => x, x => new Gram(x, power));
+                foreach (var netGram in netGrams[gramName].Grams)
+                {
+                    if (!curRezDic.ContainsKey(netGram.Key))
+                    {
+                        var resGram = new Gram(netGram.Key, netGram.Power * power);
+                        curRezDic[netGram.Key] = resGram;
+                    }
+                }
+
+                var gramRez = curRezDic.Select(x => x.Value).OrderByDescending(x => x.Power).ToArray();
+                rezCats[gramName] = new GramCategory(gramRez);
+            }
+            return rezCats;
         }
     }
 }
