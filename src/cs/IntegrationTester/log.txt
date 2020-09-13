@@ -1,4 +1,4 @@
-9/10/20 2:43:38 AM
+9/13/20 10:29:53 AM
 
 
 ####################################################
@@ -1178,16 +1178,16 @@ Full:
 
 Full case classification. Full acc: 0.980693
 Full case classification. Classes acc: 0.9857899
-Full gndr classification. Full acc: 0.9604921
-Full gndr classification. Classes acc: 0.9670466
+Full gndr classification. Full acc: 0.9604039
+Full gndr classification. Classes acc: 0.9669735
 Full mood classification. Full acc: 0.9986894
 Full mood classification. Classes acc: 0.9987578
 Full nmbr classification. Full acc: 0.9931398
 Full nmbr classification. Classes acc: 0.9935647
 Full pers classification. Full acc: 1
 Full pers classification. Classes acc: 1
-Full post classification. Full acc: 0.9876785
-Full post classification. Classes acc: 0.9877545
+Full post classification. Full acc: 0.9866327
+Full post classification. Classes acc: 0.9867205
 Full tens classification. Full acc: 1
 Full tens classification. Classes acc: 1
 Full voic classification. Full acc: 1

@@ -25,7 +25,7 @@ namespace IntegrationTester
                     morph.CorrectionDict = new Dict();
                     morph.Processors = new IMorphProcessor[0];
                     new Tester(morph,  "Network", "Only network").Test();
-                    morph = new MorphAnalyzer(useEnGramNames: true, withLemmatization: true);
+                    morph = new MorphAnalyzer(useEnGramNames: true, withLemmatization: true, withTrimAndLower: false);
                     new Tester(morph, "Network", "Full").Test();
                     new Tester(morph, "Reg", "Reg").Test();
                     new Tester(morph, "Numb", "Numb").Test();
