@@ -256,8 +256,8 @@ class Releaser:
 
     def __release_inflect_docs__(self):
         mds = [
-            "# Inflect header",
-            "inflect text"
+            "# Список поддерживаемых словоизменений",
+            "Словоизменение возможно только в рамках выделенных жирным категорий:"
         ]
 
         post_index = self.gram_types['post']['index']
@@ -293,8 +293,9 @@ class Releaser:
                 raise NotImplemented()
 
             mds.append(f"- **{header_text}**:")
-            mds.append(create_tag_text(main_tpl))
-            tags = sorted([(item, self.tags[item]['o']) for item in self.inflect_templates[main_tpl]], key=lambda x: x[1], reverse=True)
+            items = [(item, self.tags[item]['o']) for item in self.inflect_templates[main_tpl]]
+            items.append((main_tpl, self.tags[main_tpl]['o']))
+            tags = sorted(items, key=lambda x: x[1], reverse=True)
             for tag in tags:
                 mds.append(create_tag_text(tag[0]))
 

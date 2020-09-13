@@ -9,7 +9,7 @@ namespace UnitTests
         [Test]
         public void TestExistingEnTagCreation()
         {
-            _testExistingTagCreation(new MorphAnalyzer(useEnGramNames: true));
+            _testExistingTagCreation(new MorphAnalyzer(useEnGrams: true));
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace UnitTests
             string tensKey = "tens";
             string moodKey = "mood";
             string voicKey = "voic";
-            if (!morph.UseEnGramNames)
+            if (!morph.UseEnGrams)
             {
                 postKey = GramInfo.TranslateKeyToRu(postKey);
                 nmbrKey = GramInfo.TranslateKeyToRu(nmbrKey);

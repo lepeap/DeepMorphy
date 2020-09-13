@@ -29,7 +29,7 @@ namespace DeepMorphy
         /// --------------------
         /// Perform lemmatization on for each tag in while parsing
         /// </param>
-        /// <param name="useEnGramNames">
+        /// <param name="useEnGrams">
         /// Использовать английские названия граммем и грамматических категорий
         /// --------------------
         /// If true returns english gramme names otherwise russian</param>
@@ -45,7 +45,7 @@ namespace DeepMorphy
         /// </param>
         /// <exception cref="ArgumentException">if maxBatchSize is not grater then 0</exception>
         public MorphAnalyzer(bool withLemmatization = false,
-            bool useEnGramNames = false,
+            bool useEnGrams = false,
             bool withTrimAndLower = true,
             int maxBatchSize = 4096)
         {
@@ -55,9 +55,9 @@ namespace DeepMorphy
             }
             
             _withTrimAndLower = withTrimAndLower;
-            UseEnGramNames = useEnGramNames;
-            TagHelper = new TagHelper(useEnGramNames);
-            Net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGramNames);
+            UseEnGrams = useEnGrams;
+            TagHelper = new TagHelper(useEnGrams);
+            Net = new NeuralNet.NetworkProc(TagHelper, maxBatchSize, withLemmatization, useEnGrams);
             CorrectionDict = new Dict("dict_correction");
             Processors = new IMorphProcessor[]
             {
@@ -71,7 +71,7 @@ namespace DeepMorphy
         /// <summary>
         /// Используются ли английские названия граммем
         /// </summary>
-        public bool UseEnGramNames { get; }
+        public bool UseEnGrams { get; }
         
         /// <summary>
         /// Объект для работы с тегами
@@ -153,7 +153,7 @@ namespace DeepMorphy
                 }
 
                 var resTags = _mergeTagsPower(taglist);
-                yield return new MorphInfo(netTpl.srcWord, resTags, gramDic, UseEnGramNames);
+                yield return new MorphInfo(netTpl.srcWord, resTags, gramDic, UseEnGrams);
             }
         }
 
@@ -280,7 +280,7 @@ namespace DeepMorphy
             var rezCats = new Dictionary<string, GramCategory>();
             foreach (var gram in GramInfo.GramsInfo)
             {
-                var gramName = UseEnGramNames ? gram.KeyEn : gram.KeyRu;
+                var gramName = UseEnGrams ? gram.KeyEn : gram.KeyRu;
                 var tagGrams = tags.Select(x => x[gramName])
                                 .Where(x => x != null)
                                 .Distinct()
@@ -289,7 +289,7 @@ namespace DeepMorphy
                 if (tagGrams.Length == 0)
                 {
                     tagGrams = gram.Classes
-                        .Select(x => UseEnGramNames ? x.KeyEn : x.KeyRu)
+                        .Select(x => UseEnGrams ? x.KeyEn : x.KeyRu)
                         .ToArray();
                 }
                         
