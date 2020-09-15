@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn.preprocessing import normalize
 from collections import defaultdict
-from utils import get_grams_info, CONFIG, save_dataset
+from utils import get_grams_info, CONFIG, split_weight_save_dataset
 
 
 VECT_PATH = CONFIG['vect_words_path']
@@ -47,7 +47,7 @@ def generate_dataset(vec_words, cls_type, cls_dic):
             })
             rez_items[cur_cls] = items
 
-    save_dataset(rez_items, cls_type)
+    split_weight_save_dataset(rez_items, cls_type)
 
 
 def generate_all(vec_words):

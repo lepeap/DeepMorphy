@@ -3,6 +3,7 @@ import yaml
 import random
 import pickle
 import logging
+import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
 
@@ -30,6 +31,8 @@ DATASET_PATH = CONFIG['dataset_path']
 DICS_PATH = CONFIG['dics_path']
 RANDOM = random.Random(CONFIG['random_seed'])
 GRAMMEMES_TYPES = CONFIG['grammemes_types']
+END_TOKEN = CONFIG['end_token']
+MAX_WORD_SIZE = CONFIG['max_word_size']
 
 
 class MyDefaultDict(defaultdict):
@@ -95,7 +98,7 @@ def select_uniform_items(items_dict, persent, ds_info):
             i += 1
 
 
-def save_dataset(items_dict, file_prefix):
+def split_weight_save_dataset(items_dict, file_prefix):
     if not os.path.isdir(DATASET_PATH):
         os.mkdir(DATASET_PATH)
 
@@ -109,19 +112,22 @@ def save_dataset(items_dict, file_prefix):
     items = []
     for key in items_dict:
         items.extend(items_dict[key])
-    random.shuffle(items)
+    RANDOM.shuffle(items)
+    save_dataset(file_prefix, items, valid_items, test_items)
 
+
+def save_dataset(file_prefix, train, valid, test):
     logging.info(f"Saving '{file_prefix}' train dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_train_dataset.pkl"), 'wb+') as f:
-        pickle.dump(items, f)
+        pickle.dump(train, f)
 
     logging.info(f"Saving '{file_prefix}' valid dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_valid_dataset.pkl"), 'wb+') as f:
-        pickle.dump(valid_items, f)
+        pickle.dump(valid, f)
 
     logging.info(f"Saving '{file_prefix}' test dataset")
     with open(os.path.join(DATASET_PATH, f"{file_prefix}_test_dataset.pkl"), 'wb+') as f:
-        pickle.dump(test_items, f)
+        pickle.dump(test, f)
 
 
 def get_dict_path(file_prefix):
@@ -152,3 +158,15 @@ def load_datasets(main_type, *ds_type):
         load_words(key)
 
     return words
+
+
+def vectorize_text(text, chars, chars_indexes):
+    word_vect = np.full((MAX_WORD_SIZE,), END_TOKEN, dtype=np.int32)
+    for index, c in enumerate(text):
+        if c in chars:
+            word_vect[index] = chars_indexes[c]
+        else:
+            word_vect[index] = chars_indexes["UNDEFINED"]
+
+    seq_len = len(text)
+    return word_vect, seq_len

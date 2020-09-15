@@ -21,6 +21,7 @@ inflect_templates_path: data/inflect_templates.pkl
 export_path: export
 save_path: checkpoints/
 bad_path: data/
+ambig_src_path: data/ambig_src.json
 
 test_results_paths:
   - latest_release
@@ -189,6 +190,21 @@ chars:
   - ю
   - я
   - "-"
+
+ambig_chars:
+  - .
+  - ","
+  - "!"
+  - "?"
+  - ":"
+  - ;
+  - )
+  - (
+  - "\""
+  - "'"
+  - «
+  - »
+  - ー
 
 lemma_same_word:
   - post: noun

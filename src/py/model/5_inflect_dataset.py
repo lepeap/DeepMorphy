@@ -1,7 +1,7 @@
 import pickle
 from tqdm import tqdm
 
-from utils import CONFIG, save_dataset
+from utils import CONFIG, split_weight_save_dataset
 
 
 MIN_WORD_SIZE = CONFIG['min_word_size']
@@ -101,7 +101,7 @@ def generate_dataset(forms_dict, vect_words, cls_dic):
                 y_len=y_len
             ))
 
-    save_dataset(rez_dict, 'inflect')
+    split_weight_save_dataset(rez_dict, 'inflect')
 
 
 with open(VECT_PATH, 'rb') as f:

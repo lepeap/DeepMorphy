@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark", "Benchmark\Benc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{1E75D249-3891-48A3-B0B8-2AF49E3F4B22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmbDsGenerator", "AmbDsGenerator\AmbDsGenerator.csproj", "{6F35795D-0ACA-4865-8AEB-741E35B53E2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{1E75D249-3891-48A3-B0B8-2AF49E3F4B22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E75D249-3891-48A3-B0B8-2AF49E3F4B22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E75D249-3891-48A3-B0B8-2AF49E3F4B22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F35795D-0ACA-4865-8AEB-741E35B53E2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F35795D-0ACA-4865-8AEB-741E35B53E2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F35795D-0ACA-4865-8AEB-741E35B53E2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F35795D-0ACA-4865-8AEB-741E35B53E2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

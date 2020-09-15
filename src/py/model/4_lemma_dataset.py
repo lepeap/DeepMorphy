@@ -1,7 +1,7 @@
 import pickle
 from tqdm import tqdm
 from collections import defaultdict
-from utils import CONFIG, save_dataset, save_dictionary_items
+from utils import CONFIG, split_weight_save_dataset, save_dictionary_items
 
 
 MIN_WORD_SIZE = CONFIG['min_word_size']
@@ -57,7 +57,7 @@ def generate(vec_words, main_cls_dic):
             })
             rez_dict[main_cls] = items
 
-    save_dataset(rez_dict, 'lemma')
+    split_weight_save_dataset(rez_dict, 'lemma')
     save_dictionary_items(dict_words, 'lemma')
 
 
