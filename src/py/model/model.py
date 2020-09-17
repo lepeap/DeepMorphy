@@ -5,6 +5,7 @@ from graph.gram_cls import GramCls
 from graph.main_cls import MainCls
 from graph.lemm import Lemm
 from graph.inflect import Inflect
+from graph.ambig import Ambig
 from graph.base import TfContext
 from utils import MyDefaultDict, CONFIG
 from tensorflow.python.tools import freeze_graph
@@ -73,6 +74,7 @@ class RNN:
             self.lem_graph_part = Lemm(self.for_usage, self.config, self.key_configs["lemm"], self.optimiser, self.reset_optimizer)
             self.main_graph_part = MainCls(self.for_usage, self.config, self.key_configs["main"], self.optimiser, self.reset_optimizer)
             self.inflect_graph_part = Inflect(self.for_usage, self.config, self.key_configs['inflect'], self.optimiser, self.reset_optimizer)
+            self.ambig_graph_part = Ambig(self.for_usage, self.config, self.key_configs['ambig'], self.optimiser, self.reset_optimizer)
 
             for device_index, device_name in enumerate(self.devices):
                 with tf.device(device_name):
@@ -129,6 +131,8 @@ class RNN:
                         self.inflect_result = self.inflect_graph_part.results[0]
                         self.inflect_x_class_pl = self.inflect_graph_part.x_cls[0]
                         self.inflect_y_class_pl = self.inflect_graph_part.y_cls[0]
+
+                    self.ambig_graph_part.build_graph_for_device(self.main_graph_part.probs[device_index], x_seq_len, )
 
             for gram in self.gram_keys:
                 self.gram_graph_parts[gram].build_graph_end()

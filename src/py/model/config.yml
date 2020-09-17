@@ -78,7 +78,8 @@ train_steps:
   #- pers
   #- main
   #- lemm
-  - inflect
+  #- inflect
+  - ambig
 
 
 ignore_restore: []
@@ -153,6 +154,15 @@ graph_part_configs:
     batch_size: 8192
     main_metric_type: Accuracy
     stop_main_metric_delta: 0.000001
+
+  ambig:
+    rnn_state_size: 256
+    keep_drop: 1
+    ad_tags_max_count: 8
+    char_vector_size: 64
+    word_rnn:
+      rnn_state_size: 64
+      rnn_bidirectional: false
 
 chars:
   - UNDEFINED # неизвестный символ
