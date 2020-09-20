@@ -95,7 +95,10 @@ def build_rnn(rnn_input, keep_drop, seq_len, settings, initial_state_fw=None, in
                                                      initial_state=initial_state_fw,
                                                      inputs=rnn_input,
                                                      dtype=tf.float32)
-            return final_state[-1]
+            if with_seq:
+                return final_state, rnn_rez
+            else:
+                return final_state
 
 
 def average_gradients(tower_grads):
@@ -250,6 +253,68 @@ def load_inflect_dataset(dataset_path, devices_count, type, batch_size):
 
     if len(cur_step) == devices_count and all([len(step['x']) == batch_size for step in cur_step]):
         yield cur_step
+
+
+def load_ambig_dataset(dataset_path,
+                       devices_count,
+                       type,
+                       batch_size,
+                       max_word_size,
+                       ad_tags_max_count):
+    path = os.path.join(dataset_path, f"ambig_{type}_dataset.pkl")
+    with open(path, 'rb') as f:
+        items = pickle.load(f)
+
+    batches = [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
+    cur_step = []
+    for batch in batches:
+        cur_batch_size = len(batch)
+        sent_lengths = []
+        sent_max_length = max([len(sent) for sent in batch])
+        cur_flat_size = cur_batch_size * sent_max_length
+        x = np.zeros((cur_flat_size, max_word_size), dtype=np.int)
+        x_seq_len = np.zeros((cur_flat_size, ), dtype=np.int)
+        x_amb = np.zeros((cur_flat_size, max_word_size), dtype=np.int)
+        upper_mask = np.zeros((cur_flat_size, max_word_size, 1), dtype=np.int)
+        mask = np.zeros((cur_flat_size,), dtype=np.int)
+        ad_tags = np.zeros((cur_flat_size, ad_tags_max_count), dtype=np.int)
+        y = np.zeros((cur_flat_size, ), dtype=np.int)
+        for i in range(cur_batch_size):
+            sent = batch[i]
+            sent_length = len(batch[i])
+            sent_lengths.append(sent_length)
+            i_val = i * sent_max_length
+            for j in range(sent_max_length):
+                if j >= sent_length:
+                    continue
+                index = i_val + j
+                word = sent[j]
+                x[index] = word['x'][0]
+                x_amb[index] = word['x_amb'][0]
+                x_seq_len[index] = len(word['text'])
+                mask[index] = word['mask']
+                upper_mask[index] = word['upper_mask'][0]
+                y[index] = word['y']
+                for k, t in enumerate(word['tags'][:ad_tags_max_count]):
+                    ad_tags[index, k] = t
+
+        if len(cur_step) == devices_count:
+            yield cur_step
+            cur_step = []
+
+        cur_step.append(dict(
+            x=x,
+            x_seq_len=x_seq_len,
+            y=y,
+            x_amb=x_amb,
+            sent_length=sent_lengths,
+            upper_mask=upper_mask,
+            mask=mask,
+            ad_tags=ad_tags,
+            sent_max_length=sent_max_length,
+            cur_flat_size=cur_flat_size,
+            sent_batch_size=cur_batch_size
+        ))
 
 
 def seq2seq(graph_part,

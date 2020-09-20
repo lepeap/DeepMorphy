@@ -13,13 +13,13 @@ class MainCls(GraphPartBase):
         self.probs = []
         self.results = []
         self.ys = []
-        self.drops = []
+        self.gram_drops = []
         self.top_k = global_settings['main_class_k']
 
     def __build_graph_for_device__(self, x, seq_len, gram_probs, gram_drop):
         self.xs.append(x)
         self.x_seq_lens.append(seq_len)
-        self.drops.append(gram_drop)
+        self.gram_drops.append(gram_drop)
 
         y = tf.placeholder(dtype=tf.int32, shape=(None, self.main_classes_count), name='Y')
         weights = tf.placeholder(dtype=tf.float32, shape=(None,), name='Weight')
@@ -85,7 +85,7 @@ class MainCls(GraphPartBase):
         self.create_accuracy_metric(1, labels, predictions)
 
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
-        for gram_drop in self.drops[dev_num]:
+        for gram_drop in self.gram_drops[dev_num]:
             feed_dict[gram_drop] = 1
         feed_dict[self.keep_drops[dev_num]] = 1 if op_name == 'test' else self.settings['keep_drop']
         feed_dict[self.ys[dev_num]] = batch['y']

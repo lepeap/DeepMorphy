@@ -1,5 +1,6 @@
 import json
 import pickle
+import numpy as np
 from collections import defaultdict
 from utils import CONFIG, RANDOM, MAX_WORD_SIZE, get_grams_info, create_cls_tuple, vectorize_text, save_dataset
 
@@ -22,21 +23,25 @@ SRC_CONVERT['numb'] = ('post', 'int')
 with open(CONFIG['tags_path'], 'rb') as f:
     tags = pickle.load(f)
 
-WEIGHT_DIC = defaultdict(lambda: 1)
-WEIGHT_DIC[tags[create_cls_tuple({'post': 'punct'})]['i']] = 0
-WEIGHT_DIC[tags[create_cls_tuple({'post': 'unkn'})]['i']] = 0
-WEIGHT_DIC[tags[create_cls_tuple({'post': 'int'})]['i']] = 0
+MASK_DIC = defaultdict(lambda: 1)
+MASK_DIC[tags[create_cls_tuple({'post': 'punct'})]['i']] = 0
+MASK_DIC[tags[create_cls_tuple({'post': 'unkn'})]['i']] = 0
+MASK_DIC[tags[create_cls_tuple({'post': 'int'})]['i']] = 0
 
 
 def create_item(text, lower_text, tags, tag_id):
+    upper_mask = np.zeros((MAX_WORD_SIZE,), np.int)
+    for index, c in enumerate(text[:MAX_WORD_SIZE]):
+        val = 1 if c.isupper() else 0
+        upper_mask[index] = val
     return {
                 'text': lower_text,
-                'upper_mask': [1 if c.isupper() else 0 for c in text],
+                'upper_mask': upper_mask,
                 'tags': tags,
                 'x': vectorize_text(lower_text, CHARS, CHARS_INDEXES),
                 'x_amb': vectorize_text(lower_text, AMB_CHARS, AMB_CHARS_INDEXES),
                 'y': tag_id,
-                'weight': WEIGHT_DIC[tag_id]
+                'mask': MASK_DIC[tag_id]
             }
 
 

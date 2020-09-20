@@ -132,13 +132,20 @@ class RNN:
                         self.inflect_x_class_pl = self.inflect_graph_part.x_cls[0]
                         self.inflect_y_class_pl = self.inflect_graph_part.y_cls[0]
 
-                    self.ambig_graph_part.build_graph_for_device(self.main_graph_part.probs[device_index], x_seq_len, )
+                    self.ambig_graph_part.build_graph_for_device(x,
+                                                                 x_seq_len,
+                                                                 self.main_graph_part.probs[device_index],
+                                                                 x_seq_len,
+                                                                 self.main_graph_part.results[0].indices,
+                                                                 gram_keep_drops,
+                                                                 self.main_graph_part.keep_drops[device_index])
 
             for gram in self.gram_keys:
                 self.gram_graph_parts[gram].build_graph_end()
             self.main_graph_part.build_graph_end()
             self.lem_graph_part.build_graph_end()
             self.inflect_graph_part.build_graph_end()
+            self.ambig_graph_part.build_graph_end()
             self.saver = tf.train.Saver(tf.global_variables(), max_to_keep=self.checkpoints_keep)
 
     def restore(self, sess):
@@ -155,6 +162,9 @@ class RNN:
 
         if self.inflect_graph_part.settings['transfer_init']:
             self.inflect_graph_part.transfer_learning_init(sess)
+
+        if self.ambig_graph_part not in self.config['ignore_restore']:
+            self.ambig_graph_part.restore(sess, latest_checkpoint)
 
     def train(self):
         config = tf.ConfigProto(allow_soft_placement=True)
@@ -181,6 +191,9 @@ class RNN:
 
             if self.inflect_graph_part.key in self.train_steps:
                 self.inflect_graph_part.train(tc)
+
+            if self.ambig_graph_part.key in self.train_steps:
+                self.ambig_graph_part.train(tc)
 
     def release(self):
         with tf.Session(graph=self.graph) as sess:

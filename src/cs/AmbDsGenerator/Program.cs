@@ -12,8 +12,8 @@ namespace AmbDataset
     {
         static void Main(string[] args)
         {
-            var resPath = "/Users/Admin/Projects/DeepMorphy/DeepMorphy/src/py/model/data/ambig_src.json";
-            var srcFilePath = @"/Users/Admin/Projects/DeepMorphy/annot.opcorpora.no_ambig.nonmod.xml";
+            var resPath = "/media/alex/hybrid/Projects/DeepMorphy/ambig_src.json";
+            var srcFilePath = @"/media/alex/hybrid/Projects/Resources/annot.opcorpora.no_ambig.nonmod.xml";
             var sents = LoadSents(srcFilePath);
             ParseTokens(sents);
             File.WriteAllText(resPath, JsonConvert.SerializeObject(sents));
