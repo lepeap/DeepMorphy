@@ -68,16 +68,6 @@ for key in CONFIG['other_post_types']:
     }
     max_cls_id += 1
 
-tpl = [None for item in CONFIG['grammemes_types']]
-tpl[post_index] = 'unkn'
-tpl = tuple(tpl)
-items[tpl] = {
-    'i': max_cls_id,
-    'p': 'reg',
-    'l':  max_cls_id
-}
-max_cls_id += 1
-
 with open(CONFIG['dict_words_path'], 'rb') as f:
     dic_words = pickle.load(f)
 

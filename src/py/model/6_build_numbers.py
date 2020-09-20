@@ -12,7 +12,7 @@ GLASN_CHARS = ['а', 'о', 'и', 'е', 'ё', 'э', 'ы', 'у', 'ю', 'я']
 
 
 with open(CLS_CLASSES_PATH, 'rb') as f:
-    cur_classes_count = len(pickle.load(f)) + 1
+    cur_classes_count = len(pickle.load(f))
 
 with open('numb.yml') as f:
     numbr_src_dic = yaml.load(f)
