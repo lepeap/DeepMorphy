@@ -99,6 +99,7 @@ namespace IntegrationTester
             var grams = Directory.GetFiles(_pathPrefix, "*.xml")
                 .Select(Path.GetFileNameWithoutExtension)
                 .Where(x => x != "lemma" && x != "main" && x != "inflect")
+                .OrderBy(x => x)
                 .ToArray();
 
             foreach (var gram in grams)
