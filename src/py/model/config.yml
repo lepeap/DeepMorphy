@@ -89,8 +89,8 @@ ignore_restore: []
 graph_part_configs:
   default:
     #learn params
-    stop_main_metric_delta: 0.00001
-    learn_rate: 0.01
+    stop_main_metric_delta: 0.0001
+    learn_rate: 0.0001
     learn_rate_decay_step: 0.1
     min_learn_rate: 0.00001
     return_step: 2
@@ -156,16 +156,18 @@ graph_part_configs:
     stop_main_metric_delta: 0.000001
 
   ambig:
+    stop_main_metric_delta: 0.0001
     test_batch_size: 8
     valid_batch_size: 16
     train_batch_size: 256
-    rnn_state_size: 256
-    keep_drop: 1
+    rnn_state_size: 64
+    rnn_layers_count: 2
+    keep_drop: 0.95
     ad_tags_max_count: 8
-    char_vector_size: 64
+    char_vector_size: 32
     main_metric_type: Accuracy
     word_rnn:
-      rnn_state_size: 64
+      rnn_state_size: 32
       rnn_layers_count: 1
       rnn_bidirectional: false
 

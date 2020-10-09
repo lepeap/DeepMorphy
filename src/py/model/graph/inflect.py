@@ -50,7 +50,7 @@ class Inflect(GraphPartBase):
         feed_dict[self.y_cls[dev_num]] = batch['y_cls']
         feed_dict[self.ys[dev_num]] = batch['y']
         feed_dict[self.y_seq_lens[dev_num]] = batch['y_seq_len']
-        feed_dict[self.keep_drops[dev_num]] = self.settings['keep_drop']
+        feed_dict[self.keep_drops[dev_num]] = self.settings['keep_drop'] if op_name == 'train' else 1
         feed_dict[self.decoder_keep_drops[dev_num]] = self.settings['decoder']['keep_drop']
 
     def __load_dataset__(self, operation_name):

@@ -3,7 +3,8 @@ import numpy as np
 import tensorflow as tf
 from tqdm import tqdm
 from model import RNN
-from utils import CONFIG, decode_word, load_datasets
+from utils import CONFIG, decode_word, load_datasets, load_tags, MAX_WORD_SIZE
+from tf_utils import load_ambig_dataset
 
 
 class Tester:
@@ -12,6 +13,8 @@ class Tester:
         self.config['graph_part_configs']['lemm']['use_cls_placeholder'] = True
         self.rnn = RNN(True)
         self.chars = {c: index for index, c in enumerate(self.config['chars'])}
+        self.tags = load_tags()
+        self.tags_dic = {self.tags[tpl]['i']: tpl for tpl in self.tags}
         self.batch_size = 65536
         self.show_bad_items = False
 
@@ -22,6 +25,8 @@ class Tester:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
             self.rnn.restore(sess)
+            self.__test_ambig__(sess, 'test', 'valid')
+
             for gram in self.rnn.gram_keys:
                 full_cls_acc, part_cls_acc, _ = self.__test_classification__(sess, gram, self.rnn.gram_graph_parts[gram], 'test')
                 result = f"{gram}. full_cls_acc: {full_cls_acc}; part_cls_acc: {part_cls_acc}"
@@ -250,6 +255,73 @@ class Tester:
         acc = correct / total
         return acc, bad_items
 
+    def __test_ambig__(self, sess, *ds_types):
+        batches = []
+        ad_tags_count = CONFIG['graph_part_configs']['ambig']['ad_tags_max_count']
+        for op_type in ds_types:
+            for batch in load_ambig_dataset(
+                    CONFIG['dataset_path'],
+                    1,
+                    op_type,
+                    64,
+                    MAX_WORD_SIZE,
+                    ad_tags_count):
+                batches.append(batch)
+
+        dev_num = 0
+        good_count = 0
+        total_count = 0
+        bad_sents = []
+        for batch in batches:
+            batch = batch[0]
+            feed_dict = {}
+            feed_dict[self.rnn.xs[dev_num]] = batch['x']
+            feed_dict[self.rnn.x_seq_lens[dev_num]] = batch['x_seq_len']
+            feed_dict[self.rnn.ambig_graph_part.keep_drops[dev_num]] = 1
+            feed_dict[self.rnn.ambig_graph_part.main_drops[dev_num]] = 1
+            feed_dict[self.rnn.ambig_graph_part.xs_amb[dev_num]] = batch['x_amb']
+            feed_dict[self.rnn.ambig_graph_part.sent_max_lengths[dev_num]] = batch['sent_max_length']
+            feed_dict[self.rnn.ambig_graph_part.sent_lengths[dev_num]] = batch['sent_length']
+            feed_dict[self.rnn.ambig_graph_part.sent_batch_sizes[dev_num]] = batch['sent_batch_size']
+            feed_dict[self.rnn.ambig_graph_part.masks[dev_num]] = batch['mask']
+            feed_dict[self.rnn.ambig_graph_part.ad_tags[dev_num]] = batch['ad_tags']
+            feed_dict[self.rnn.ambig_graph_part.upper_masks[dev_num]] = batch['upper_mask']
+            feed_dict[self.rnn.ambig_graph_part.ys[dev_num]] = batch['y']
+            res = sess.run([self.rnn.ambig_graph_part.results[dev_num]], feed_dict)
+
+            for i, sent in enumerate(batch['src_texts']):
+                sent = batch['src_texts'][i]
+                is_bad = False
+                cur_result = []
+                for j, text in enumerate(sent):
+                    res_tag_id = res[0][i][j]
+                    g_index = i * batch['sent_max_length'] + j
+                    etalon_tag_id = batch['y'][g_index]
+                    res_tag = self.tags_dic[res_tag_id]
+                    etalon_tag = self.tags_dic[etalon_tag_id]
+                    is_nn_token = batch['mask'][g_index] == 1
+                    is_correct = res_tag_id == etalon_tag_id
+
+                    if is_nn_token:
+                        total_count += 1
+
+                    if is_nn_token and is_correct:
+                        good_count += 1
+                    elif is_nn_token and not is_correct:
+                        is_bad = True
+
+                    cur_result.append(dict(
+                        text=text,
+                        res_tag=res_tag,
+                        etalon_tag=etalon_tag,
+                        is_error=is_nn_token and not is_correct
+                    ))
+
+                if is_bad:
+                    bad_sents.append(cur_result)
+
+        test_acc = good_count / total_count
+        return test_acc
 
 if __name__ == "__main__":
     tester = Tester()

@@ -143,7 +143,7 @@ def split_dataset(dataset):
     valid_count = total * CONFIG['validation_persent'] / 100
     test = select_items(train, test_count)
     valid = select_items(train, valid_count)
-    train += generate_additional(train)
+    #train += generate_additional(train)
     print("Train count: {0}; Valid count: {1}; Test count: {2}".format(len(train),len(valid), len(test)))
     RANDOM.shuffle(test)
     RANDOM.shuffle(valid)

@@ -87,7 +87,7 @@ class MainCls(GraphPartBase):
     def __update_feed_dict__(self, op_name, feed_dict, batch, dev_num):
         for gram_drop in self.gram_drops[dev_num]:
             feed_dict[gram_drop] = 1
-        feed_dict[self.keep_drops[dev_num]] = 1 if op_name == 'test' else self.settings['keep_drop']
+        feed_dict[self.keep_drops[dev_num]] = self.settings['keep_drop'] if op_name == 'train' else 1
         feed_dict[self.ys[dev_num]] = batch['y']
         feed_dict[self.weights[dev_num]] = batch['weight']
 

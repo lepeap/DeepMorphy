@@ -38,7 +38,8 @@ def rnn_cell(settings, for_usage, keep_drop=None):
         cells = []
         for i in range(settings['rnn_layers_count']):
             with tf.variable_scope('RnnUnit_%s' % i, reuse=tf.AUTO_REUSE) as scope:
-                cell = rnn_cell_unit(settings, for_usage, keep_drop)
+                cur_drop = None if i == settings['rnn_layers_count'] - 1 else keep_drop
+                cell = rnn_cell_unit(settings, for_usage, cur_drop)
             cells.append(cell)
         cell = tf.nn.rnn_cell.MultiRNNCell(cells)
     else:
@@ -277,16 +278,20 @@ def load_ambig_dataset(dataset_path,
         x_amb = np.zeros((cur_flat_size, max_word_size), dtype=np.int)
         upper_mask = np.zeros((cur_flat_size, max_word_size, 1), dtype=np.int)
         mask = np.zeros((cur_flat_size,), dtype=np.int)
-        ad_tags = np.zeros((cur_flat_size, ad_tags_max_count), dtype=np.int)
+        ad_tags = np.full((cur_flat_size, ad_tags_max_count), -1, dtype=np.int)
         y = np.zeros((cur_flat_size, ), dtype=np.int)
+        src_texts = []
         for i in range(cur_batch_size):
             sent = batch[i]
             sent_length = len(batch[i])
             sent_lengths.append(sent_length)
+            sent_src_texts = []
+            src_texts.append(sent_src_texts)
             i_val = i * sent_max_length
             for j in range(sent_max_length):
                 if j >= sent_length:
                     continue
+
                 index = i_val + j
                 word = sent[j]
                 x[index] = word['x'][0]
@@ -295,6 +300,7 @@ def load_ambig_dataset(dataset_path,
                 mask[index] = word['mask']
                 upper_mask[index] = word['upper_mask'][0]
                 y[index] = word['y']
+                sent_src_texts.append(word['text'])
                 for k, t in enumerate(word['tags'][:ad_tags_max_count]):
                     ad_tags[index, k] = t
 
@@ -313,7 +319,8 @@ def load_ambig_dataset(dataset_path,
             ad_tags=ad_tags,
             sent_max_length=sent_max_length,
             cur_flat_size=cur_flat_size,
-            sent_batch_size=cur_batch_size
+            sent_batch_size=cur_batch_size,
+            src_texts=src_texts
         ))
 
 
@@ -555,6 +562,5 @@ class ClsGramEmbedder:
             initializer=tf.contrib.layers.xavier_initializer()
         )
         ad_cls_rez = tf.nn.embedding_lookup(ad_cls_embeddings, cls_pl)
-
         result = tf.concat([gram_rez, ad_cls_rez], axis=1)
         return result

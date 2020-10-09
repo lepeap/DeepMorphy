@@ -85,7 +85,7 @@ class RNN:
                         x_ind = tf.dtypes.cast(x_ind_pl, dtype=tf.int64)
                         x_val = tf.dtypes.cast(x_val_pl, dtype=tf.int64)
                         x_shape = tf.dtypes.cast(x_shape_pl, dtype=tf.int64)
-
+#
                         x_sparse = tf.sparse.SparseTensor(x_ind, x_val, x_shape)
                         x = tf.sparse.to_dense(x_sparse, default_value=self.end_char)
                         self.x_inds.append(x_ind_pl)
@@ -136,7 +136,7 @@ class RNN:
                                                                  x_seq_len,
                                                                  self.main_graph_part.probs[device_index],
                                                                  x_seq_len,
-                                                                 self.main_graph_part.results[0].indices,
+                                                                 self.main_graph_part.results[device_index].indices,
                                                                  gram_keep_drops,
                                                                  self.main_graph_part.keep_drops[device_index])
 
@@ -171,7 +171,7 @@ class RNN:
         if not os.path.isdir(self.save_path):
             os.mkdir(self.save_path)
 
-        with tf.Session(config = config, graph=self.graph) as sess:
+        with tf.Session(config=config, graph=self.graph) as sess:
             sess.run(tf.global_variables_initializer())
             sess.run(tf.local_variables_initializer())
 

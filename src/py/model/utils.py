@@ -160,6 +160,10 @@ def load_datasets(main_type, *ds_type):
     return words
 
 
+def load_tags():
+    with open(CONFIG['tags_path'], 'rb') as f:
+        return pickle.load(f)
+
 def vectorize_text(text, chars, chars_indexes):
     word_vect = np.full((MAX_WORD_SIZE,), END_TOKEN, dtype=np.int32)
     for index, c in enumerate(text):
