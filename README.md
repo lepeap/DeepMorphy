@@ -272,6 +272,7 @@ Console.WriteLine(m.Inflect(tasks).First());
 * [Проект с C# примерами](https://github.com/lepeap/DeepMorphy/tree/master/src/cs/ExampleConsole).
 * [Файлы последнего релиза](https://github.com/lepeap/DeepMorphy/tree/master/src/py/model/latest_release).
 
-## Планы по доработкам
-* Подумать над оптимизацией модели на этапе применения (подумать над квантованием или обрезкой графа вычислений).
+## Планы по возмодным доработкам
+* Обновление версии tensorflow.
+* Подумать над использованием трансформеров.
 
