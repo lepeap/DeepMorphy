@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <Version>2.0.1</Version>
+        <Version>2.0.2</Version>
         <AssemblyName>DeepMorphy</AssemblyName>
         <Authors>Alexander Lepe</Authors>
         <Description>Morphological analyzer for Russian language</Description>
@@ -12,9 +12,7 @@
         <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
         <RepositoryUrl>https://github.com/lepeap/DeepMorphy</RepositoryUrl>
         <PackageReleaseNotes>
-- повышение точности разбора слов;
-- добавлен функционал по определение наклонения и залога;
-- добавлен функционал по изменению формы слов.
+- получение наибольшего общего префикса и окончаний для списка слов.
         </PackageReleaseNotes>
     </PropertyGroup>
 
